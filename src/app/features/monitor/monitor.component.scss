@@ -1,0 +1,15 @@
+.monitor-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f4f4;
+}
+
+.monitor-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 420px;
+  text-align: center;
+}

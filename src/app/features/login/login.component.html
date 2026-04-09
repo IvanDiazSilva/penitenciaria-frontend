@@ -1,0 +1,42 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Iniciar sesión</h2>
+    <p>Accede al sistema penitenciario</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Usuario</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="Introduce tu usuario"
+        />
+        <small class="error" *ngIf="username?.invalid && username?.touched">
+          El usuario es obligatorio.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Introduce tu contraseña"
+        />
+        <small class="error" *ngIf="password?.invalid && password?.touched">
+          La contraseña es obligatoria.
+        </small>
+      </div>
+
+      <div class="error-box" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+</div>

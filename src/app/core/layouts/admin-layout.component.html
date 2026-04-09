@@ -1,0 +1,15 @@
+<p-sidebar [(visible)]="sidebarVisible" mode="overlay" [showCloseIcon]="true">
+  <p-menubar [model]="menuItems"></p-menubar>
+</p-sidebar>
+
+<div class="admin-layout">
+  <div class="header">
+    <button pButton label="Menú" icon="pi pi-bars" (click)="sidebarVisible = true"></button>
+    <span>Panel Penitenciaria</span>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

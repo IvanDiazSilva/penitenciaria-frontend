@@ -1,0 +1,47 @@
+<div class="visitas-container">
+  <div class="visitas-header">
+    <h2>Listado de Visitas</h2>
+    <button (click)="logout()">Cerrar sesión</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Cargando visitas...
+  </div>
+
+  <div *ngIf="!loading && errorMsg" class="error">
+    {{ errorMsg }}
+  </div>
+
+  <div *ngIf="!loading && !errorMsg && visitas.length > 0">
+    <p>Total visitas: {{ visitas.length }}</p>
+
+    <table class="visitas-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Visitante</th>
+          <th>DNI</th>
+          <th>Fecha</th>
+          <th>Entrada</th>
+          <th>Salida</th>
+          <th>Autorizado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let visita of visitas">
+          <td>{{ visita.id }}</td>
+          <td>{{ visita.visitanteNombre }}</td>
+          <td>{{ visita.visitanteDni }}</td>
+          <td>{{ visita.fechaVisita }}</td>
+          <td>{{ visita.horaEntrada || '-' }}</td>
+          <td>{{ visita.horaSalida || '-' }}</td>
+          <td>{{ visita.autorizado ? 'Sí' : 'No' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && !errorMsg && visitas.length === 0" class="empty">
+    No hay visitas disponibles.
+  </div>
+</div>

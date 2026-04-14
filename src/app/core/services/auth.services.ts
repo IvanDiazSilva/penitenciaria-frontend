@@ -1,49 +1,48 @@
-// core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-}
-
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private tokenSubject = new BehaviorSubject<string | null>(null);
 
-  private readonly API_URL = 'http://localhost:8080/penitenciaria-api/api';
-  private token: string | null = null;
-
-  constructor(private http: HttpClient) {
-    // Intentar recuperar token de sessionStorage al iniciar
-    this.token = sessionStorage.getItem('auth_token');
-  }
-
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
-      tap(response => {
-        this.token = response.token;
-        sessionStorage.setItem('auth_token', response.token);
-      })
-    );
-  }
-
-  logout(): void {
-    this.token = null;
-    sessionStorage.removeItem('auth_token');
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      this.tokenSubject.next(token);
+    }
   }
 
   getToken(): string | null {
-    return this.token;
+    return this.tokenSubject.value;
   }
 
   isLoggedIn(): boolean {
-    return this.token !== null;
+    const token = this.getToken();
+    console.log('AuthService isLoggedIn():', !!token, 'token:', token);
+    return !!token;
+  }
+
+  login(credentials: any): Observable<any> {
+  return this.http.post<any>('http://localhost:8080/penitenciaria-api/api/login', credentials).pipe(
+    tap(response => {
+      if (response.token) {
+        localStorage.setItem('auth_token', response.token);
+        this.tokenSubject.next(response.token);
+      }
+    })
+  );
+}
+
+  logout(): void {
+    localStorage.removeItem('auth_token');
+    this.tokenSubject.next(null);
+    this.router.navigate(['/login']);
   }
 }

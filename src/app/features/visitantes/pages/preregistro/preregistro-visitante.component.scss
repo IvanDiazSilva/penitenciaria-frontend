@@ -1,0 +1,201 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: 2.5rem 1rem;
+  background: #eef3f8;
+}
+
+.formulario-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hero-formulario {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.hero-formulario h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.hero-formulario p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.campo-full {
+  grid-column: 1 / -1;
+}
+
+.campo label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+input[pInputText] {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+input[pInputText]:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+p-password {
+  display: block;
+  width: 100%;
+}
+
+p-password input {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+p-password input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.normativa {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.normativa label {
+  cursor: pointer;
+  color: #374151;
+  font-weight: 500;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+small {
+  color: #dc2626;
+  font-size: 0.84rem;
+}
+
+p-card {
+  display: block;
+}
+
+::ng-deep .p-card {
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+::ng-deep .p-card .p-card-body {
+  padding: 2rem;
+}
+
+::ng-deep .p-button {
+  border-radius: 12px;
+  min-height: 44px;
+  padding-inline: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .grid-form {
+    grid-template-columns: 1fr;
+  }
+
+  .acciones {
+    justify-content: stretch;
+  }
+
+  ::ng-deep .p-button {
+    width: 100%;
+  }
+
+  ::ng-deep .p-card .p-card-body {
+    padding: 1.25rem;
+  }
+}
+::ng-deep .btn-submit .p-button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+::ng-deep .btn-submit .p-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.acciones ::ng-deep .p-button {
+  width: auto;
+  min-width: 220px;
+}
+::ng-deep .btn-submit .p-button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+::ng-deep .btn-submit .p-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+::ng-deep .btn-submit .p-button:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}

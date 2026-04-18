@@ -4,7 +4,7 @@ import { Reo, ReoService } from '../../core/services/reo.services';
 
 @Component({
   selector: 'app-reo-list',
-  templateUrl: './reo-list.component.html',
+  templateUrl:'./reo-list.component.html',
   styleUrls: ['./reo-list.component.scss']
 })
 export class ReoListComponent implements OnInit {

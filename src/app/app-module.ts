@@ -9,16 +9,21 @@ import { App } from './app';
 
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ReoListComponent } from './features/reos/reo-list.component';
+import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';
 
 @NgModule({
-  declarations: [App],
+  declarations: [
+    App,
+    
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
-    AppRoutingModule,
     ReactiveFormsModule,
+    AppRoutingModule,
+    PreregistroVisitanteComponent,
     ReoListComponent
   ],
   providers: [

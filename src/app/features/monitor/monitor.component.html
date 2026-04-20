@@ -22,6 +22,14 @@
       <p>Total visitas: {{ data.visitasTotal }}</p>
       <p>Total incidentes: {{ data.incidentesTotal }}</p>
     </div>
+    <button pButton 
+        type="button" 
+        label="Gestionar Reos" 
+        icon="pi pi-users" 
+        class="p-button-lg" 
+        style="padding: 1.5rem 2rem; font-size: 1.25rem; font-weight: bold;"
+        routerLink="/reos">
+</button>
 
     <div *ngIf="!loading && !errorMsg && !data">
       <p>No hay datos disponibles.</p>

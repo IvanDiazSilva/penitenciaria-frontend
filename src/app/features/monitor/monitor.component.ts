@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.services';
@@ -7,7 +8,7 @@ import { AuthService } from '../../core/services/auth.services';
 @Component({
   selector: 'app-monitor',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.scss']
 })

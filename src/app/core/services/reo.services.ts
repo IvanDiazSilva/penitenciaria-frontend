@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// La interfaz debe ser EXACTAMENTE como el JSON de Postman
 export interface Reo {
   id: number;
   nombre: string;
-  apellidos: string;
-  codigoUnico: string;
-  fechaEntrada: string;
-  fechaSalida: string | null;
-  observaciones: string | null;
+  dni: string;
+  delito: string;
 }
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,11 @@ export class ReoService {
 
   constructor(private http: HttpClient) {}
 
-  getReos(): Observable<Reo[]> {
+  // Cambiamos el nombre a getAllReos para que sea más claro
+  getAllReos(): Observable<Reo[]> {
     return this.http.get<Reo[]>(this.apiUrl);
   }
+  createReo(reo: Reo): Observable<Reo> {
+  return this.http.post<Reo>(this.apiUrl, reo);
+}
 }

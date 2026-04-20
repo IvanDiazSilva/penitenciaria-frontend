@@ -1,0 +1,27 @@
+<div class="card" style="max-width: 500px; margin: 20px auto;">
+    <p-card header="Nuevo Registro de Reo">
+        <form [formGroup]="reoForm" (ngSubmit)="onSubmit()" class="p-fluid">
+            
+            <div class="field" style="margin-bottom: 15px;">
+                <label for="nombre">Nombre Completo</label>
+                <input id="nombre" type="text" pInputText formControlName="nombre">
+            </div>
+
+            <div class="field" style="margin-bottom: 15px;">
+                <label for="dni">DNI / NIE</label>
+                <input id="dni" type="text" pInputText formControlName="dni">
+            </div>
+
+            <div class="field" style="margin-bottom: 20px;">
+                <label for="delito">Delito</label>
+                <input id="delito" type="text" pInputText formControlName="delito">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button pButton type="submit" label="Guardar" icon="pi pi-check" [disabled]="reoForm.invalid"></button>
+                <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-secondary" routerLink="/reos"></button>
+            </div>
+            
+        </form>
+    </p-card>
+</div>

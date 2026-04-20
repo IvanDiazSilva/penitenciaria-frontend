@@ -1,29 +1,19 @@
 <div class="reos-container">
-  <!-- Título y contador -->
   <h2>Listado de Reos</h2>
   <p>Total reos: {{ totalReos }}</p>
 
-  <!-- Botón de cierre de sesión -->
-  <button (click)="logout()">
-    Cerrar sesión
-  </button>
-
-  <!-- Carga -->
   <div *ngIf="loading">
     <p>Buscando reos, por favor espere...</p>
   </div>
 
-  <!-- Error -->
   <div *ngIf="errorMsg" class="error">
     <p>{{ errorMsg }}</p>
   </div>
 
-  <!-- Vacío -->
   <div *ngIf="isEmpty()">
     <p>No hay reos registrados.</p>
   </div>
 
-  <!-- Tabla -->
   <table *ngIf="!loading && !isEmpty()" border="1">
     <thead>
       <tr>

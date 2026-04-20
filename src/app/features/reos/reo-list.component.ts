@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Reo, ReoService } from '../../core/services/reo.services';
-
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-reo-list',
-  templateUrl:'./reo-list.component.html',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './reo-list.component.html',
   styleUrls: ['./reo-list.component.scss']
 })
 export class ReoListComponent implements OnInit {
@@ -13,10 +14,7 @@ export class ReoListComponent implements OnInit {
   reos: Reo[] = [];
   totalReos: number = 0;
 
-  constructor(
-    private reoService: ReoService,
-    private router: Router
-  ) {}
+  constructor(private reoService: ReoService) {}
 
   ngOnInit(): void {
     this.loadReos();
@@ -41,9 +39,5 @@ export class ReoListComponent implements OnInit {
 
   isEmpty(): boolean {
     return this.reos.length === 0 && !this.loading;
-  }
-
-  logout(): void {
-    this.router.navigate(['/login']);
   }
 }

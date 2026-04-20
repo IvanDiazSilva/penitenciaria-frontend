@@ -10,7 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { VisitantesService } from '../../services/visitantes.service';
-import { PreregistroVisitanteRequest } from '../../models/preregistro-visitante.request';
+import { PreregistroVisitanteRequest } from '../../models/preregistro-visitante-request.model';
 
 @Component({
   selector: 'app-preregistro-visitante',
@@ -52,36 +52,36 @@ export class PreregistroVisitanteComponent {
     });
   }
 
-  onSubmit(): void {
-    this.mensaje = '';
-    this.error = '';
+ onSubmit(): void {
+  this.mensaje = '';
+  this.error = '';
 
-    if (this.preregistroForm.invalid) {
-      this.preregistroForm.markAllAsTouched();
-      return;
-    }
-
-    const request: PreregistroVisitanteRequest = this.preregistroForm.value;
-
-    this.visitantesService.preregistrarVisitante(request).subscribe({
-      next: () => {
-        this.mensaje = 'Pre-registro realizado correctamente.';
-        this.preregistroForm.reset({
-          nombreCompleto: '',
-          dniNie: '',
-          password: '',
-          nacionalidad: '',
-          telefono: '',
-          email: '',
-          direccion: '',
-          nombreInterno: '',
-          parentesco: '',
-          aceptaNormativa: false
-        });
-      },
-      error: (err) => {
-        this.error = err?.error?.message || 'Error al realizar el pre-registro.';
-      }
-    });
+  if (this.preregistroForm.invalid) {
+    this.preregistroForm.markAllAsTouched();
+    return;
   }
+
+  const request: PreregistroVisitanteRequest = this.preregistroForm.getRawValue();
+
+  this.visitantesService.preregistrarVisitante(request).subscribe({
+    next: () => {
+      this.mensaje = 'Pre-registro realizado correctamente.';
+      this.preregistroForm.reset({
+        nombreCompleto: '',
+        dniNie: '',
+        password: '',
+        nacionalidad: '',
+        telefono: '',
+        email: '',
+        direccion: '',
+        nombreInterno: '',
+        parentesco: '',
+        aceptaNormativa: false
+      });
+    },
+    error: (err: { error: { message: string } }) => {
+      this.error = err?.error?.message || 'Error al realizar el pre-registro.';
+    }
+  });
+}
 }

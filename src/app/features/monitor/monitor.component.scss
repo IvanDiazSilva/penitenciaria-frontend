@@ -1,15 +1,19 @@
 .monitor-container {
-  min-height: 100vh;
+  width: 100%;
+  padding: 1rem;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   background: #f4f4f4;
+  box-sizing: border-box;
 }
 
 .monitor-card {
   background: white;
   padding: 2rem;
   border-radius: 10px;
-  width: 420px;
+  width: 100%;
+  max-width: 420px;
   text-align: center;
+  box-sizing: border-box;
 }

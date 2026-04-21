@@ -3,10 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { MonitorComponent } from './features/monitor/pages/monitor-dashboard/monitor.component';// Importaciones de Visitas corregidas
 import { VisitasListComponent } from './features/visitas/pages/visitas-list/visitas-list.component';
-import { VisitasFormComponent } from './features/visitas/pages/visitas-form/visitas-form';
+import { VisitasFormComponent } from './features/visitas/pages/visitas-form/visitas-form.component';
 // Importaciones de Reos corregidas (con /)
 import { ReoListComponent } from './features/reos/pages/reo-list/reo-list.component';
-import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component'; 
+import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component';
 
 import { AuthGuard } from './core/guards/auth.guard';
 import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';

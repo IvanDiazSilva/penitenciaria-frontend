@@ -9,8 +9,8 @@ import { Visita } from '../../models/visita.model';
   selector: 'app-visitas-form',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './visitas-form.html',
-  styleUrls: ['./visitas-form.scss']
+  templateUrl: './visitas-form.component.html',
+  styleUrls: ['./visitas-form.component.scss']
 })
 export class VisitasFormComponent {
   private visitaService = inject(VisitaService);

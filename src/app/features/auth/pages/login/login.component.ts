@@ -49,7 +49,10 @@ export class LoginComponent {
         // Lógica de redirección basada en los paths de tu AppRoutingModule
         if (userLogueado === 'admin' || rolServidor === 'ADMIN') {
           this.router.navigate(['/monitor']); 
-        } else if (userLogueado === 'guardia1' || rolServidor === 'GUARDIA') {
+        } else if (rolServidor === 'VISITANTE') {
+      // Si Iván te devuelve que es VISITANTE, lo mandamos a su listado de visitas
+      this.router.navigate(['/visitas']);
+        }else if (userLogueado === 'guardia1' || rolServidor === 'GUARDIA') {
           this.router.navigate(['/reos']);
         } else {
           // Por defecto enviamos al monitor si es otro tipo de usuario

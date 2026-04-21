@@ -13,10 +13,14 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ReoListComponent } from './features/reos\\pages/reo-list/reo-list.component';
 import { ReoFormComponent } from './features/reos\\pages/reo-form/reo-form.component';
 import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';
+import { VisitasList } from './features/visitas/pages/visitas-list/visitas-list';
+import { VisitasForm } from './features/visitas/pages/visitas-form/visitas-form';
 
 @NgModule({
   declarations: [
-    App 
+    App,
+    VisitasList,
+    VisitasForm,
     // AQUÍ SOLO QUEDA "App". Los otros se han ido abajo.
   ],
   imports: [
@@ -26,12 +30,12 @@ import { PreregistroVisitanteComponent } from './features/visitantes/pages/prere
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    
+
     // --- ESTA ES LA LISTA MÁGICA ---
     // Como son Standalone (true), Angular exige que estén aquí:
     ReoListComponent,
     ReoFormComponent,
-    PreregistroVisitanteComponent
+    PreregistroVisitanteComponent,
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -43,4 +47,4 @@ import { PreregistroVisitanteComponent } from './features/visitantes/pages/prere
   ],
   bootstrap: [App],
 })
-export class AppModule { }
+export class AppModule {}

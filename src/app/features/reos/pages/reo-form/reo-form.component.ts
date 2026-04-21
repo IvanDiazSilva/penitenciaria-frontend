@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; // Añadimos ActivatedRoute
 import { ReoService } from '../../../../core/services/reo.services';
 
 // PrimeNG
@@ -24,13 +24,15 @@ import { CardModule } from 'primeng/card';
 })
 export class ReoFormComponent implements OnInit {
   reoForm: FormGroup;
+  isEditMode = false; // Nueva bandera para saber si editamos
+  reoId: string | null = null; // Para guardar el ID que viene en la URL
 
   constructor(
     private fb: FormBuilder,
     private reoService: ReoService,
-    private router: Router
+    public router: Router,
+    private route: ActivatedRoute // Inyectamos la ruta activa
   ) {
-    // Definimos los campos que espera tu API de Java
     this.reoForm = this.fb.group({
       nombre: ['', Validators.required],
       dni: ['', [Validators.required, Validators.minLength(9)]],
@@ -38,17 +40,48 @@ export class ReoFormComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // 1. Comprobamos si hay un ID en la ruta (definida como /reos/editar/:id)
+    this.reoId = this.route.snapshot.paramMap.get('id');
+    
+    if (this.reoId) {
+      this.isEditMode = true;
+      this.cargarDatosReo(this.reoId);
+    }
+  }
+
+  cargarDatosReo(id: string): void {
+    // Aquí usamos el servicio que está haciendo tu compañero
+    this.reoService.getReoById(id).subscribe({
+      next: (reo) => {
+        // Rellenamos el formulario con los datos que nos trae Java
+        this.reoForm.patchValue(reo);
+      },
+      error: (err) => console.error('Error al cargar datos:', err)
+    });
+  }
 
   onSubmit(): void {
     if (this.reoForm.valid) {
-      this.reoService.createReo(this.reoForm.value).subscribe({
-        next: () => {
-          console.log('Reo creado con éxito');
-          this.router.navigate(['/reos']); // Volvemos a la lista
-        },
-        error: (err) => console.error('Error al crear:', err)
-      });
+      if (this.isEditMode) {
+        // MODO EDICIÓN: Llamamos a actualizar
+        this.reoService.updateReo(this.reoId!, this.reoForm.value).subscribe({
+          next: () => {
+            console.log('Reo actualizado con éxito');
+            this.router.navigate(['/reos']);
+          },
+          error: (err) => console.error('Error al actualizar:', err)
+        });
+      } else {
+        // MODO CREACIÓN: Lo que ya tenías hecho
+        this.reoService.createReo(this.reoForm.value).subscribe({
+          next: () => {
+            console.log('Reo creado con éxito');
+            this.router.navigate(['/reos']);
+          },
+          error: (err) => console.error('Error al crear:', err)
+        });
+      }
     }
   }
 }

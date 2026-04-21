@@ -1,35 +1,54 @@
-<div class="card" style="padding: 20px;">
-    <h2>Listado de Reos (Datos cargados: {{ reos.length }})</h2>
-    <div class="card" style="padding: 20px;">
+<div class="formulario-wrapper">
+    <div class="navigation-header" style="margin-bottom: 1rem;">
+  <button pButton pRipple 
+          label="Volver al Panel de Monitorización" 
+          icon="pi pi-arrow-left" 
+          class="p-button-text p-button-secondary"
+          routerLink="/monitor"> </button>
+</div>
+  <div class="hero-formulario">
+    <h1>Listado de Reos</h1>
+    <p>Gestión de internos y expedientes activos.</p>
+  </div>
+
+  <p-card>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Listado de Reos</h2>
-        <button pButton pRipple label="Añadir Reo" icon="pi pi-plus" class="p-button-success" routerLink="/reos/nuevo"></button>
+        <h2 style="margin:0">Expedientes</h2>
+        <button pButton label="Añadir Reo" icon="pi pi-plus" class="btn-submit" routerLink="/reos/nuevo"></button>
     </div>
 
-    <p-table [value]="reos" [rows]="10" [paginator]="true">
-        </p-table>
-</div>
-    <p-table [value]="reos" [tableStyle]="{ 'min-width': '50rem' }">
+    <div *ngIf="reos.length === 0" style="padding: 20px; text-align: center; color: #666; border: 1px dashed #ccc; border-radius: 10px;">
+        <i class="pi pi-info-circle"></i> Buscando datos en el servidor... (Si no aparecen, revisa la consola)
+    </div>
+
+    <p-table *ngIf="reos.length > 0" [value]="reos" [rows]="10" [paginator]="true">
         <ng-template pTemplate="header">
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>DNI</th>
                 <th>Delito</th>
+                <th style="text-align: center;">Acciones</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-item>
             <tr>
-                <td>{{ item.id }}</td>
-                <td>{{ item.nombre }}</td>
+                <td><span class="badge-id">#{{ item.id }}</span></td>
+                <td><strong>{{ item.nombre }}</strong></td>
                 <td>{{ item.dni }}</td>
                 <td>{{ item.delito }}</td>
+                <td>
+                    <div style="display: flex; justify-content: center; gap: 8px;">
+                        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="editarReo(item)"></button>
+                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="confirmarEliminar(item)"></button>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     </p-table>
+  </p-card>
 
-    <div style="margin-top: 20px; color: gray;">
-        <p>Debug de datos:</p>
-        <pre>{{ reos | json }}</pre>
-    </div>
+  <div style="margin-top: 20px; background: #eee; padding: 10px; border-radius: 5px;">
+      <small>Debug: Tienes <strong>{{ reos.length }}</strong> reos cargados.</small>
+  </div>
 </div>

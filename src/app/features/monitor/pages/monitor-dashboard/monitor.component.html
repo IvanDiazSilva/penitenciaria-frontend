@@ -1,0 +1,55 @@
+<div class="monitor-container">
+  <div class="monitor-card">
+    <h2>Monitor</h2>
+    <p>Bienvenido al panel principal.</p>
+
+    <button (click)="logout()" class="p-button-text">Cerrar sesión</button>
+
+    <hr>
+
+    <div class="main-actions" style="margin: 20px 0; text-align: center; display: flex; flex-direction: column; gap: 15px;">
+      
+      <button pButton 
+              type="button" 
+              label="Gestión Reos" 
+              icon="pi pi-users" 
+              class="p-button-lg p-button-raised" 
+              style="padding: 1.5rem 2rem; font-size: 1.25rem; font-weight: bold; width: 100%; border: 2px solid #0056b3;"
+              routerLink="/reos">
+      </button>
+
+      <button pButton 
+              type="button" 
+              label="Gestión Visitantes" 
+              icon="pi pi-user-check" 
+              class="p-button-lg p-button-raised" 
+              style="padding: 1.5rem 2rem; font-size: 1.25rem; font-weight: bold; width: 100%; border: 2px solid #0056b3;"
+              routerLink="/validacion-visitante">
+      </button>
+
+    </div>
+
+    <div class="stats-section">
+      <div *ngIf="loading">
+        <p><i class="pi pi-spin pi-spinner"></i> Cargando estadísticas...</p>
+      </div>
+
+      <div *ngIf="!loading && errorMsg">
+        <p style="color: red;">{{ errorMsg }}</p>
+      </div>
+
+      <div *ngIf="!loading && !errorMsg && data">
+        <h3>Resumen del sistema</h3>
+        <div class="stats-grid">
+          <p>Total reos: <strong>{{ data.reoTotal }}</strong></p>
+          <p>Total visitas: <strong>{{ data.visitasTotal }}</strong></p>
+          <p>Total incidentes: <strong>{{ data.incidentesTotal }}</strong></p>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && !errorMsg && !data">
+        <p>No hay datos estadísticos disponibles.</p>
+      </div>
+    </div>
+  </div>
+</div>

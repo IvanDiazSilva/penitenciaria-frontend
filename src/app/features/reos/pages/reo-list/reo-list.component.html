@@ -1,0 +1,33 @@
+<h2>Listado de reos</h2>
+
+<button (click)="irANuevoReo()">Nuevo reo</button>
+
+<div *ngIf="loading">Cargando reos...</div>
+
+<table *ngIf="!loading && reos.length > 0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>DNI</th>
+      <th>Delito</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let reo of reos">
+      <td>{{ reo.id }}</td>
+      <td>{{ reo.nombre }}</td>
+      <td>{{ reo.dni }}</td>
+      <td>{{ reo.delito }}</td>
+      <td>
+        <button (click)="editar(reo)">Editar</button>
+        <button (click)="eliminar(reo.id!)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="!loading && reos.length === 0">
+  No hay reos registrados.
+</div>

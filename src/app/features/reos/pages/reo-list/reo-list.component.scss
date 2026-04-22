@@ -1,0 +1,152 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: 2.5rem 1rem;
+  background: #eef3f8;
+}
+
+.formulario-wrapper {
+  max-width: 1100px; // Un poco más ancha para la tabla
+  margin: 0 auto;
+}
+
+.hero-formulario {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: #6b7280;
+    font-size: 1.1rem;
+  }
+}
+
+/* Cabecera interna de la tabla */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.search-input {
+  border-radius: 10px;
+  min-width: 300px;
+}
+
+/* Botón Añadir con tu estilo azul */
+::ng-deep .btn-add.p-button {
+  background: #2563eb;
+  border-color: #2563eb;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Estilo de la Card */
+::ng-deep .p-card {
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo de la Tabla */
+::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .p-datatable-tbody > tr {
+    transition: background 0.2s;
+    
+    &:hover {
+      background: #f1f5f9 !important;
+    }
+    
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+  }
+}
+
+/* Pequeños detalles visuales */
+.badge-id {
+  background: #e2e8f0;
+  color: #475569;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.flex-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.debug-info {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
+/* ... todo lo que ya tenías ... */
+
+.btn-submit {
+  background: #2563eb !important;
+  border: 1px solid #2563eb !important;
+  border-radius: 12px !important;
+  padding: 0.5rem 1.25rem !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18) !important;
+}
+
+.badge-id {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background: #f8fafc;
+    padding: 1rem;
+    color: #475569;
+}
+.navigation-header {
+  ::ng-deep .p-button.p-button-text {
+    color: #64748b;
+    padding: 0;
+    font-weight: 500;
+    
+    &:hover {
+      color: #2563eb;
+      background: transparent;
+    }
+  }
+}

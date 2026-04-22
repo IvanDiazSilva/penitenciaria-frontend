@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Reo } from '../models/reo.model';
@@ -7,9 +7,8 @@ import { Reo } from '../models/reo.model';
   providedIn: 'root'
 })
 export class ReosService {
+  private http = inject(HttpClient);
   private apiUrl = 'http://localhost:8080/penitenciaria-api/api/reos';
-
-  constructor(private http: HttpClient) {}
 
   getReos(): Observable<Reo[]> {
     return this.http.get<Reo[]>(this.apiUrl);
@@ -19,15 +18,15 @@ export class ReosService {
     return this.http.get<Reo>(`${this.apiUrl}/${id}`);
   }
 
-  createReo(reo: Reo): Observable<Reo> {
+  crearReo(reo: Reo): Observable<Reo> {
     return this.http.post<Reo>(this.apiUrl, reo);
   }
 
-  updateReo(id: number, reo: Reo): Observable<Reo> {
+  actualizarReo(id: number, reo: Reo): Observable<Reo> {
     return this.http.put<Reo>(`${this.apiUrl}/${id}`, reo);
   }
 
-  deleteReo(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  eliminarReo(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

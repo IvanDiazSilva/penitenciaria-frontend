@@ -1,33 +1,32 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Incidencia } from '../models/incidencias.model';
+import { Incidente } from '../models/incidente.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IncidenciasService {
-  private apiUrl = 'http://localhost:8080/penitenciaria-api/api/incidencias';
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/penitenciaria-api/api/incidentes';
 
-  constructor(private http: HttpClient) {}
-
-  getIncidencias(): Observable<Incidencia[]> {
-    return this.http.get<Incidencia[]>(this.apiUrl);
+  getIncidencias(): Observable<Incidente[]> {
+    return this.http.get<Incidente[]>(this.apiUrl);
   }
 
-  getIncidenciaById(id: number): Observable<Incidencia> {
-    return this.http.get<Incidencia>(`${this.apiUrl}/${id}`);
+  getIncidenciaById(id: number): Observable<Incidente> {
+    return this.http.get<Incidente>(`${this.apiUrl}/${id}`);
   }
 
-  createIncidencia(incidencia: Incidencia): Observable<Incidencia> {
-    return this.http.post<Incidencia>(this.apiUrl, incidencia);
+  crearIncidencia(incidencia: Incidente): Observable<Incidente> {
+    return this.http.post<Incidente>(this.apiUrl, incidencia);
   }
 
-  updateIncidencia(id: number, incidencia: Incidencia): Observable<Incidencia> {
-    return this.http.put<Incidencia>(`${this.apiUrl}/${id}`, incidencia);
+  actualizarIncidencia(id: number, incidencia: Incidente): Observable<Incidente> {
+    return this.http.put<Incidente>(`${this.apiUrl}/${id}`, incidencia);
   }
 
-  deleteIncidencia(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  eliminarIncidencia(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

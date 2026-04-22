@@ -1,0 +1,31 @@
+<p-card header="Prerregistro de visitante">
+  <form [formGroup]="form" (ngSubmit)="onSubmit" class="formulario">
+    <div class="campo">
+      <label for="dniNie">DNI / NIE</label>
+      <input
+        id="dniNie"
+        type="text"
+        pInputText
+        formControlName="dniNie"
+        placeholder="Introduce tu DNI o NIE"
+      />
+      <small *ngIf="form.get('dniNie')?.invalid && form.get('dniNie')?.touched" class="error">
+        El DNI/NIE es obligatorio.
+      </small>
+    </div>
+
+    <button pButton type="submit" label="Enviar prerregistro"></button>
+
+    <p-message
+      *ngIf="enviado"
+      severity="success"
+      text="Prerregistro enviado correctamente.">
+    </p-message>
+
+    <p-message
+      *ngIf="error"
+      severity="error"
+      [text]="error">
+    </p-message>
+  </form>
+</p-card>

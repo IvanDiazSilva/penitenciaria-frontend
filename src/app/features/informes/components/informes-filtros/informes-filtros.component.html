@@ -1,0 +1,27 @@
+<div class="informes-filtros">
+  <div class="informes-filtros__group">
+    <label for="fecha">Fecha</label>
+    <input
+      id="fecha"
+      type="date"
+      [(ngModel)]="fecha"
+      name="fecha" />
+  </div>
+
+  <div class="informes-filtros__group">
+    <label for="tipo">Tipo de informe</label>
+    <select
+      id="tipo"
+      [(ngModel)]="tipo"
+      name="tipo">
+      <option value="general">General</option>
+      <option value="visitas">Visitas</option>
+      <option value="incidentes">Incidentes</option>
+    </select>
+  </div>
+
+  <div class="informes-filtros__actions">
+    <button type="button" (click)="onAplicarFiltros()">Aplicar filtros</button>
+    <button type="button" class="secondary" (click)="limpiarFiltros()">Limpiar</button>
+  </div>
+</div>

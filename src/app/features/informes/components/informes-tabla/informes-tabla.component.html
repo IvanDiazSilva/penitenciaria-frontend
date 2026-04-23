@@ -1,0 +1,17 @@
+<div class="informes-tabla" *ngIf="datos && datos.length > 0">
+  <table>
+    <thead>
+      <tr>
+        <th>Campo</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let fila of datos">
+        <td>{{ fila.campo }}</td>
+        <td>{{ fila.valor }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

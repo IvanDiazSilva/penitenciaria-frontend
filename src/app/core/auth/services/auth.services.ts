@@ -7,20 +7,17 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private tokenSubject = new BehaviorSubject<string | null>(null);
+  private tokenSubject = new BehaviorSubject<string | null>(
+    localStorage.getItem('auth_token')
+  );
 
   constructor(
     private http: HttpClient,
     private router: Router
-  ) {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      this.tokenSubject.next(token);
-    }
-  }
+  ) {}
 
   getToken(): string | null {
-    return this.tokenSubject.value;
+    return this.tokenSubject.value || localStorage.getItem('auth_token');
   }
 
   isLoggedIn(): boolean {

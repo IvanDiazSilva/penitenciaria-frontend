@@ -10,8 +10,10 @@ import { VisitasFormComponent } from './features/visitas/page/visitas-form/visit
 import { ReoListComponent } from './features/reos/pages/reo-list/reo-list.component';
 import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component';
 
-import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro-visitante/preregistro-visitante.component';  
+import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro-visitante/preregistro-visitante.component';
 import { ValidacionVisitanteComponent } from './features/visitantes/pages/validacion-visitante/validacion-visitante.component';
+
+import { InformesPageComponent } from './features/informes/pages/informes-page/informes-page.component';
 
 import { AuthGuard } from './core/auth/guards/auth.guard';
 import { AdminLayoutComponent } from './core/layout/pages/admin-layout/admin-layout.component';
@@ -19,9 +21,11 @@ import { AdminLayoutComponent } from './core/layout/pages/admin-layout/admin-lay
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+  // Rutas públicas
   { path: 'login', component: LoginComponent },
   { path: 'preregistro', component: PreregistroVisitanteComponent },
 
+  // Rutas protegidas
   {
     path: '',
     component: AdminLayoutComponent,
@@ -35,6 +39,8 @@ const routes: Routes = [
 
       { path: 'visitas', component: VisitasListComponent },
       { path: 'visitas/nueva', component: VisitasFormComponent },
+
+      { path: 'informes', component: InformesPageComponent },
 
       { path: 'validacion-visitante', component: ValidacionVisitanteComponent },
 

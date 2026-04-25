@@ -8,6 +8,9 @@ import { VisitasFormComponent } from './features/visitas/pages/visitas-form/visi
 import { ReoListComponent } from './features/reos/pages/reo-list/reo-list.component';
 import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component';
 
+import { IncidenciaFormComponent } from './features/incidentes/pages/incidente-form/incidencia-form.component';
+import { IncidenciaListComponent } from './features/incidentes/pages/incidente-list/incidencia-list.component';
+
 import { AuthGuard } from './core/guards/auth.guard';
 import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';
 import { ValidacionVisitanteComponent } from './features/validacion-visitante/pages/validacion-form/validacion-visitante.component';
@@ -27,7 +30,9 @@ const routes: Routes = [
   { path: 'monitor', component: MonitorComponent, canActivate: [AuthGuard] },
   { path: 'validacion-visitante', component: ValidacionVisitanteComponent, canActivate: [AuthGuard] },
   { path: 'portal-visitante', component: PreregistroVisitanteComponent },
-  
+  { path: 'incidencias', component: IncidenciaListComponent },
+  { path: 'incidencias/nuevo', component: IncidenciaFormComponent },
+  { path: 'incidencias/editar/:id', component: IncidenciaFormComponent },
   { path: '**', redirectTo: 'login' }
 ];
 

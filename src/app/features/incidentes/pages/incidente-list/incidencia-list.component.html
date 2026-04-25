@@ -1,0 +1,78 @@
+<p-toast position="top-right"></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="formulario-wrapper">
+  <div class="navigation-header" style="margin-bottom: 1rem;">
+    <button pButton pRipple 
+            label="Volver al Panel de Monitorización" 
+            icon="pi pi-arrow-left" 
+            class="p-button-text p-button-secondary"
+            routerLink="/monitor"> 
+    </button>
+  </div>
+
+  <div class="hero-formulario">
+    <h1>Gestión de Incidencias</h1>
+    <p>Historial de eventos y reportes de seguridad.</p>
+  </div>
+
+  <p-card>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="margin:0">Registros</h2>
+      <button pButton label="Nueva Incidencia" icon="pi pi-plus" class="btn-submit" (click)="irAFuomulario()"></button>
+    </div>
+
+    <div style="margin-bottom: 25px; max-width: 400px;">
+      <div class="search-box-custom" style="position: relative; display: flex; align-items: center;">
+        <i class="pi pi-search" style="position: absolute; left: 12px; color: #cbd5e1; font-size: 0.9rem;"></i>
+        <input 
+          type="text" 
+          pInputText 
+          placeholder="Buscar por tipo, reo o descripción..." 
+          style="width: 100%; padding: 8px 12px 8px 35px; border-radius: 20px; border: 1px solid #f1f5f9; background-color: #f8fafc; color: #94a3b8; font-size: 0.85rem;"
+          (input)="filtrar($event)" />
+      </div>
+    </div>
+
+    <div *ngIf="loading" style="text-align: center; padding: 2rem;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #334155;"></i>
+        <p>Sincronizando con la base de datos...</p>
+    </div>
+
+    <p-table *ngIf="!loading" [value]="incidentesFiltrados" [rows]="10" [paginator]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Tipo</th>
+          <th>Reo Involucrado</th>
+          <th>Fecha y Hora</th>
+          <th style="text-align: center;">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td><span class="badge-id">#{{ item.id }}</span></td>
+          <td><strong>{{ item.tipo }}</strong></td>
+          <td>
+            <span class="p-tag p-tag-info">ID Reo: {{ item.idReo || item.id_reo }}</span>
+          </td>
+          <td>
+            {{ item.fechaHora || item.fecha_hora }}
+          </td>
+          <td>
+            <div style="display: flex; justify-content: center; gap: 8px;">
+              <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="irAFuomulario(item.id)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="confirmar_baja(item)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 20px;">No se encontraron incidentes registrados.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>

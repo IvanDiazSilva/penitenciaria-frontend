@@ -1,0 +1,68 @@
+<p-toast position="top-right"></p-toast>
+
+<div class="formulario-wrapper">
+  <div class="navigation-header" style="margin-bottom: 1rem;">
+    <button pButton pRipple 
+            label="Volver al Listado" 
+            icon="pi pi-arrow-left" 
+            class="p-button-text p-button-secondary"
+            routerLink="/incidencias"> 
+    </button>
+  </div>
+
+  <div class="hero-formulario">
+    <h1>{{ modoEditar ? 'Editar Reporte' : 'Alta de Incidencia' }}</h1>
+    <p>Complete los detalles del suceso ocurrido en el centro.</p>
+  </div>
+
+  <p-card>
+    <div class="p-fluid" style="display: flex; flex-direction: column; gap: 20px;">
+      
+      <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <label class="font-bold">Tipo de Incidente</label>
+          <input pInputText [(ngModel)]="incidente.tipo" placeholder="Ej: Pelea, Médico, Intento fuga" />
+        </div>
+        
+        <div style="flex: 1;">
+          <label class="font-bold">Reo Involucrado</label>
+          <select [(ngModel)]="incidente.idReo" 
+                  class="p-inputtext" 
+                  style="appearance: auto; padding: 0.5rem;">
+            <option [value]="0" disabled>Seleccione un recluso...</option>
+            <option *ngFor="let r of reos" [value]="r.id">
+              {{r.nombre}} {{r.apellido}} (ID: {{r.id}})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="font-bold">Fecha y Hora del Suceso</label>
+        <input type="datetime-local" 
+               pInputText 
+               [(ngModel)]="incidente.fechaHora" 
+               style="width: 100%;" />
+      </div>
+
+      <div>
+        <label class="font-bold">Descripción Detallada</label>
+        <textarea pInputText 
+                  [(ngModel)]="incidente.descripcion" 
+                  rows="5" 
+                  placeholder="Describa lo ocurrido..." 
+                  style="width: 100%; border: 1px solid #ced4da; border-radius: 6px; padding: 10px;">
+        </textarea>
+      </div>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button pButton 
+                [label]="modoEditar ? 'Actualizar Reporte' : 'Registrar Incidencia'" 
+                icon="pi pi-save" 
+                class="btn-submit" 
+                (click)="guardar()">
+        </button>
+      </div>
+    </div>
+  </p-card>
+</div>

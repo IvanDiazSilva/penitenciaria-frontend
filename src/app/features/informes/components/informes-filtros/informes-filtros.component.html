@@ -1,27 +1,51 @@
-<div class="informes-filtros">
-  <div class="informes-filtros__group">
-    <label for="fecha">Fecha</label>
-    <input
-      id="fecha"
-      type="date"
-      [(ngModel)]="fecha"
-      name="fecha" />
+<form class="informes-filtros" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="informes-filtros__header">
+    <h2>Filtros</h2>
+    <p>Refina la información del informe por reo y rango de fechas.</p>
   </div>
 
-  <div class="informes-filtros__group">
-    <label for="tipo">Tipo de informe</label>
-    <select
-      id="tipo"
-      [(ngModel)]="tipo"
-      name="tipo">
-      <option value="general">General</option>
-      <option value="visitas">Visitas</option>
-      <option value="incidentes">Incidentes</option>
-    </select>
+  <div class="informes-filtros__grid">
+    <div class="informes-filtros__field">
+      <label for="reoId">Reo</label>
+
+      <p-select
+        inputId="reoId"
+        formControlName="reoId"
+        [options]="reos"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos los reos"
+        [showClear]="true"
+        [loading]="loadingReos"
+        [disabled]="loadingReos"
+        [emptyMessage]="'No hay reos disponibles'"
+        appendTo="body"
+        class="w-full">
+      </p-select>
+
+      <small *ngIf="loadingReos">Cargando reos...</small>
+      <small *ngIf="!loadingReos && reos.length === 0">No hay reos disponibles.</small>
+    </div>
+
+    <div class="informes-filtros__field">
+      <label for="fechaDesde">Fecha desde</label>
+      <input
+        id="fechaDesde"
+        type="date"
+        formControlName="fechaDesde">
+    </div>
+
+    <div class="informes-filtros__field">
+      <label for="fechaHasta">Fecha hasta</label>
+      <input
+        id="fechaHasta"
+        type="date"
+        formControlName="fechaHasta">
+    </div>
   </div>
 
   <div class="informes-filtros__actions">
-    <button type="button" (click)="onAplicarFiltros()">Aplicar filtros</button>
-    <button type="button" class="secondary" (click)="limpiarFiltros()">Limpiar</button>
+    <button type="submit">Aplicar filtros</button>
+    <button type="button" (click)="onLimpiar()">Limpiar</button>
   </div>
-</div>
+</form>

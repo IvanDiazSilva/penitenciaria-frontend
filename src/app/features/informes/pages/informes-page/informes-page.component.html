@@ -1,58 +1,30 @@
 <section class="informes-page">
-  <div class="informes-page__header">
-    <div>
-      <h1>Informes</h1>
-      <p>Consulta rápida del informe general del sistema.</p>
-    </div>
+  <h1>Informes</h1>
+  <p>Consulta rápida del informe general del sistema.</p>
 
-    <div class="informes-page__actions">
-      <button type="button" (click)="descargarPdf()" [disabled]="downloadingPdf">
-        {{ downloadingPdf ? 'Generando PDF...' : 'Descargar PDF' }}
-      </button>
-    </div>
+  <div class="acciones">
+    <button type="button" (click)="cargarResumen()">Recargar resumen</button>
+    <button type="button" (click)="descargarPdf()">Descargar PDF</button>
   </div>
 
-  <div *ngIf="loading" class="informes-page__message">
-    Cargando informe...
+  <div *ngIf="loading">
+    Cargando resumen...
   </div>
 
-  <div *ngIf="errorMessage" class="informes-page__message informes-page__message--error">
+  <div *ngIf="errorMessage">
     {{ errorMessage }}
   </div>
 
-  <div *ngIf="!loading && resumenGeneral" class="informes-page__section">
+  <pre *ngIf="resumenGeneral">{{ resumenGeneral | json }}</pre>
+
+  <div *ngIf="resumenGeneral">
     <h2>Resumen general</h2>
 
-    <div class="informes-page__grid">
-      <div class="informes-page__card">
-        <span class="label">Fecha</span>
-        <strong>{{ resumenGeneral.fecha }}</strong>
-      </div>
-
-      <div class="informes-page__card">
-        <span class="label">Reos totales</span>
-        <strong>{{ resumenGeneral.reoTotal }}</strong>
-      </div>
-
-      <div class="informes-page__card">
-        <span class="label">Visitas totales</span>
-        <strong>{{ resumenGeneral.visitasTotal }}</strong>
-      </div>
-
-      <div class="informes-page__card">
-        <span class="label">Visitas hoy</span>
-        <strong>{{ resumenGeneral.visitasHoy }}</strong>
-      </div>
-
-      <div class="informes-page__card">
-        <span class="label">Incidentes totales</span>
-        <strong>{{ resumenGeneral.incidentesTotal }}</strong>
-      </div>
-    </div>
-
-    <div class="informes-page__status">
-      <span class="label">Estado del informe</span>
-      <p>{{ resumenGeneral.mensaje }}</p>
-    </div>
+    <p><strong>Fecha:</strong> {{ resumenGeneral.fecha }}</p>
+    <p><strong>Reos totales:</strong> {{ resumenGeneral.reoTotal }}</p>
+    <p><strong>Visitas totales:</strong> {{ resumenGeneral.visitasTotal }}</p>
+    <p><strong>Visitas hoy:</strong> {{ resumenGeneral.visitasHoy }}</p>
+    <p><strong>Incidentes totales:</strong> {{ resumenGeneral.incidentesTotal }}</p>
+    <p><strong>Estado:</strong> {{ resumenGeneral.mensaje }}</p>
   </div>
 </section>

@@ -1,0 +1,54 @@
+<section class="monitor-filtros">
+  <div class="monitor-filtros__header">
+    <h2>Filtros del informe</h2>
+    <p>Selecciona un reo o un rango de fechas para personalizar el informe.</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="monitor-filtros__state monitor-filtros__state--error">
+    {{ errorMessage }}
+  </div>
+
+  <div class="monitor-filtros__grid">
+    <div class="monitor-filtros__field">
+      <label for="reoId">Reo</label>
+      <select
+        id="reoId"
+        [(ngModel)]="filtros.reoId"
+        (ngModelChange)="onFiltrosChange()"
+        [disabled]="loadingReos">
+        <option [ngValue]="null">Todos los reos</option>
+        <option *ngFor="let reo of reos" [ngValue]="reo.id">
+          {{ reo.nombre }} - {{ reo.dni }}
+        </option>
+      </select>
+    </div>
+
+    <div class="monitor-filtros__field">
+      <label for="fechaDesde">Fecha desde</label>
+      <input
+        id="fechaDesde"
+        type="date"
+        [(ngModel)]="filtros.fechaDesde"
+        (ngModelChange)="onFiltrosChange()">
+    </div>
+
+    <div class="monitor-filtros__field">
+      <label for="fechaHasta">Fecha hasta</label>
+      <input
+        id="fechaHasta"
+        type="date"
+        [(ngModel)]="filtros.fechaHasta"
+        (ngModelChange)="onFiltrosChange()">
+    </div>
+  </div>
+
+  <div class="monitor-filtros__actions">
+    <button type="button" class="monitor-filtros__button monitor-filtros__button--primary" (click)="onAplicar()">
+      Aplicar filtros
+    </button>
+
+    <button type="button" class="monitor-filtros__button monitor-filtros__button--secondary" (click)="onLimpiar()">
+      Limpiar
+    </button>
+  </div>
+</section>

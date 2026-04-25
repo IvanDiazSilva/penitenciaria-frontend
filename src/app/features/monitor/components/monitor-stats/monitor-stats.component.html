@@ -1,0 +1,31 @@
+<section class="monitor-stats">
+  <div class="monitor-stats__header">
+    <h2>Resumen general</h2>
+    <p>Indicadores principales del sistema penitenciario.</p>
+  </div>
+
+  <div *ngIf="loading" class="monitor-stats__state">
+    Cargando estadísticas...
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="monitor-stats__state monitor-stats__state--error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && stats" class="monitor-stats__grid">
+    <article class="monitor-stats__card">
+      <span class="monitor-stats__label">Reos totales</span>
+      <strong class="monitor-stats__value">{{ stats.reoTotal }}</strong>
+    </article>
+
+    <article class="monitor-stats__card">
+      <span class="monitor-stats__label">Visitas totales</span>
+      <strong class="monitor-stats__value">{{ stats.visitasTotal }}</strong>
+    </article>
+
+    <article class="monitor-stats__card">
+      <span class="monitor-stats__label">Incidentes totales</span>
+      <strong class="monitor-stats__value">{{ stats.incidentesTotal }}</strong>
+    </article>
+  </div>
+</section>

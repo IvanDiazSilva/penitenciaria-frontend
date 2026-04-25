@@ -1,4 +1,3 @@
-// core/interceptors/auth.interceptor.ts
 import { Injectable } from '@angular/core';
 import {
   HttpInterceptor,
@@ -17,7 +16,9 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.authService.getToken();
 
-    // No interceptar la propia petición de login
+    console.log('INTERCEPTOR => URL:', req.url);
+    console.log('INTERCEPTOR => TOKEN:', token);
+
     if (!token || req.url.includes('/login')) {
       return next.handle(req);
     }
@@ -27,6 +28,8 @@ export class AuthInterceptor implements HttpInterceptor {
         Authorization: `Bearer ${token}`
       }
     });
+
+    console.log('INTERCEPTOR => AUTH HEADER AÑADIDO');
 
     return next.handle(authReq);
   }

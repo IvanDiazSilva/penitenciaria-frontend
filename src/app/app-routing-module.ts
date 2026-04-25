@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent } from './core/auth/pages/login-page/login.component';
-import { MonitorComponent } from './features/monitor/pages/monitor.component';
+import { MonitorPageComponent } from './features/monitor/pages/monitor-page/monitor-page.component';
 
 import { VisitasListComponent } from './features/visitas/page/visitas-list/visitas-list.component';
 import { VisitasFormComponent } from './features/visitas/page/visitas-form/visitas-form.component';
@@ -31,7 +31,7 @@ const routes: Routes = [
     component: AdminLayoutComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: 'monitor', component: MonitorComponent },
+      { path: 'monitor', component: MonitorPageComponent },
 
       { path: 'reos', component: ReoListComponent },
       { path: 'reos/nuevo', component: ReoFormComponent },

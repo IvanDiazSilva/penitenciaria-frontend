@@ -14,7 +14,6 @@ import { PreregistroVisitanteComponent } from './features/visitantes/pages/prere
 @NgModule({
   declarations: [
     App,
-    
   ],
   imports: [
     BrowserModule,

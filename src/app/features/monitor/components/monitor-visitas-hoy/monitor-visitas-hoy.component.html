@@ -1,0 +1,31 @@
+<section class="monitor-visitas-hoy">
+  <div class="monitor-visitas-hoy__header">
+    <h2>Visitas de hoy</h2>
+    <p>Información diaria de accesos autorizados.</p>
+  </div>
+
+  <div *ngIf="loading" class="monitor-visitas-hoy__state">
+    Cargando visitas de hoy...
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="monitor-visitas-hoy__state monitor-visitas-hoy__state--error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && visitasHoy" class="monitor-visitas-hoy__grid">
+    <article class="monitor-visitas-hoy__card">
+      <span class="monitor-visitas-hoy__label">Fecha</span>
+      <strong class="monitor-visitas-hoy__value">{{ visitasHoy.fecha }}</strong>
+    </article>
+
+    <article class="monitor-visitas-hoy__card">
+      <span class="monitor-visitas-hoy__label">Total visitas</span>
+      <strong class="monitor-visitas-hoy__value">{{ visitasHoy.total }}</strong>
+    </article>
+
+    <article class="monitor-visitas-hoy__card">
+      <span class="monitor-visitas-hoy__label">Autorizadas</span>
+      <strong class="monitor-visitas-hoy__value">{{ visitasHoy.autorizados }}</strong>
+    </article>
+  </div>
+</section>

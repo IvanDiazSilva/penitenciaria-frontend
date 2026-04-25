@@ -1,0 +1,47 @@
+<section class="monitor-page">
+  <div class="monitor-page__header">
+    <div>
+      <h1>Monitor</h1>
+      <p>
+        Consulta el estado general del centro, las visitas del día
+        y el informe resumido con filtros.
+      </p>
+    </div>
+
+    <div class="monitor-page__actions">
+      <button type="button" (click)="recargarTodo()">
+        Recargar datos
+      </button>
+    </div>
+  </div>
+
+  <app-monitor-stats
+    [stats]="stats"
+    [loading]="loadingStats"
+    [errorMessage]="errorStats">
+  </app-monitor-stats>
+
+  <app-monitor-visitas-hoy
+    [visitasHoy]="visitasHoy"
+    [loading]="loadingVisitasHoy"
+    [errorMessage]="errorVisitasHoy">
+  </app-monitor-visitas-hoy>
+
+  <app-monitor-filtros
+    [reos]="reos"
+    [loadingReos]="loadingReos"
+    [filtros]="filtros"
+    [errorMessage]="errorReos"
+    (filtrosChange)="onFiltrosChange($event)"
+    (aplicar)="aplicarFiltros()"
+    (limpiar)="limpiarFiltros()">
+  </app-monitor-filtros>
+
+  <app-monitor-informe
+    [informe]="informe"
+    [loading]="loadingInforme"
+    [errorMessage]="errorInforme"
+    [downloadingPdf]="downloadingPdf"
+    (descargarPdf)="descargarPdf()">
+  </app-monitor-informe>
+</section>

@@ -1,35 +1,64 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { SelectModule } from 'primeng/select';
+import { InformeFiltros } from '../../services/informes.service';
+
+interface ReoDropdownOption {
+  label: string;
+  value: number;
+}
 
 @Component({
   selector: 'app-informes-filtros',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, SelectModule],
   templateUrl: './informes-filtros.component.html',
-  styleUrl: './informes-filtros.component.scss',
+  styleUrls: ['./informes-filtros.component.scss']
 })
-export class InformesFiltrosComponent {
-  fecha: string = '';
-  tipo: string = 'general';
+export class InformesFiltrosComponent implements OnChanges {
+  @Input() reos: ReoDropdownOption[] = [];
+  @Input() loadingReos = false;
+  @Input() filtrosIniciales: InformeFiltros | null = null;
 
-  @Output() aplicarFiltros = new EventEmitter<{ fecha: string; tipo: string }>();
+  @Output() filtrar = new EventEmitter<InformeFiltros>();
+  @Output() limpiar = new EventEmitter<void>();
 
-  onAplicarFiltros(): void {
-    this.aplicarFiltros.emit({
-      fecha: this.fecha,
-      tipo: this.tipo
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      reoId: [null],
+      fechaDesde: [null],
+      fechaHasta: [null]
     });
   }
-  
 
-  limpiarFiltros(): void {
-    this.fecha = '';
-    this.tipo = 'general';
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filtrosIniciales'] && this.filtrosIniciales) {
+      this.form.patchValue({
+        reoId: this.filtrosIniciales.reoId ?? null,
+        fechaDesde: this.filtrosIniciales.fechaDesde ?? null,
+        fechaHasta: this.filtrosIniciales.fechaHasta ?? null
+      }, { emitEvent: false });
+    }
+  }
 
-    this.aplicarFiltros.emit({
-      fecha: this.fecha,
-      tipo: this.tipo
+  onSubmit(): void {
+    this.filtrar.emit({
+      reoId: this.form.value.reoId ?? null,
+      fechaDesde: this.form.value.fechaDesde ?? null,
+      fechaHasta: this.form.value.fechaHasta ?? null
     });
+  }
+
+  onLimpiar(): void {
+    this.form.reset({
+      reoId: null,
+      fechaDesde: null,
+      fechaHasta: null
+    });
+
+    this.limpiar.emit();
   }
 }

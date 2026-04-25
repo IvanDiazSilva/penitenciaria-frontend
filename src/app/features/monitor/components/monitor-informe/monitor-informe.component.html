@@ -1,0 +1,56 @@
+<section class="monitor-informe">
+  <div class="monitor-informe__header">
+    <div>
+      <h2>Informe general</h2>
+      <p>Resumen generado a partir de la selección actual de filtros.</p>
+    </div>
+
+    <button
+      type="button"
+      class="monitor-informe__button"
+      (click)="onDescargarPdf()"
+      [disabled]="loading || downloadingPdf">
+      {{ downloadingPdf ? 'Generando PDF...' : 'Descargar PDF' }}
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="monitor-informe__state">
+    Cargando informe...
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="monitor-informe__state monitor-informe__state--error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && informe" class="monitor-informe__grid">
+    <article class="monitor-informe__card">
+      <span>Fecha</span>
+      <strong>{{ informe.fecha }}</strong>
+    </article>
+
+    <article class="monitor-informe__card">
+      <span>Reos totales</span>
+      <strong>{{ informe.reoTotal }}</strong>
+    </article>
+
+    <article class="monitor-informe__card">
+      <span>Visitas totales</span>
+      <strong>{{ informe.visitasTotal }}</strong>
+    </article>
+
+    <article class="monitor-informe__card">
+      <span>Visitas hoy</span>
+      <strong>{{ informe.visitasHoy }}</strong>
+    </article>
+
+    <article class="monitor-informe__card">
+      <span>Incidentes totales</span>
+      <strong>{{ informe.incidentesTotal }}</strong>
+    </article>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && informe" class="monitor-informe__message">
+    <span>Estado</span>
+    <p>{{ informe.mensaje }}</p>
+  </div>
+</section>

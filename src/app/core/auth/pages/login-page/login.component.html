@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-card">
-    <h2>Iniciar sesión</h2>
-    <p>Accede al sistema penitenciario</p>
+    <h1>Iniciar sesión</h1>
+    <p>Introduce tus credenciales para acceder.</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -12,7 +12,8 @@
           formControlName="username"
           placeholder="Introduce tu usuario"
         />
-        <small class="error" *ngIf="username?.invalid && username?.touched">
+
+        <small *ngIf="username?.invalid && username?.touched" class="error-text">
           El usuario es obligatorio.
         </small>
       </div>
@@ -25,17 +26,18 @@
           formControlName="password"
           placeholder="Introduce tu contraseña"
         />
-        <small class="error" *ngIf="password?.invalid && password?.touched">
+
+        <small *ngIf="password?.invalid && password?.touched" class="error-text">
           La contraseña es obligatoria.
         </small>
       </div>
 
-      <div class="error-box" *ngIf="errorMessage">
+      <div *ngIf="errorMessage" class="server-error">
         {{ errorMessage }}
       </div>
 
       <button type="submit" [disabled]="isLoading">
-        {{ isLoading ? 'Entrando...' : 'Entrar' }}
+        {{ isLoading ? 'Iniciando sesión...' : 'Iniciar sesión' }}
       </button>
     </form>
   </div>

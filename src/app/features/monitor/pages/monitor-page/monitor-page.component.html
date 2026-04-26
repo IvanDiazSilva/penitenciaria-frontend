@@ -9,10 +9,19 @@
     </div>
 
     <div class="monitor-page__actions">
-      <button type="button" (click)="recargarTodo()">
+      <button
+        type="button"
+        (click)="recargarTodo()"
+        [disabled]="loadingStats || loadingVisitasHoy || loadingReos || loadingInforme">
         Recargar datos
       </button>
     </div>
+  </div>
+
+  <div
+    *ngIf="loadingStats || loadingVisitasHoy || loadingReos || loadingInforme"
+    class="monitor-page__loading">
+    Cargando información del monitor...
   </div>
 
   <app-monitor-stats

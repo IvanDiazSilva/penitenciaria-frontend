@@ -1,20 +1,37 @@
-<aside class="app-sidebar">
-  <nav class="app-sidebar__nav">
-    <a routerLink="/monitor" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-      class="app-sidebar__link">
-      Monitor
-    </a>
+<nav class="sidebar-nav">
+  <a
+    routerLink="/monitor"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN', 'GUARDIA'])"
+  >
+    Monitor
+  </a>
 
-    <a routerLink="/reos" routerLinkActive="active" class="app-sidebar__link">
-      Reos
-    </a>
+  <a
+    routerLink="/reos"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN'])"
+  >
+    Reos
+  </a>
 
-    <a routerLink="/visitas" routerLinkActive="active" class="app-sidebar__link">
-      Visitas
-    </a>
-    <a routerLink="/informes" routerLinkActive="active" class="app-sidebar__link">
-      Informes
-    </a>
+  <a
+    routerLink="/visitas"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN', 'FUNCIONARIO'])"
+  >
+    Visitas
+  </a>
 
-  </nav>
-</aside>
+  <a
+    routerLink="/validacion-visitante"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['GUARDIA'])"
+  >
+    Validación visitante
+  </a>
+</nav>

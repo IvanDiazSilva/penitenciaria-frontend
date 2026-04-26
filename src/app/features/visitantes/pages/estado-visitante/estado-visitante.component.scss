@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.estado-visitante {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+}
+
+.estado-visitante__container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.estado-visitante__header {
+  margin-bottom: 1.5rem;
+}
+
+.estado-visitante__eyebrow {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: #2563eb;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.estado-visitante__title {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.estado-visitante__intro {
+  margin: 0;
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.estado-visitante__card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.06),
+    0 4px 10px rgba(15, 23, 42, 0.04);
+}
+
+.estado-visitante__card-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.estado-visitante__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.estado-visitante__row:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0.25rem;
+}
+
+.estado-visitante__label {
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.estado-visitante__value {
+  color: #0f172a;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+.estado-visitante__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.estado-visitante__status--pendiente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado-visitante__status--aprobado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.estado-visitante__status--denegado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.estado-visitante__message {
+  margin: 1.25rem 0 0;
+  color: #475569;
+  line-height: 1.6;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 640px) {
+  .estado-visitante {
+    padding: 1.25rem 0.85rem;
+  }
+
+  .estado-visitante__title {
+    font-size: 1.6rem;
+  }
+
+  .estado-visitante__card {
+    padding: 1.15rem;
+    border-radius: 14px;
+  }
+
+  .estado-visitante__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .estado-visitante__value {
+    text-align: left;
+  }
+
+  .estado-visitante__status {
+    min-width: auto;
+  }
+}

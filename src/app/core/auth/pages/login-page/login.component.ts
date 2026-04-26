@@ -39,7 +39,18 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/monitor']);
+        
+        // Cambio clave: redirigir según rol
+        const rol = this.authService.getRol();
+
+        if (rol === 'ADMIN' || rol === 'GUARDIA') {
+          this.router.navigate(['/monitor']);
+        } else if (rol === 'VISITANTE') {
+          this.router.navigate(['/visitante/estado']);
+        } else {
+          this.authService.logout();
+          this.errorMessage = 'Rol no autorizado';
+        }
       },
 
       error: (err) => {

@@ -1,41 +1,42 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { Visitante } from '../models/visitante.model';
+
+export interface EstadoVisitanteResponse {
+  dniNie: string;
+  estado: 'PENDIENTE' | 'APROBADO' | 'DENEGADO';
+  nombreCompleto: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class VisitantesService {
-  private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/penitenciaria-api/api/visitantes';
+  private readonly apiUrl = 'http://localhost:8080/penitenciaria-api/api/visitantes';
+
+  constructor(private http: HttpClient) {}
+
+  consultarEstadoPorDni(dniNie: string): Observable<EstadoVisitanteResponse> {
+    return this.http.get<EstadoVisitanteResponse>(`${this.apiUrl}/estado/${dniNie}`);
+  }
 
   getVisitantes(): Observable<Visitante[]> {
     return this.http.get<Visitante[]>(this.apiUrl);
   }
 
-  getVisitanteById(id: number): Observable<Visitante> {
-    return this.http.get<Visitante>(`${this.apiUrl}/${id}`);
+  actualizarEstadoVisitante(
+    id: number,
+    estado: 'APROBADO' | 'DENEGADO' | 'PENDIENTE'
+  ): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/estado`, { estado });
   }
 
-  crearVisitante(visitante: Visitante): Observable<Visitante> {
-    return this.http.post<Visitante>(this.apiUrl, visitante);
+  aprobarVisitante(id: number): Observable<any> {
+    return this.actualizarEstadoVisitante(id, 'APROBADO');
   }
 
-  actualizarVisitante(id: number, visitante: Visitante): Observable<Visitante> {
-    return this.http.put<Visitante>(`${this.apiUrl}/${id}`, visitante);
-  }
-
-  eliminarVisitante(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
-
-  aprobarVisitante(id: number): Observable<Visitante> {
-    return this.http.patch<Visitante>(`${this.apiUrl}/${id}/aprobar`, {});
-  }
-
-  denegarVisitante(id: number): Observable<Visitante> {
-    return this.http.patch<Visitante>(`${this.apiUrl}/${id}/denegar`, {});
+  denegarVisitante(id: number): Observable<any> {
+    return this.actualizarEstadoVisitante(id, 'DENEGADO');
   }
 }

@@ -10,7 +10,7 @@ import { EstadoVisitanteResponse } from '../models/estado-visitante-response.mod
 })
 export class VisitantesPublicService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/penitenciaria-api/api/visitantes-public';
+  private apiUrl = 'http://localhost:8080/penitenciaria-api/api/visitantes';
 
   preregistrarVisitante(data: PreregistroVisitanteRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/preregistro`, data);

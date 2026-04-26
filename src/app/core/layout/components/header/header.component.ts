@@ -7,11 +7,14 @@ import { AuthService } from '../../../auth/services/auth.services';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-
   constructor(private authService: AuthService) {}
+
+  get rol(): string {
+    return this.authService.getRol() ?? 'SIN ROL';
+  }
 
   logout(): void {
     this.authService.logout();

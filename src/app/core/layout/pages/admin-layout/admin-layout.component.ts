@@ -16,6 +16,6 @@ import { FooterComponent } from '../../components/footer/footer.component';
     FooterComponent
   ],
   templateUrl: './admin-layout.component.html',
-  styleUrls: ['./admin-layout.component.scss']
+  styleUrl: './admin-layout.component.scss'
 })
-export class AdminLayoutComponent { }
+export class AdminLayoutComponent {}

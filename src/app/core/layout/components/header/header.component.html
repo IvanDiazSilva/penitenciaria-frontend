@@ -4,8 +4,12 @@
   </div>
 
   <div class="app-header__right">
-    <span class="app-header__user">Usuario autenticado</span>
-    <button class="app-header__logout" type="button" (click)="logout()">
+    <span class="app-header__role">Rol autenticado: {{ rol }}</span>
+    <button
+      class="app-header__logout"
+      type="button"
+      (click)="logout()"
+    >
       Cerrar sesión
     </button>
   </div>

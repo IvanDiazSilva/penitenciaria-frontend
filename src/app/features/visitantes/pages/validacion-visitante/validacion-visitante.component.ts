@@ -28,7 +28,7 @@ export class ValidacionVisitanteComponent implements OnInit {
   visitantes: Visitante[] = [];
   cargando = false;
 
-  constructor(private visitantesService: VisitantesService) {}
+  constructor(private visitantesService: VisitantesService) { }
 
   ngOnInit(): void {
     this.cargarVisitantes();
@@ -38,7 +38,7 @@ export class ValidacionVisitanteComponent implements OnInit {
     this.cargando = true;
 
     this.visitantesService.getVisitantes().subscribe({
-      next: (data) => {
+      next: (data: Visitante[]) => {
         this.visitantes = data;
         this.cargando = false;
       },
@@ -48,6 +48,7 @@ export class ValidacionVisitanteComponent implements OnInit {
       }
     });
   }
+
 
   getSeverity(
     estado: string | undefined

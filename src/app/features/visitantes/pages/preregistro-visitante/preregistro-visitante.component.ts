@@ -33,7 +33,9 @@ export class PreregistroVisitanteComponent {
     private visitantesPublicService: VisitantesPublicService
   ) {
     this.form = this.fb.group({
-      dniNie: ['', [Validators.required, Validators.minLength(9)]]
+      nombreCompleto: ['', [Validators.required]],
+      dniNie: ['', [Validators.required, Validators.minLength(9)]],
+      password: ['', [Validators.required, Validators.minLength(4)]]
     });
   }
 
@@ -53,7 +55,14 @@ export class PreregistroVisitanteComponent {
       },
       error: (err: any) => {
         console.error('Error al preregistrar visitante:', err);
-        this.error = 'No se pudo enviar el preregistro.';
+
+        if (err.status === 400) {
+          this.error = err.error?.error || 'Faltan datos obligatorios.';
+        } else if (err.status === 409) {
+          this.error = err.error?.error || 'Ya existe un visitante con ese DNI/NIE.';
+        } else {
+          this.error = 'No se pudo enviar el preregistro.';
+        }
       }
     });
   }

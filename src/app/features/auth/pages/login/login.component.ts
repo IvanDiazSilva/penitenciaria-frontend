@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../../../core/services/auth.services';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -40,27 +40,29 @@ export class LoginComponent {
       next: (res: any) => {
         this.isLoading = false;
 
-        // NO guardamos el token aquí manualmente porque el AuthService ya 
-        // lo hace en su método login() usando 'auth_token'.
-
         const userLogueado = this.loginForm.value.username.toLowerCase().trim();
         const rolServidor = res.rol ? res.rol.toUpperCase() : '';
 
-        // Lógica de redirección basada en los paths de tu AppRoutingModule
+        // --- LÓGICA DE REDIRECCIÓN ACTUALIZADA ---
         if (userLogueado === 'admin' || rolServidor === 'ADMIN') {
           this.router.navigate(['/monitor']); 
-        } else if (rolServidor === 'VISITANTE') {
-      // Si Iván te devuelve que es VISITANTE, lo mandamos a su listado de visitas
-      this.router.navigate(['/visitas']);
-        }else if (userLogueado === 'guardia1' || rolServidor === 'GUARDIA') {
-          this.router.navigate(['/reos']);
-        } else {
-          // Por defecto enviamos al monitor si es otro tipo de usuario
+        } 
+        else if (rolServidor === 'VISITANTE') {
+          this.router.navigate(['/visitas']);
+        } 
+        else if (userLogueado === 'guardia1' || rolServidor === 'GUARDIA') {
+          // Ahora los guardias entran directamente a incidencias
+          this.router.navigate(['/incidencias']); 
+        } 
+        else {
+          // Por defecto al monitor
           this.router.navigate(['/monitor']);
         }
-      },
-      error: (err) => {
+      }, // Fin del bloque next
+      error: (err: any) => {
         this.isLoading = false;
+        console.error('Login error:', err);
+        
         if (err.status === 401) {
           this.errorMessage = 'Usuario o contraseña incorrectos.';
         } else if (err.status === 0) {

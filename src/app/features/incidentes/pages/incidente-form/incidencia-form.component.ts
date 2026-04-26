@@ -1,19 +1,17 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
-// Usamos solo lo básico que ya sabemos que funciona en tu proyecto
+// PrimeNG
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
-
 import { IncidenciasService } from '../../service/incidencias.service';
 import { ReoService } from '../../../reos/service/reo.service';
-import { Incidente } from '../../models/incidente.models';
 
 @Component({
   selector: 'app-incidencia-form',
@@ -24,7 +22,7 @@ import { Incidente } from '../../models/incidente.models';
     RouterModule, 
     CardModule, 
     ButtonModule, 
-    InputTextModule, 
+    InputTextModule,
     ToastModule
   ],
   providers: [MessageService],
@@ -37,16 +35,19 @@ export class IncidenciaFormComponent implements OnInit {
   private messageService = inject(MessageService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef); // Inyectamos el detector de cambios
 
   modoEditar: boolean = false;
-  reos: any[] = []; // Lista de reos para el select
+  reos: any[] = []; 
   
-  incidente: Incidente = {
+  // Objeto inicial igualado a la estructura del formulario
+  incidente: any = {
+    id: null,
     tipo: '',
     descripcion: '',
-    idGuardia: 1, 
     fechaHora: '', 
-    idReo: 0
+    idReo: null,
+    idGuardia: null
   };
 
   ngOnInit(): void {
@@ -55,41 +56,92 @@ export class IncidenciaFormComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.modoEditar = true;
-      this.incidenciaService.getIncidenciaById(id).subscribe({
-        next: (res) => this.incidente = res,
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message })
-      });
-    } else {
-      // Fecha actual en formato YYYY-MM-DDTHH:MM para el input datetime-local
-      const ahora = new Date();
-      ahora.setMinutes(ahora.getMinutes() - ahora.getTimezoneOffset());
-      this.incidente.fechaHora = ahora.toISOString().slice(0, 16);
+      this.cargarIncidencia(id); // Llamada al método de carga siguiendo estilo "Reos"
     }
+  }
+
+  // MÉTODO PARA CARGAR DATOS EN EDICIÓN
+  cargarIncidencia(id: number): void {
+    this.incidenciaService.getIncidenciaById(id).subscribe({
+      next: (res: any) => {
+        // Mapeamos los campos y forzamos un objeto nuevo para refrescar la vista
+        this.incidente = {
+          id: res.id,
+          tipo: res.tipo || '',
+          descripcion: res.descripcion || '',
+          // Formateo vital para que el input datetime-local lo reconozca
+          fechaHora: res.fechaHora ? res.fechaHora.replace(' ', 'T').slice(0, 16) : '',
+          idReo: res.reo ? res.reo.id : null,
+          idGuardia: res.guardia ? res.guardia.id : null
+        };
+        
+        // Forzamos a Angular a detectar los cambios inmediatamente
+        this.cdr.detectChanges();
+        console.log('Incidencia cargada para edición:', this.incidente);
+      },
+      error: (err) => {
+        console.error('Error al obtener incidencia:', err);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener el registro' });
+      }
+    });
   }
 
   cargarReos(): void {
     this.reoService.obtener_todos().subscribe({
-      next: (res) => this.reos = res,
-      error: () => console.error('No se pudieron cargar los reos')
+      next: (res) => {
+        this.reos = res;
+        this.cdr.detectChanges();
+      },
+      error: () => console.error('Error al cargar reos')
     });
   }
 
   guardar(): void {
+    if (!this.incidente.tipo || !this.incidente.descripcion || !this.incidente.fechaHora || !this.incidente.idGuardia) {
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Faltan campos obligatorios' });
+      return;
+    }
+
+    // Formateo de fecha para el backend de Java (yyyy-MM-dd HH:mm:ss)
+    let fechaJava = this.incidente.fechaHora.replace('T', ' ');
+    if (fechaJava.length === 16) fechaJava += ":00";
+
+    const payload: any = {
+      tipo: this.incidente.tipo,
+      descripcion: this.incidente.descripcion,
+      fechaHora: fechaJava,
+      guardia: { id: Number(this.incidente.idGuardia) }
+    };
+
+    // Si hay un reo seleccionado, lo añadimos como objeto con su ID
+    if (this.incidente.idReo && this.incidente.idReo !== "null") {
+      payload.reo = { id: Number(this.incidente.idReo) };
+    } else {
+      payload.reo = null; // Para limpiar la relación si se desea
+    }
+
     if (this.modoEditar) {
-      this.incidenciaService.modificacion_incidente(this.incidente.id!, this.incidente).subscribe({
-        next: () => this.exito('Actualizado'),
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message })
+      payload.id = this.incidente.id;
+      this.incidenciaService.modificacion_incidente(this.incidente.id, payload).subscribe({
+        next: () => this.notificarExito('Reporte actualizado correctamente'),
+        error: (err) => this.notificarError(err)
       });
     } else {
-      this.incidenciaService.alta_incidente(this.incidente).subscribe({
-        next: () => this.exito('Registrado'),
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message })
+      this.incidenciaService.alta_incidente(payload).subscribe({
+        next: () => this.notificarExito('Incidencia registrada correctamente'),
+        error: (err) => this.notificarError(err)
       });
     }
   }
 
-  private exito(texto: string): void {
-    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: texto });
-    setTimeout(() => this.router.navigate(['/incidencias']), 1000);
+  private notificarExito(msg: string) {
+    this.messageService.add({ severity: 'success', summary: 'Hecho', detail: msg });
+    setTimeout(() => this.router.navigate(['/incidencias']), 1500);
+  }
+
+  private notificarError(err: any) {
+    console.error('Error del servidor:', err);
+    const errorMsg = err.error?.error || 'Error 400: Datos inválidos';
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg });
   }
 }

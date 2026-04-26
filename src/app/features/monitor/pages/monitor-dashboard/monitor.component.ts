@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.services';
+import { AuthService } from '../../../auth/services/auth.service';
 // 1. Asegúrate de importar ButtonModule y RippleModule
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';

@@ -1,24 +1,12 @@
-<p-toast position="top-right"></p-toast>
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
-
-<div class="formulario-wrapper">
-  <div class="navigation-header" style="margin-bottom: 1rem;">
-    <button pButton pRipple 
-            label="Volver al Panel de Monitorización" 
-            icon="pi pi-arrow-left" 
-            class="p-button-text p-button-secondary"
-            routerLink="/monitor"> 
-    </button>
-  </div>
 
   <div class="hero-formulario">
-    <h1>Gestión de Incidencias</h1>
-    <p>Historial de eventos y reportes de seguridad.</p>
+    <h1>Listado de Incidencias</h1>
+    <p>Gestión de eventos y reportes de seguridad activos.</p>
   </div>
 
   <p-card>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="margin:0">Registros</h2>
+      <h2 style="margin:0">Registros Oficiales</h2>
       <button pButton label="Nueva Incidencia" icon="pi pi-plus" class="btn-submit" (click)="irAFuomulario()"></button>
     </div>
 
@@ -28,15 +16,15 @@
         <input 
           type="text" 
           pInputText 
-          placeholder="Buscar por tipo, reo o descripción..." 
-          style="width: 100%; padding: 8px 12px 8px 35px; border-radius: 20px; border: 1px solid #f1f5f9; background-color: #f8fafc; color: #94a3b8; font-size: 0.85rem;"
+          placeholder="Buscar por tipo, descripción o ID de incidente" 
+          style="width: 100%; padding: 8px 12px 8px 35px; border-radius: 20px; border: 1px solid #f1f5f9; background-color: #f8fafc; color: #334155; font-size: 0.85rem; font-weight: 300; outline: none; box-shadow: none;"
           (input)="filtrar($event)" />
       </div>
     </div>
 
-    <div *ngIf="loading" style="text-align: center; padding: 2rem;">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #334155;"></i>
-        <p>Sincronizando con la base de datos...</p>
+    <div *ngIf="loading" style="padding: 30px; text-align: center; color: #64748b;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #3b82f6;"></i>
+        <p style="margin-top: 10px;">Sincronizando registros con el servidor...</p>
     </div>
 
     <p-table *ngIf="!loading" [value]="incidentesFiltrados" [rows]="10" [paginator]="true">
@@ -49,30 +37,52 @@
           <th style="text-align: center;">Acciones</th>
         </tr>
       </ng-template>
+      
       <ng-template pTemplate="body" let-item>
         <tr>
           <td><span class="badge-id">#{{ item.id }}</span></td>
           <td><strong>{{ item.tipo }}</strong></td>
           <td>
-            <span class="p-tag p-tag-info">ID Reo: {{ item.idReo || item.id_reo }}</span>
+            <span *ngIf="item.reo">
+              {{ item.reo.nombre }} {{ item.reo.apellido }}
+            </span>
+            <span *ngIf="!item.reo" style="color: #94a3b8; font-style: italic;">
+              ID: {{ item.idReo || item.id_reo || 'N/A' }}
+            </span>
           </td>
-          <td>
-            {{ item.fechaHora || item.fecha_hora }}
-          </td>
+          <td>{{ item.fechaHora || item.fecha_hora }}</td>
           <td>
             <div style="display: flex; justify-content: center; gap: 8px;">
-              <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="irAFuomulario(item.id)"></button>
-              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="confirmar_baja(item)"></button>
+              <button pButton icon="pi pi-pencil" 
+                      class="p-button-rounded p-button-text p-button-warning" 
+                      (click)="irAFuomulario(item.id)">
+              </button>
+              <button pButton icon="pi pi-trash" 
+                      class="p-button-rounded p-button-text p-button-danger" 
+                      (click)="confirmarEliminar(item)">
+              </button>
             </div>
           </td>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" style="text-align: center; padding: 20px;">No se encontraron incidentes registrados.</td>
+          <td colspan="5" style="text-align: center; padding: 20px; color: #94a3b8;">
+            No se han encontrado incidencias.
+          </td>
         </tr>
       </ng-template>
     </p-table>
   </p-card>
-</div>
+
+  <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 15px; padding: 0 10px; color: #64748b; font-size: 0.85rem; font-weight: 400;">
+    <div style="background: #f1f5f9; padding: 5px 12px; border-radius: 15px; display: flex; align-items: center; gap: 8px;">
+        <i class="pi pi-database" style="font-size: 0.8rem; color: #94a3b8;"></i>
+        <span>
+            Filtrados: <strong>{{ incidentesFiltrados.length }}</strong> 
+            <span style="color: #cbd5e1; margin: 0 5px;">|</span> 
+            Total: <strong>{{ incidentes.length }}</strong>
+        </span>
+    </div>
+  </div>

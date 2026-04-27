@@ -1,0 +1,85 @@
+<p-toast></p-toast>
+
+<div class="formulario-wrapper">
+  <div class="navigation-header" style="margin-bottom: 1rem;">
+    <button pButton 
+            label="Volver al Listado" 
+            icon="pi pi-arrow-left" 
+            class="p-button-text p-button-secondary"
+            routerLink="/incidentes"> 
+    </button>
+  </div>
+
+  <div class="hero-formulario">
+    <h1>{{ modoEditar ? 'Editar Reporte' : 'Alta de Incidencia' }}</h1>
+    <p>Complete los detalles del suceso ocurrido en el centro.</p>
+  </div>
+
+  <p-card>
+    <div class="p-fluid" style="display: flex; flex-direction: column; gap: 20px;">
+      
+      <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <label class="font-bold">Tipo de Incidente *</label>
+          <input pInputText 
+                 name="tipo"
+                 [(ngModel)]="incidente.tipo" 
+                 placeholder="Ej: Pelea, Intento fuga" />
+        </div>
+        
+        <div style="flex: 1;">
+          <label class="font-bold">ID Guardia Responsable *</label>
+          <input type="number" 
+                 name="idGuardia"
+                 pInputText 
+                 [(ngModel)]="incidente.idGuardia" 
+                 placeholder="Ingrese su ID de guardia" />
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <label class="font-bold">Reo Involucrado</label>
+          <select name="idReo"
+                  [(ngModel)]="incidente.idReo" 
+                  class="p-inputtext w-full" 
+                  style="appearance: auto; padding: 0.5rem; height: 38px; border: 1px solid #ced4da;">
+            <option [ngValue]="null">-- Sin reo asignado / Desconocido --</option>
+            <option *ngFor="let r of reos" [value]="r.id">
+              {{r.nombre}} {{r.apellido}} (ID: {{r.id}})
+            </option>
+          </select>
+        </div>
+
+        <div style="flex: 1;">
+          <label class="font-bold">Fecha y Hora del Suceso *</label>
+          <input type="datetime-local" 
+                 name="fechaHora"
+                 pInputText 
+                 [(ngModel)]="incidente.fechaHora" 
+                 style="width: 100%;" />
+        </div>
+      </div>
+
+      <div>
+        <label class="font-bold">Descripción Detallada *</label>
+        <textarea pInputTextarea 
+                  name="descripcion"
+                  [(ngModel)]="incidente.descripcion" 
+                  rows="5" 
+                  placeholder="Describa lo ocurrido..." 
+                  style="width: 100%; border: 1px solid #ced4da; border-radius: 6px; padding: 10px;">
+        </textarea>
+      </div>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button pButton 
+                [label]="modoEditar ? 'Actualizar Reporte' : 'Registrar Incidencia'" 
+                icon="pi pi-save" 
+                class="btn-submit" 
+                (click)="guardar()">
+        </button>
+      </div>
+    </div>
+  </p-card>
+</div>

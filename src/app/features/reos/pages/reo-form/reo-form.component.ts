@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReosService } from '../../services/reos.service';
+import { ReoService } from '../../service/reo.service';
+import {Reo} from '../../models/reo.model'
 
+// PrimeNG
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -19,73 +21,92 @@ import { CardModule } from 'primeng/card';
     CardModule
   ],
   templateUrl: './reo-form.component.html',
-  styleUrls: ['./reo-form.component.scss']
+  styleUrl: './reo-form.component.scss'
 })
 export class ReoFormComponent implements OnInit {
   reoForm: FormGroup;
-  isEditMode = false;
-  reoId: string | null = null;
+  isEditMode = false; 
+  reoId: string | null = null; 
 
   constructor(
     private fb: FormBuilder,
-    private reosService: ReosService,
+    private reoService: ReoService,
     public router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute 
   ) {
     this.reoForm = this.fb.group({
       nombre: ['', Validators.required],
+      // Validamos que el DNI tenga formato mínimo para no enviar basura a la BD
       dni: ['', [Validators.required, Validators.minLength(9)]],
       delito: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
+    // Capturamos el ID de la URL para saber si estamos editando o creando
     this.reoId = this.route.snapshot.paramMap.get('id');
-
+    
     if (this.reoId) {
       this.isEditMode = true;
       this.cargarDatosReo(this.reoId);
     }
   }
 
+  /**
+   * CONSULTA A BD: Recupera un recluso por su ID para editarlo.
+   */
   cargarDatosReo(id: string): void {
-    const idNumber = parseInt(id, 10);
-
-    this.reosService.getReoById(idNumber).subscribe({
+    this.reoService.getReoById(id).subscribe({
       next: (reo) => {
+        // Sincronizamos los datos de la BD con los campos del formulario
         this.reoForm.patchValue(reo);
+        console.log('Datos del recluso recuperados con éxito');
       },
-      error: (err: any) => {
-        console.error('Error al cargar datos:', err);
+      error: (err) => {
+        console.error('No se pudo obtener el reo:', err.message);
+        alert('Error: No se pudo cargar la información del recluso.');
       }
     });
   }
 
+  /**
+   * ENVÍO DE DATOS (ALTA O MODIFICACIÓN)
+   * Gestiona la conexión final con la base de datos según el modo.
+   */
   onSubmit(): void {
     if (this.reoForm.valid) {
-      if (this.isEditMode) {
-        const idNumber = parseInt(this.reoId!, 10);
-
-        this.reosService.actualizarReo(idNumber, this.reoForm.value).subscribe({
+      if (this.isEditMode && this.reoId) {
+        
+        // --- CASO DE USO: MODIFICACIÓN ---
+        this.reoService.modificacion_recluso(Number(this.reoId), this.reoForm.value).subscribe({
           next: () => {
-            console.log('Reo actualizado con éxito');
+            console.log('Actualización confirmada en Base de Datos');
+            alert('Datos actualizados correctamente');
             this.router.navigate(['/reos']);
           },
-          error: (err: any) => {
-            console.error('Error al actualizar:', err);
+          error: (err) => {
+            // Aquí capturamos el mensaje de DNI duplicado o error de BD
+            alert(err.message);
           }
         });
+
       } else {
-        this.reosService.crearReo(this.reoForm.value).subscribe({
+        
+        // --- CASO DE USO: ALTA ---
+        this.reoService.alta_recluso(this.reoForm.value).subscribe({
           next: () => {
-            console.log('Reo creado con éxito');
+            console.log('Inserción confirmada en Base de Datos');
+            alert('Recluso registrado con éxito');
             this.router.navigate(['/reos']);
           },
-          error: (err: any) => {
-            console.error('Error al crear:', err);
+          error: (err) => {
+            // El servicio nos devuelve un error amigable si el DNI ya existe
+            alert(err.message);
           }
         });
       }
+    } else {
+      alert('Por favor, rellene todos los campos obligatorios.');
     }
   }
 }

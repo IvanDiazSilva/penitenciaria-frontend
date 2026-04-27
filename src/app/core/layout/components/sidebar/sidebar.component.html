@@ -3,7 +3,7 @@
     routerLink="/monitor"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN', 'GUARDIA'])"
+    *ngIf="canAccess(['ADMIN'])"
   >
     Monitor
   </a>
@@ -17,21 +17,30 @@
     Reos
   </a>
 
+
   <a
-    routerLink="/visitas"
+    routerLink="/incidentes"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN', 'FUNCIONARIO'])"
+    *ngIf="canAccess(['ADMIN', 'GUARDIA'])"
   >
-    Visitas
+    Incidencias
   </a>
 
   <a
     routerLink="/validacion-visitante"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['GUARDIA'])"
+    *ngIf="canAccess(['ADMIN'])"
   >
-    Validación visitante
+    Validación visitantes
+  </a>
+  <a
+    routerLink="/validar-qr"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN', 'GUARDIA'])"
+  >
+    Acceso QR
   </a>
 </nav>

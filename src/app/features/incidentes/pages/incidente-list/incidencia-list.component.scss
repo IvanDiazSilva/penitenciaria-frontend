@@ -1,0 +1,41 @@
+.formulario-wrapper {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.hero-formulario {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  padding: 2.5rem;
+  border-radius: 15px;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  h1 { margin: 0; font-size: 2rem; font-weight: 700; }
+  p { margin: 0.5rem 0 0; opacity: 0.8; font-weight: 300; }
+}
+
+.btn-submit {
+  background: #f59e0b !important; // Naranja para incidencias
+  border: none;
+  padding: 10px 20px;
+  font-weight: 600;
+  &:hover { background: #d97706 !important; }
+}
+
+.badge-id {
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #64748b;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #475569;
+  font-size: 0.9rem;
+}

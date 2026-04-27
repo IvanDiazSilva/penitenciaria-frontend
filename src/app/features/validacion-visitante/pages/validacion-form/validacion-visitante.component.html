@@ -1,0 +1,87 @@
+<p-toast position="top-right"></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="formulario-wrapper">
+  <div class="navigation-header" style="margin-bottom: 1rem;">
+    <button pButton pRipple 
+            label="Volver al Panel de Monitorización" 
+            icon="pi pi-arrow-left" 
+            class="p-button-text p-button-secondary"
+            routerLink="/monitor"> 
+    </button>
+  </div>
+
+  <div class="hero-formulario">
+    <h1>Validación de Visitantes</h1>
+    <p>Gestión de solicitudes y control de accesos.</p>
+  </div>
+
+  <p-card>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="margin:0">Solicitudes de Visita</h2>
+      </div>
+
+    <div style="margin-bottom: 25px; max-width: 400px;">
+      <div class="search-box-custom" style="position: relative; display: flex; align-items: center;">
+        <i class="pi pi-search" style="position: absolute; left: 12px; color: #cbd5e1; font-size: 0.9rem;"></i>
+        <input 
+          type="text" 
+          pInputText 
+          placeholder="Buscar por nombre, DNI o interno..." 
+          style="width: 100%; padding: 8px 12px 8px 35px; border-radius: 20px; border: 1px solid #f1f5f9; background-color: #f8fafc; color: #94a3b8; font-size: 0.85rem; font-weight: 300; outline: none; box-shadow: none;"
+          (input)="filtrarVisitantes($event)" />
+      </div>
+    </div>
+
+    <div *ngIf="solicitudes.length === 0" style="padding: 20px; text-align: center; color: #666; border: 1px dashed #ccc; border-radius: 10px;">
+        <i class="pi pi-info-circle"></i> Buscando solicitudes en el servidor...
+    </div>
+
+    <p-table *ngIf="solicitudes.length > 0" [value]="solicitudesFiltradas" [rows]="10" [paginator]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Visitante</th>
+          <th>DNI/NIE</th>
+          <th>Relación con el interno</th>
+          <th>Estado</th>
+          <th style="text-align: center;">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-s>
+        <tr>
+          <td>
+            <strong>{{ s.nombreCompleto }}</strong><br>
+            <small style="color: #94a3b8;">{{ s.email }}</small>
+          </td>
+          <td>{{ s.dniNie }}</td>
+          <td>
+            <div>{{ s.nombreInterno }}</div>
+            <small style="color: #94a3b8;">({{ s.parentesco }})</small>
+          </td>
+          <td>
+            <p-tag [value]="s.estado" [severity]="getSeverity(s.estado)"></p-tag>
+          </td>
+          <td>
+            <div style="display: flex; justify-content: center; gap: 8px;">
+              <button pButton icon="pi pi-check" class="p-button-rounded p-button-text p-button-success" 
+                      (click)="confirmarCambio(s, 'APROBADO')" pTooltip="Aprobar"></button>
+              <button pButton icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger" 
+                      (click)="confirmarCambio(s, 'RECHAZADO')" pTooltip="Rechazar"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 15px; padding: 0 10px; color: #64748b; font-size: 0.85rem; font-weight: 400;">
+    <div style="background: #f1f5f9; padding: 5px 12px; border-radius: 15px; display: flex; align-items: center; gap: 8px;">
+      <i class="pi pi-server" style="font-size: 0.8rem; color: #94a3b8;"></i>
+      <span>
+        Mostrando <strong>{{ solicitudesFiltradas.length }}</strong> registros 
+        <span style="color: #cbd5e1; margin: 0 5px;">|</span> 
+        Total en sistema: <strong>{{ solicitudes.length }}</strong>
+      </span>
+    </div>
+  </div>
+</div>

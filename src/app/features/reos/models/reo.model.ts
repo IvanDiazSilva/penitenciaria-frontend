@@ -1,6 +1,10 @@
 export interface Reo {
-  id?: number;
+  id: number;
   nombre: string;
+  apellido: string;
   dni: string;
-  delito: string;
+  numero_celda: string;
+  fecha_ingreso: string;
+  delito?: string;
+  estado: 'Activo' | 'Trasladado' | 'Libertad';
 }

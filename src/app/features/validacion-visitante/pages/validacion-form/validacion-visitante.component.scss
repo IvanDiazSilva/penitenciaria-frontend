@@ -1,0 +1,96 @@
+/* 1. Estructura Principal (Igual a Reos) */
+.formulario-wrapper {
+    padding: 2rem;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+/* 2. Cabecera con degradado (Hero) */
+.hero-formulario {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 2.5rem;
+    border-radius: 15px;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    
+    h1 { 
+        margin: 0; 
+        font-size: 2rem; 
+        font-weight: 700;
+    }
+    p { 
+        margin: 0.5rem 0 0; 
+        opacity: 0.8; 
+        font-weight: 300;
+    }
+}
+
+/* 3. Ajustes de PrimeNG para igualar el diseño */
+:host ::v-deep {
+    /* La tarjeta blanca */
+    .p-card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+
+    /* La Tabla */
+    .p-datatable {
+        .p-datatable-thead > tr > th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            border: none;
+        }
+
+        .p-datatable-tbody > tr {
+            border: none;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #f1f5f9 !important;
+            }
+
+            td {
+                padding: 1rem;
+                border-bottom: 1px solid #f1f5f9;
+                color: #334155;
+            }
+        }
+    }
+
+    /* Los Tags de estado */
+    .p-tag {
+        border-radius: 20px;
+        padding: 0.3rem 0.8rem;
+        font-weight: 600;
+    }
+}
+
+/* 4. Utilidades específicas */
+.font-bold {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+small {
+    display: block;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* Badge para el ID (si lo usas como en reos) */
+.badge-id {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #64748b;
+    font-family: monospace;
+    font-weight: 600;
+}

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.services';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -40,16 +41,21 @@ export class LoginComponent {
       next: () => {
         this.isLoading = false;
         
-        // Cambio clave: redirigir según rol
+        // Obtenemos el rol para decidir a dónde mandar a cada uno
         const rol = this.authService.getRol();
 
-        if (rol === 'ADMIN' || rol === 'GUARDIA') {
+        if (rol === 'ADMIN') {
+          // El Admin sigue entrando al Monitor por defecto
           this.router.navigate(['/monitor']);
+        } else if (rol === 'GUARDIA') {
+          // El Guardia va directo a su herramienta de trabajo: Incidencias
+          this.router.navigate(['/incidentes']);
         } else if (rol === 'VISITANTE') {
-          this.router.navigate(['/visitante/estado']);
+          this.router.navigate(['/visitante']);
         } else {
+          // Si el rol no es ninguno de los esperados, por seguridad cerramos sesión
           this.authService.logout();
-          this.errorMessage = 'Rol no autorizado';
+          this.errorMessage = 'Rol no autorizado para acceder al sistema.';
         }
       },
 
@@ -59,7 +65,7 @@ export class LoginComponent {
         if (err.status === 401) {
           this.errorMessage = 'Usuario o contraseña incorrectos.';
         } else if (err.status === 0) {
-          this.errorMessage = 'No se pudo conectar con el servidor.';
+          this.errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
         } else {
           this.errorMessage = 'Ha ocurrido un error al iniciar sesión.';
         }
@@ -67,6 +73,7 @@ export class LoginComponent {
     });
   }
 
+  // Getters para facilitar el acceso desde el HTML
   get username() {
     return this.loginForm.get('username');
   }

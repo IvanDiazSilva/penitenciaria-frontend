@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { VisitaService } from '../../services/visita.service';
 import { Visita } from '../../models/visita.model';
+import { TableModule } from "primeng/table";
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-visitas-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TableModule, ButtonModule ],
   templateUrl: './visitas-list.component.html',
   styleUrls: ['./visitas-list.component.scss']
 })

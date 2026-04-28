@@ -64,7 +64,7 @@ export class IncidenciaListComponent implements OnInit {
     );
   }
 
-  irAFuomulario(id?: number): void {
+  irAFormulario(id?: number): void {
     if (id) {
       this.router.navigate(['/incidencias/editar', id]);
     } else {

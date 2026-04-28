@@ -8,5 +8,5 @@ export interface PreregistroVisitanteRequest {
   direccion?: string;
   nombreInterno?: string;
   parentesco?: string;
-  aceptaNormativa?: boolean;
+  aceptaNormativa: boolean;
 }

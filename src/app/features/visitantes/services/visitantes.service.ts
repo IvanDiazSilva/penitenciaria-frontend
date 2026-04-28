@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PreregistroVisitanteRequest } from '../models/preregistro-visitante.request';
 
+export interface PreregistroVisitanteResponse {
+  mensaje: string;
+  id?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +17,9 @@ export class VisitantesService {
 
   constructor(private http: HttpClient) {}
 
-  preregistrarVisitante(data: PreregistroVisitanteRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/preregistro`, data);
+  preregistrarVisitante(
+    data: PreregistroVisitanteRequest
+  ): Observable<PreregistroVisitanteResponse> {
+    return this.http.post<PreregistroVisitanteResponse>(`${this.apiUrl}/preregistro`, data);
   }
 }

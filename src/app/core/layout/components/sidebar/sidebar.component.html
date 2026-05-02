@@ -1,46 +1,26 @@
 <nav class="sidebar-nav">
-  <a
-    routerLink="/monitor"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN'])"
-  >
+  <a routerLink="/monitor" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN'])">
     Monitor
   </a>
 
-  <a
-    routerLink="/reos"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN'])"
-  >
+  <a routerLink="/reos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN'])">
     Reos
   </a>
 
 
-  <a
-    routerLink="/incidentes"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN', 'GUARDIA'])"
-  >
+  <a routerLink="/incidentes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Incidencias
   </a>
 
-  <a
-    routerLink="/validacion-visitante"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN'])"
-  >
+  <a routerLink="/validacion-visitante" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN'])">
     Validación visitantes
   </a>
-  <a
-    routerLink="/validar-qr"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN', 'GUARDIA'])"
-  >
+  <a routerLink="/validar-qr" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Acceso QR
   </a>
 </nav>

@@ -43,16 +43,15 @@ export class PreregistroVisitanteComponent implements OnDestroy {
   private redirectTimeout?: ReturnType<typeof setTimeout>;
 
   preregistroForm = this.fb.group({
-    nombreCompleto: ['', Validators.required],
-    dniNie: ['', Validators.required],
+    nombreCompleto: ['', [Validators.required]],
+    dniNie: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(4)]],
     nacionalidad: [''],
     telefono: [''],
-    email: ['', Validators.email],
+    email: ['', [Validators.email]],
     direccion: [''],
-    nombreInterno: [''],
     parentesco: [''],
-    aceptaNormativa: [false, Validators.requiredTrue]
+    aceptaNormativa: [false, [Validators.requiredTrue]]
   });
 
   onSubmit(): void {
@@ -74,7 +73,6 @@ export class PreregistroVisitanteComponent implements OnDestroy {
       telefono: formValue.telefono?.trim() || undefined,
       email: formValue.email?.trim() || undefined,
       direccion: formValue.direccion?.trim() || undefined,
-      nombreInterno: formValue.nombreInterno?.trim() || undefined,
       parentesco: formValue.parentesco?.trim() || undefined,
       aceptaNormativa: !!formValue.aceptaNormativa
     };
@@ -94,7 +92,6 @@ export class PreregistroVisitanteComponent implements OnDestroy {
           telefono: '',
           email: '',
           direccion: '',
-          nombreInterno: '',
           parentesco: '',
           aceptaNormativa: false
         });
@@ -108,7 +105,7 @@ export class PreregistroVisitanteComponent implements OnDestroy {
         this.error =
           err?.error?.error ||
           err?.error?.mensaje ||
-          'Error al realizar el pre-registro. Verifique los datos.';
+          'Error al realizar el preregistro. Verifica los datos e inténtalo de nuevo.';
       }
     });
   }

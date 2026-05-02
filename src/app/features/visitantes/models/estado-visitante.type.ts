@@ -1,0 +1,1 @@
+export type EstadoVisitante = 'PENDIENTE' | 'APROBADO' | 'RECHAZADO';

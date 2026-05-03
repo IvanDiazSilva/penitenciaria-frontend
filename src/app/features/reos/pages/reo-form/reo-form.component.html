@@ -5,32 +5,38 @@
   </div>
 
   <p-card [header]="isEditMode ? 'Editar datos del reo' : 'Datos del nuevo reo'" 
-          [subheader]="'ID de referencia: ' + (reoId || 'Nuevo')">
+          [subheader]="'ID de referencia: ' + (reoId || 'Nuevo (Pendiente de BD)')">
     
     <form [formGroup]="reoForm" (ngSubmit)="onSubmit()" class="formulario">
       
       <div class="grid-form">
+        <!-- NOMBRE -->
         <div class="campo campo-full">
-          <label for="nombre">Nombre completo del reo</label>
+          <label for="nombre">Nombre y Apellidos</label>
           <input id="nombre" type="text" pInputText formControlName="nombre" placeholder="Ej: Juan Pérez García" />
-          <small *ngIf="reoForm.get('nombre')?.touched && reoForm.get('nombre')?.invalid">
-            El nombre es obligatorio para el registro.
+          <small *ngIf="reoForm.get('nombre')?.touched && reoForm.get('nombre')?.invalid" class="p-error">
+            El nombre es obligatorio.
           </small>
         </div>
 
+        <!-- DNI / NIE / PASAPORTE -->
         <div class="campo">
-          <label for="dni">DNI / NIE / Pasaporte</label>
-          <input id="dni" type="text" pInputText formControlName="dni" placeholder="00000000X" />
-          <small *ngIf="reoForm.get('dni')?.touched && reoForm.get('dni')?.invalid">
-            Introduzca un documento válido (mínimo 9 caracteres).
+          <label for="dni">Documento (DNI/NIE/Pass)</label>
+          <input id="dni" type="text" pInputText formControlName="dni" placeholder="Ej: 12345678Z o X1234567L" maxlength="12" />
+          <small class="p-info-text" style="display: block; color: #6c757d; font-size: 0.85rem; margin-top: 4px;">
+            * Incluya la letra para DNI/NIE. Sin espacios ni guiones.
+          </small>
+          <small *ngIf="reoForm.get('dni')?.touched && reoForm.get('dni')?.invalid" class="p-error">
+            Documento inválido (Mínimo 6 caracteres, solo letras y números).
           </small>
         </div>
 
+        <!-- DELITO -->
         <div class="campo">
-          <label for="delito">Cargo o Delito principal</label>
+          <label for="delito">Cargo o Delito</label>
           <input id="delito" type="text" pInputText formControlName="delito" placeholder="Ej: Robo con fuerza" />
-          <small *ngIf="reoForm.get('delito')?.touched && reoForm.get('delito')?.invalid">
-            Debe especificar el cargo.
+          <small *ngIf="reoForm.get('delito')?.touched && reoForm.get('delito')?.invalid" class="p-error">
+            Debe especificar el delito.
           </small>
         </div>
       </div>
@@ -43,7 +49,7 @@
         </p-button>
         
         <p-button type="submit" 
-                  [label]="isEditMode ? 'Actualizar Expediente' : 'Finalizar Registro'" 
+                  [label]="isEditMode ? 'Guardar Cambios' : 'Registrar Interno'" 
                   [icon]="isEditMode ? 'pi pi-save' : 'pi pi-check'"
                   styleClass="btn-submit"
                   [disabled]="reoForm.invalid">

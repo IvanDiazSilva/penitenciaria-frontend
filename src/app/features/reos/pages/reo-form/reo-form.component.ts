@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReoService } from '../../service/reo.service';
-import {Reo} from '../../models/reo.model'
+import { Reo } from '../../models/reo.model';
 
 // PrimeNG
 import { InputTextModule } from 'primeng/inputtext';
@@ -34,79 +34,62 @@ export class ReoFormComponent implements OnInit {
     public router: Router,
     private route: ActivatedRoute 
   ) {
+    // Validación flexible: DNI (8N+1L), NIE (1L+7N+1L) o Pasaporte (Alfanumérico)
     this.reoForm = this.fb.group({
       nombre: ['', Validators.required],
-      // Validamos que el DNI tenga formato mínimo para no enviar basura a la BD
-      dni: ['', [Validators.required, Validators.minLength(9)]],
+      dni: ['', [
+        Validators.required, 
+        Validators.minLength(6), 
+        Validators.maxLength(12),
+        Validators.pattern('^[a-zA-Z0-9]+$') // Solo letras y números
+      ]],
       delito: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    // Capturamos el ID de la URL para saber si estamos editando o creando
     this.reoId = this.route.snapshot.paramMap.get('id');
-    
     if (this.reoId) {
       this.isEditMode = true;
       this.cargarDatosReo(this.reoId);
     }
   }
 
-  /**
-   * CONSULTA A BD: Recupera un recluso por su ID para editarlo.
-   */
   cargarDatosReo(id: string): void {
     this.reoService.getReoById(id).subscribe({
       next: (reo) => {
-        // Sincronizamos los datos de la BD con los campos del formulario
         this.reoForm.patchValue(reo);
-        console.log('Datos del recluso recuperados con éxito');
       },
       error: (err) => {
-        console.error('No se pudo obtener el reo:', err.message);
-        alert('Error: No se pudo cargar la información del recluso.');
+        console.error('Error:', err.message);
+        alert('No se pudo cargar la información del recluso.');
       }
     });
   }
 
-  /**
-   * ENVÍO DE DATOS (ALTA O MODIFICACIÓN)
-   * Gestiona la conexión final con la base de datos según el modo.
-   */
   onSubmit(): void {
     if (this.reoForm.valid) {
+      const reoData = this.reoForm.value;
+      
       if (this.isEditMode && this.reoId) {
-        
-        // --- CASO DE USO: MODIFICACIÓN ---
-        this.reoService.modificacion_recluso(Number(this.reoId), this.reoForm.value).subscribe({
+        this.reoService.modificacion_recluso(Number(this.reoId), reoData).subscribe({
           next: () => {
-            console.log('Actualización confirmada en Base de Datos');
-            alert('Datos actualizados correctamente');
+            alert('Expediente actualizado');
             this.router.navigate(['/reos']);
           },
-          error: (err) => {
-            // Aquí capturamos el mensaje de DNI duplicado o error de BD
-            alert(err.message);
-          }
+          error: (err) => alert(err.message)
         });
-
       } else {
-        
-        // --- CASO DE USO: ALTA ---
-        this.reoService.alta_recluso(this.reoForm.value).subscribe({
+        this.reoService.alta_recluso(reoData).subscribe({
           next: () => {
-            console.log('Inserción confirmada en Base de Datos');
             alert('Recluso registrado con éxito');
             this.router.navigate(['/reos']);
           },
-          error: (err) => {
-            // El servicio nos devuelve un error amigable si el DNI ya existe
-            alert(err.message);
-          }
+          error: (err) => alert(err.message)
         });
       }
     } else {
-      alert('Por favor, rellene todos los campos obligatorios.');
+      alert('Por favor, revisa los campos. El documento debe tener entre 6 y 12 caracteres.');
     }
   }
 }

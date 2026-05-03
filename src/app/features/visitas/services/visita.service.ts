@@ -15,8 +15,9 @@ export class VisitaService { // Mantenemos tu nombre en singular
   // --- TUS MÉTODOS ORIGINALES (No tocamos nada) ---
 
   getAllVisitas(): Observable<Visita[]> {
-    return this.http.get<Visita[]>(this.apiUrl);
-  }
+  // Cambiamos la URL para que coincida con el @Path("/mis-citas") de tu Java
+  return this.http.get<Visita[]>(`${this.apiUrl}/mis-citas`);
+}
 
   createVisita(visita: Visita): Observable<Visita> {
     return this.http.post<Visita>(this.apiUrl, visita);
@@ -37,6 +38,11 @@ export class VisitaService { // Mantenemos tu nombre en singular
   }
 
   validarQrVisita(codigoQr: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/validar-qr`, { codigoQr });
-  }
+  const body = new URLSearchParams();
+  body.set('qr', codigoQr); // Nombre exacto que pide el @FormParam
+  
+  return this.http.post(`${this.apiUrl}/validar-qr`, body.toString(), {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  });
+}
 }

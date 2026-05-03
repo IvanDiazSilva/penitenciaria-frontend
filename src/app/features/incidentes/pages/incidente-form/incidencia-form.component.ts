@@ -47,7 +47,7 @@ export class IncidenciaFormComponent implements OnInit {
     descripcion: '',
     fechaHora: '', 
     idReo: null,
-    idGuardia: null
+    idGuardia: 2
   };
 
   ngOnInit(): void {
@@ -89,7 +89,7 @@ export class IncidenciaFormComponent implements OnInit {
   cargarReos(): void {
     this.reoService.obtener_todos().subscribe({
       next: (res) => {
-        this.reos = res;
+        this.reos = res;  //aqui carga los reos
         this.cdr.detectChanges();
       },
       error: () => console.error('Error al cargar reos')

@@ -15,7 +15,7 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Interno (ID)</th>
+          <th>Interno (Nombre)</th> 
           <th>Fecha</th>
           <th>Entrada/Salida</th>
           <th>Estado</th>
@@ -26,17 +26,30 @@
       <tbody>
         <tr *ngFor="let v of visitas">
           <td><strong>#{{ v.id }}</strong></td>
-          <td>{{ v.reo_id }}</td>
-          <td>{{ v.fecha_visita | date:'dd/MM/yyyy' }}</td>
+          
           <td>
-            <small>{{ v.hora_entrada || '--:--' }} / {{ v.hora_salida || '--:--' }}</small>
+            <ng-container *ngIf="v.reo; else reoDesconocido">
+              {{ v.reo.nombre }}
+            </ng-container>
+            <ng-template #reoDesconocido>
+              <span class="text-muted italic">ID Reo: {{ v.idReo || 'N/A' }}</span>
+            </ng-template>
           </td>
+          
+          <td>{{ v.fechaVisita | date:'dd/MM/yyyy' }}</td>
+          
+          <td>
+            <small>{{ v.horaEntrada || '--:--' }} / {{ v.horaSalida || '--:--' }}</small>
+          </td>
+          
           <td>
             <span [class]="v.autorizado ? 'badge-success' : 'badge-pending'">
               {{ v.autorizado ? 'Autorizado' : 'Pendiente' }}
             </span>
           </td>
-          <td><code class="qr-code">{{ v.codigo_qr || 'Pte. Generar' }}</code></td>
+          
+          <td><code class="qr-code">{{ v.codigoQr || 'Pte. Generar' }}</code></td>
+          
           <td class="actions">
             <button class="btn-action edit" (click)="editar(v)" title="Editar">✏️</button>
             <button class="btn-action delete" (click)="eliminar(v.id)" title="Eliminar">🗑️</button>
@@ -46,7 +59,7 @@
     </table>
 
     <div *ngIf="visitas.length === 0" class="empty-state">
-      <p>No se encontraron registros de visitas.</p>
+      <p>No se encontraron registros de visitas en la base de datos.</p>
     </div>
   </div>
 </div>

@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { VisitaService } from '../../services/visita.service';
-import { Visita } from '../../models/visita.model';
 
 @Component({
   selector: 'app-visitas-list',
@@ -12,11 +11,11 @@ import { Visita } from '../../models/visita.model';
   styleUrls: ['./visitas-list.component.scss']
 })
 export class VisitasListComponent implements OnInit {
-  // Lista donde guardaremos lo que venga de la API
-  visitas: Visita[] = [];
+  // Usamos 'any[]' para que PrimeNG o tu tabla no den error si los campos 
+  // del Backend (fechaVisita) no coinciden exactamente con tu interfaz .model
+  visitas: any[] = [];
   loading: boolean = true;
 
-  // Inyectamos el servicio y el router
   private visitaService = inject(VisitaService);
   private router = inject(Router);
 
@@ -28,38 +27,40 @@ export class VisitasListComponent implements OnInit {
     this.loading = true;
     this.visitaService.getAllVisitas().subscribe({
       next: (data) => {
+        console.log('Datos recibidos de la API:', data);
         this.visitas = data;
         this.loading = false;
       },
       error: (err) => {
         console.error('Error al cargar visitas:', err);
         this.loading = false;
-        // Aquí podrías poner una alerta si la API de Iván falla
+        // Alerta por si el servidor de Iván está caído o el Token expiró
+        if(err.status === 401) {
+          alert('Tu sesión ha expirado, por favor vuelve a entrar.');
+        }
       }
     });
   }
 
-  // Función para ir a la página del formulario (visitas-form)
   irANuevaVisita(): void {
     this.router.navigate(['/visitas/nueva']);
   }
 
-  // Función para borrar una visita
   eliminar(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta solicitud de visita?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta solicitud?')) {
       this.visitaService.deleteVisita(id).subscribe({
         next: () => {
-          // Refrescamos la lista después de borrar
           this.obtenerVisitas();
         },
-        error: (err) => alert('No se pudo eliminar la visita')
+        error: (err) => {
+          console.error('Error al borrar:', err);
+          alert('No tienes permisos para eliminar visitas (Solo ADMIN).');
+        }
       });
     }
   }
 
-  // Opcional: Para el botón de editar (si decides implementarlo)
-  editar(visita: Visita): void {
-    // Podrías pasar el ID por la URL
+  editar(visita: any): void {
     this.router.navigate(['/visitas/editar', visita.id]);
   }
 }

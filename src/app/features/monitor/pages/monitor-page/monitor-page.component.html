@@ -3,8 +3,7 @@
     <div>
       <h1>Monitor</h1>
       <p>
-        Consulta el estado general del centro, las visitas del día
-        y el informe resumido con filtros.
+        Consulta el estado general del centro y las visitas del día.
       </p>
     </div>
 
@@ -12,14 +11,21 @@
       <button
         type="button"
         (click)="recargarTodo()"
-        [disabled]="loadingStats || loadingVisitasHoy || loadingReos || loadingInforme">
+        [disabled]="loadingStats || loadingVisitasHoy">
         Recargar datos
+      </button>
+
+      <button
+        type="button"
+        (click)="descargarPdf()"
+        [disabled]="downloadingPdf">
+        {{ downloadingPdf ? 'Generando PDF...' : 'Descargar informe PDF' }}
       </button>
     </div>
   </div>
 
   <div
-    *ngIf="loadingStats || loadingVisitasHoy || loadingReos || loadingInforme"
+    *ngIf="loadingStats || loadingVisitasHoy"
     class="monitor-page__loading">
     Cargando información del monitor...
   </div>
@@ -35,22 +41,4 @@
     [loading]="loadingVisitasHoy"
     [errorMessage]="errorVisitasHoy">
   </app-monitor-visitas-hoy>
-
-  <app-monitor-filtros
-    [reos]="reos"
-    [loadingReos]="loadingReos"
-    [filtros]="filtros"
-    [errorMessage]="errorReos"
-    (filtrosChange)="onFiltrosChange($event)"
-    (aplicar)="aplicarFiltros()"
-    (limpiar)="limpiarFiltros()">
-  </app-monitor-filtros>
-
-  <app-monitor-informe
-    [informe]="informe"
-    [loading]="loadingInforme"
-    [errorMessage]="errorInforme"
-    [downloadingPdf]="downloadingPdf"
-    (descargarPdf)="descargarPdf()">
-  </app-monitor-informe>
 </section>

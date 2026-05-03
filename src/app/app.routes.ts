@@ -4,7 +4,6 @@ import { MonitorPageComponent } from './features/monitor/pages/monitor-page/moni
 import { VisitasListComponent } from './features/visitas/pages/visitas-list/visitas-list.component';
 import { VisitasFormComponent } from './features/visitas/pages/visitas-form/visitas-form.component';
 import { ReoListComponent } from './features/reos/pages/reo-list/reo-list.component';
-import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component';
 import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';
 import { ValidacionVisitanteComponent } from './features/validacion-visitante/pages/validacion-form/validacion-visitante.component';
 import { authGuard } from './core/auth/guards/auth.guard';
@@ -59,18 +58,6 @@ export const routes: Routes = [
       {
         path: 'reos',
         component: ReoListComponent,
-        canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
-      },
-      {
-        path: 'reos/nuevo',
-        component: ReoFormComponent,
-        canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
-      },
-      {
-        path: 'reos/editar/:id',
-        component: ReoFormComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },

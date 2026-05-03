@@ -1,12 +1,4 @@
 <div class="formulario-wrapper">
-  <div class="navigation-header" style="margin-bottom: 1rem;">
-    <button pButton pRipple 
-            label="Volver al Panel de Monitorización" 
-            icon="pi pi-arrow-left" 
-            class="p-button-text p-button-secondary"
-            routerLink="/monitor"> 
-    </button>
-  </div>
 
   <div class="hero-formulario">
     <h1>Listado de Reos</h1>
@@ -14,88 +6,66 @@
   </div>
 
   <p-card>
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="margin:0">Expedientes</h2>
-      <button pButton label="Añadir Reo" icon="pi pi-plus" class="btn-submit" routerLink="/reos/nuevo"></button>
-  </div>
 
-  <div style="margin-bottom: 25px; max-width: 400px;">
-    <div class="search-box-custom" style="position: relative; display: flex; align-items: center;">
-      <i class="pi pi-search" style="
-        position: absolute; 
-        left: 12px; 
-        color: #cbd5e1; 
-        font-size: 0.9rem;
-      "></i>
-      
-      <input 
-        type="text" 
-        pInputText 
-        placeholder="Buscar expediente por ID, nombre o DNI/NIE" 
-        style="
-          width: 100%; 
-          padding: 8px 12px 8px 35px; 
-          border-radius: 20px; 
-          border: 1px solid #f1f5f9; 
-          background-color: #f8fafc; 
-          color: #94a3b8; 
-          font-size: 0.85rem;
-          font-weight: 300;
-          outline: none;
-          box-shadow: none;
-        "
-        (input)="filtrarReclusos($event)" />
+    <div class="header">
+      <h2>Expedientes</h2>
+
+      <!-- 🔥 BOTÓN MODAL -->
+      <button 
+        pButton 
+        label="Añadir Reo" 
+        icon="pi pi-plus"
+        class="btn-submit"
+        (click)="abrirDialogoNuevo()">
+      </button>
     </div>
-  </div>
 
-  <div *ngIf="reos.length === 0" style="padding: 20px; text-align: center; color: #666; border: 1px dashed #ccc; border-radius: 10px;">
-      <i class="pi pi-info-circle"></i> Buscando datos en el servidor...
-  </div>
+    <!-- 🔍 BUSCADOR -->
+    <input 
+      pInputText 
+      placeholder="Buscar..." 
+      (input)="filtrarReclusos($event)" />
 
-  <p-table *ngIf="reos.length > 0" [value]="reosFiltrados" [rows]="10" [paginator]="true">
+    <!-- 📊 TABLA -->
+    <p-table [value]="reosFiltrados" [paginator]="true" [rows]="10">
+
       <ng-template pTemplate="header">
-          <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>DNI</th>
-              <th>Delito</th>
-              <th style="text-align: center;">Acciones</th>
-          </tr>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>DNI</th>
+          <th>Delito</th>
+          <th>Acciones</th>
+        </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-item>
-          <tr>
-              <td><span class="badge-id">#{{ item.id }}</span></td>
-              <td><strong>{{ item.nombre }} {{ item.apellido }}</strong></td>
-              <td>{{ item.dni }}</td>
-              <td>{{ item.delito }}</td>
-              <td>
-                  <div style="display: flex; justify-content: center; gap: 8px;">
-                      <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="editarReo(item)"></button>
-                      <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="confirmarEliminar(item)"></button>
-                  </div>
-              </td>
-          </tr>
-      </ng-template>
-  </p-table>
-</p-card>
 
-  <div style="
-    display: flex; 
-    justify-content: flex-end; 
-    align-items: center; 
-    margin-top: 15px; 
-    padding: 0 10px;
-    color: #64748b; 
-    font-size: 0.85rem;
-    font-weight: 400;
-">
-    <div style="background: #f1f5f9; padding: 5px 12px; border-radius: 15px; display: flex; align-items: center; gap: 8px;">
-        <i class="pi pi-server" style="font-size: 0.8rem; color: #94a3b8;"></i>
-        <span>
-            Mostrando <strong>{{ reosFiltrados.length }}</strong> expedientes 
-            <span style="color: #cbd5e1; margin: 0 5px;">|</span> 
-            Total en base de datos: <strong>{{ reos.length }}</strong>
-        </span>
-    </div>
+      <ng-template pTemplate="body" let-reo>
+        <tr>
+          <td>{{ reo.id }}</td>
+          <td>{{ reo.nombre }} {{ reo.apellido }}</td>
+          <td>{{ reo.dni }}</td>
+          <td>{{ reo.delito }}</td>
+
+          <td>
+            <button 
+              pButton 
+              icon="pi pi-trash"
+              class="p-button-danger p-button-text"
+              (click)="confirmarEliminar(reo)">
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+
+  </p-card>
+
 </div>
-</div>
+
+<!-- 🔥 MODAL -->
+<app-reo-dialog
+  [visible]="dialogVisible"
+  (cerrar)="cerrarDialogo()"
+  (guardado)="cargarDatos()">
+</app-reo-dialog>

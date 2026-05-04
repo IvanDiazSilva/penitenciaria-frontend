@@ -7,27 +7,36 @@
 
   <p-card>
 
-    <div class="header">
-      <h2>Expedientes</h2>
+    <!-- HEADER -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="margin:0">Expedientes</h2>
 
-      <!-- 🔥 BOTÓN MODAL -->
+      <!-- 🔥 BOTÓN NUEVO -->
       <button 
         pButton 
         label="Añadir Reo" 
-        icon="pi pi-plus"
+        icon="pi pi-plus" 
         class="btn-submit"
-        (click)="abrirDialogoNuevo()">
+        (click)="abrirNuevo()">
       </button>
     </div>
 
     <!-- 🔍 BUSCADOR -->
-    <input 
-      pInputText 
-      placeholder="Buscar..." 
-      (input)="filtrarReclusos($event)" />
+    <div style="margin-bottom: 25px; max-width: 400px;">
+      <div class="search-box-custom" style="position: relative;">
+        <i class="pi pi-search" style="position: absolute; left: 12px; top: 10px;"></i>
 
-    <!-- 📊 TABLA -->
-    <p-table [value]="reosFiltrados" [paginator]="true" [rows]="10">
+        <input 
+          type="text"
+          pInputText
+          placeholder="Buscar por ID, nombre o DNI"
+          style="padding-left: 35px;"
+          (input)="filtrarReclusos($event)" />
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <p-table [value]="reosFiltrados" [rows]="10" [paginator]="true">
 
       <ng-template pTemplate="header">
         <tr>
@@ -35,24 +44,36 @@
           <th>Nombre</th>
           <th>DNI</th>
           <th>Delito</th>
-          <th>Acciones</th>
+          <th style="text-align: center;">Acciones</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-reo>
+      <ng-template pTemplate="body" let-item>
         <tr>
-          <td>{{ reo.id }}</td>
-          <td>{{ reo.nombre }} {{ reo.apellido }}</td>
-          <td>{{ reo.dni }}</td>
-          <td>{{ reo.delito }}</td>
-
+          <td>#{{ item.id }}</td>
+          <td>{{ item.nombre }} {{ item.apellido }}</td>
+          <td>{{ item.dni }}</td>
+          <td>{{ item.delito }}</td>
           <td>
-            <button 
-              pButton 
-              icon="pi pi-trash"
-              class="p-button-danger p-button-text"
-              (click)="confirmarEliminar(reo)">
-            </button>
+            <div style="display: flex; justify-content: center; gap: 8px;">
+              
+              <!-- EDITAR -->
+              <button 
+                pButton 
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-warning"
+                (click)="editarReo(item)">
+              </button>
+
+              <!-- ELIMINAR -->
+              <button 
+                pButton 
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-danger"
+                (click)="confirmarEliminar(item)">
+              </button>
+
+            </div>
           </td>
         </tr>
       </ng-template>
@@ -63,9 +84,10 @@
 
 </div>
 
-<!-- 🔥 MODAL -->
+<!-- 🔥 DIALOG -->
 <app-reo-dialog
   [visible]="dialogVisible"
-  (cerrar)="cerrarDialogo()"
-  (guardado)="cargarDatos()">
+  [reoId]="reoSeleccionadoId"
+  (cerrar)="cerrarDialog()"
+  (guardado)="onGuardado()">
 </app-reo-dialog>

@@ -10,7 +10,7 @@ import { RippleModule } from 'primeng/ripple';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 
-// 🔥 IMPORT DEL MODAL
+// Dialog
 import { ReoDialogComponent } from '../../reo-dialog/reo-dialog';
 
 @Component({
@@ -23,7 +23,7 @@ import { ReoDialogComponent } from '../../reo-dialog/reo-dialog';
     RippleModule,
     CardModule,
     InputTextModule,
-    ReoDialogComponent // 👈 CLAVE
+    ReoDialogComponent // 🔥 IMPORTANTE
   ],
   templateUrl: './reo-list.component.html',
   styleUrls: ['./reo-list.component.scss']
@@ -33,7 +33,9 @@ export class ReoListComponent implements OnInit {
   reos: Reo[] = [];
   reosFiltrados: Reo[] = [];
 
+  // 🔥 CONTROL DEL DIALOG
   dialogVisible = false;
+  reoSeleccionadoId: number | null = null;
 
   constructor(
     private reoService: ReoService,
@@ -51,10 +53,13 @@ export class ReoListComponent implements OnInit {
         this.reosFiltrados = data;
         this.cd.detectChanges();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Error al cargar reos:', err.message);
+      }
     });
   }
 
+  // 🔍 FILTRO
   filtrarReclusos(event: any): void {
     const valor = event.target.value.toLowerCase().trim();
 
@@ -71,20 +76,40 @@ export class ReoListComponent implements OnInit {
     );
   }
 
-  abrirDialogoNuevo() {
+  // ➕ NUEVO
+  abrirNuevo(): void {
+    this.reoSeleccionadoId = null;
     this.dialogVisible = true;
   }
 
-  cerrarDialogo() {
-    this.dialogVisible = false;
+  // ✏️ EDITAR
+  editarReo(reo: Reo): void {
+    this.reoSeleccionadoId = reo.id;
+    this.dialogVisible = true;
   }
 
-  confirmarEliminar(reo: any) {
-    if (confirm(`¿Eliminar a ${reo.nombre}?`)) {
+  // ❌ ELIMINAR
+  confirmarEliminar(reo: Reo): void {
+    const mensaje = `¿Dar de baja a ${reo.nombre}?`;
+
+    if (confirm(mensaje)) {
       this.reoService.baja_recluso(reo.id).subscribe({
-        next: () => this.cargarDatos(),
+        next: () => {
+          alert('Reo eliminado');
+          this.cargarDatos();
+        },
         error: (err) => alert(err.message)
       });
     }
+  }
+
+  // 🔄 REFRESCO TRAS GUARDAR
+  onGuardado(): void {
+    this.dialogVisible = false;
+    this.cargarDatos();
+  }
+
+  cerrarDialog(): void {
+    this.dialogVisible = false;
   }
 }

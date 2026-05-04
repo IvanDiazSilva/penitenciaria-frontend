@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { VisitaService } from '../../services/visita.service';
+import { VisitaService } from '../../services/visitas.service';
 import { VisitantesService } from '../../../visitantes/services/visitantes.service';
 import { Visita } from '../../models/visita.model';
 
@@ -31,7 +31,7 @@ export class VisitasFormComponent {
   };
 
   guardar() {
-    this.visitaService.createVisita(this.nuevaVisita).subscribe({
+    this.visitaService.crearVisita(this.nuevaVisita).subscribe({
       next: () => {
         alert('Solicitud de visita enviada correctamente');
         this.router.navigate(['/visitas']); // Cuando guarda, te manda de vuelta a la lista

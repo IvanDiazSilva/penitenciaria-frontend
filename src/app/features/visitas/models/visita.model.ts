@@ -7,5 +7,5 @@ export interface Visita {
   hora_entrada: string | null;
   hora_salida: string | null;
   autorizado: boolean;
-  codigo_qr: string;
+  codigo_qr: string | null;
 }

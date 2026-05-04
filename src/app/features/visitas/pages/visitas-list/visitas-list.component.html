@@ -1,8 +1,14 @@
 <div class="list-container">
   <div class="list-header">
-    <h2>Historial de Visitas</h2>
-    <button class="btn-add" (click)="irANuevaVisita()">
-      <span class="icon">+</span> Nueva Solicitud
+    <h2>{{ esVisitante ? 'Mis visitas' : 'Historial de visitas' }}</h2>
+
+    <button
+      class="btn-add"
+      type="button"
+      (click)="irANuevaVisita()"
+      *ngIf="puedeCrearVisita()">
+      <span class="icon">+</span>
+      {{ esVisitante ? 'Nueva solicitud' : 'Nueva visita' }}
     </button>
   </div>
 
@@ -11,42 +17,84 @@
   </div>
 
   <div class="table-responsive" *ngIf="!loading">
-    <table class="visitas-table">
+    <table class="visitas-table" *ngIf="visitas.length > 0; else emptyState">
       <thead>
         <tr>
           <th>ID</th>
           <th>Interno (ID)</th>
+          <th>Visitante</th>
+          <th>DNI</th>
           <th>Fecha</th>
           <th>Entrada/Salida</th>
           <th>Estado</th>
           <th>Código QR</th>
-          <th>Acciones</th>
+          <th *ngIf="mostrarAcciones()">Acciones</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let v of visitas">
-          <td><strong>#{{ v.id }}</strong></td>
-          <td>{{ v.reo_id }}</td>
-          <td>{{ v.fecha_visita | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <strong>#{{ v.id }}</strong>
+          </td>
+
+          <td>
+            {{ v.reo_id }}
+          </td>
+
+          <td>
+            {{ v.visitante_nombre }}
+          </td>
+
+          <td>
+            {{ v.visitante_dni }}
+          </td>
+
+          <td>
+            {{ v.fecha_visita | date:'dd/MM/yyyy' }}
+          </td>
+
           <td>
             <small>{{ v.hora_entrada || '--:--' }} / {{ v.hora_salida || '--:--' }}</small>
           </td>
+
           <td>
-            <span [class]="v.autorizado ? 'badge-success' : 'badge-pending'">
+            <span [ngClass]="v.autorizado ? 'badge-success' : 'badge-pending'">
               {{ v.autorizado ? 'Autorizado' : 'Pendiente' }}
             </span>
           </td>
-          <td><code class="qr-code">{{ v.codigo_qr || 'Pte. Generar' }}</code></td>
-          <td class="actions">
-            <button class="btn-action edit" (click)="editar(v)" title="Editar">✏️</button>
-            <button class="btn-action delete" (click)="eliminar(v.id)" title="Eliminar">🗑️</button>
+
+          <td>
+            <code class="qr-code">{{ v.codigo_qr || 'Pte. generar' }}</code>
+          </td>
+
+          <td class="actions" *ngIf="mostrarAcciones()">
+            <button
+              class="btn-action edit"
+              type="button"
+              (click)="editar(v)"
+              title="Editar"
+              *ngIf="puedeEditar(v)">
+              ✏️
+            </button>
+
+            <button
+              class="btn-action delete"
+              type="button"
+              (click)="eliminar(v.id)"
+              title="Eliminar"
+              *ngIf="puedeEliminar()">
+              🗑️
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <div *ngIf="visitas.length === 0" class="empty-state">
-      <p>No se encontraron registros de visitas.</p>
-    </div>
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <p>{{ esVisitante ? 'Todavía no tienes visitas registradas.' : 'No se encontraron registros de visitas.' }}</p>
+      </div>
+    </ng-template>
   </div>
 </div>

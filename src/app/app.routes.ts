@@ -5,7 +5,6 @@ import { authGuard } from './core/auth/guards/auth.guard';
 import { roleGuard } from './core/auth/guards/role.guard';
 
 import { AdminLayoutComponent } from './core/layout/pages/admin-layout/admin-layout.component';
-import { VisitorLayoutComponent } from './core/layout/pages/visitor-layout/visitor-layout.component';
 
 import { MonitorPageComponent } from './features/monitor/pages/monitor-page/monitor-page.component';
 import { NoAutorizadoComponent } from './features/monitor/components/noAutorizadoComponent';
@@ -99,7 +98,7 @@ export const routes: Routes = [
   // Zona visitante autenticado
   {
     path: 'visitante',
-    component: VisitorLayoutComponent,
+    component: AdminLayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: { roles: ['VISITANTE'] },
     children: [

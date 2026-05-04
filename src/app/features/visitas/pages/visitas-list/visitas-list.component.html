@@ -1,8 +1,14 @@
 <div class="list-container">
   <div class="list-header">
-    <h2>Historial de Visitas</h2>
-    <button class="btn-add" (click)="irANuevaVisita()">
-      <span class="icon">+</span> Nueva Solicitud
+    <h2>{{ esVisitante ? 'Mis visitas' : 'Historial de visitas' }}</h2>
+
+    <button
+      class="btn-add"
+      type="button"
+      (click)="irANuevaVisita()"
+      *ngIf="puedeCrearVisita()">
+      <span class="icon">+</span>
+      {{ esVisitante ? 'Nueva solicitud' : 'Nueva visita' }}
     </button>
   </div>
 
@@ -11,55 +17,156 @@
   </div>
 
   <div class="table-responsive" *ngIf="!loading">
-    <table class="visitas-table">
+    <table class="visitas-table" *ngIf="visitas.length > 0; else emptyState">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Interno (Nombre)</th> 
+          <th>Interno (ID)</th>
+          <th>Visitante</th>
+          <th>DNI</th>
           <th>Fecha</th>
           <th>Entrada/Salida</th>
           <th>Estado</th>
           <th>Código QR</th>
-          <th>Acciones</th>
+          <th *ngIf="mostrarAcciones()">Acciones</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr *ngFor="let v of visitas">
+        <tr *ngFor="let v of visitasPaginadas">
           <td><strong>#{{ v.id }}</strong></td>
-          
-          <td>
-            <ng-container *ngIf="v.reo; else reoDesconocido">
-              {{ v.reo.nombre }}
-            </ng-container>
-            <ng-template #reoDesconocido>
-              <span class="text-muted italic">ID Reo: {{ v.idReo || 'N/A' }}</span>
-            </ng-template>
-          </td>
-          
+          <td>{{ v.reo.id }}</td>
+          <td>{{ v.visitante.nombreCompleto || 'Sin nombre' }}</td>
+          <td>{{ v.visitante.dniNie || '-' }}</td>
           <td>{{ v.fechaVisita | date:'dd/MM/yyyy' }}</td>
-          
           <td>
             <small>{{ v.horaEntrada || '--:--' }} / {{ v.horaSalida || '--:--' }}</small>
           </td>
-          
+
           <td>
-            <span [class]="v.autorizado ? 'badge-success' : 'badge-pending'">
+            <span [ngClass]="v.autorizado ? 'badge-success' : 'badge-pending'">
               {{ v.autorizado ? 'Autorizado' : 'Pendiente' }}
             </span>
           </td>
-          
-          <td><code class="qr-code">{{ v.codigoQr || 'Pte. Generar' }}</code></td>
-          
-          <td class="actions">
-            <button class="btn-action edit" (click)="editar(v)" title="Editar">✏️</button>
-            <button class="btn-action delete" (click)="eliminar(v.id)" title="Eliminar">🗑️</button>
+
+          <td>
+            <div class="qr-cell">
+              <code class="qr-code">
+                {{ v.codigoQr || 'Pte. generar' }}
+              </code>
+
+              <div class="qr-actions" *ngIf="esVisitante">
+                <button
+                  *ngIf="v.autorizado"
+                  class="btn-generate-qr"
+                  type="button"
+                  (click)="generarQr(v)">
+                  {{ v.codigoQr ? 'Regenerar QR' : 'Generar QR' }}
+                </button>
+
+                <button
+                  *ngIf="v.codigoQr"
+                  class="btn-view-qr"
+                  type="button"
+                  (click)="verQr(v)">
+                  Ver QR
+                </button>
+              </div>
+
+              <small *ngIf="esVisitante && !v.autorizado" class="qr-help">
+                Disponible cuando la visita sea autorizada
+              </small>
+            </div>
+          </td>
+
+          <td class="actions" *ngIf="mostrarAcciones()">
+            <button
+              class="btn-action edit"
+              type="button"
+              (click)="editar(v)"
+              title="Editar"
+              *ngIf="puedeEditar(v)">
+              ✏️
+            </button>
+
+            <button
+              class="btn-action delete"
+              type="button"
+              (click)="eliminar(v.id!)"
+              title="Eliminar"
+              *ngIf="puedeEliminar()">
+              🗑️
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <div *ngIf="visitas.length === 0" class="empty-state">
-      <p>No se encontraron registros de visitas en la base de datos.</p>
+    <div class="pagination" *ngIf="visitas.length > itemsPerPage">
+      <button
+        type="button"
+        class="page-btn"
+        (click)="paginaAnterior()"
+        [disabled]="currentPage === 1">
+        Anterior
+      </button>
+
+      <button
+        type="button"
+        class="page-btn"
+        *ngFor="let page of paginas"
+        (click)="irAPagina(page)"
+        [class.active]="page === currentPage">
+        {{ page }}
+      </button>
+
+      <button
+        type="button"
+        class="page-btn"
+        (click)="paginaSiguiente()"
+        [disabled]="currentPage === totalPages">
+        Siguiente
+      </button>
     </div>
+
+    <div class="qr-viewer" *ngIf="qrSeleccionado && visitaSeleccionada">
+      <div class="qr-viewer-header">
+        <div>
+          <h3>QR de la visita #{{ visitaSeleccionada.id }}</h3>
+          <p>
+            Visitante: {{ visitaSeleccionada.visitante.nombreCompleto || 'Sin nombre' }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close-qr"
+          (click)="cerrarQr()">
+          Cerrar
+        </button>
+      </div>
+
+      <div class="qr-viewer-body">
+        <qrcode
+          *ngIf="qrSeleccionado"
+          [qrdata]="qrSeleccionado"
+          [width]="220"
+          [errorCorrectionLevel]="'M'"
+          [elementType]="'canvas'">
+        </qrcode>
+
+        <code class="qr-selected-code">{{ qrSeleccionado }}</code>
+      </div>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <p>
+          {{ esVisitante
+            ? 'Todavía no tienes visitas registradas.'
+            : 'No se encontraron registros de visitas.' }}
+        </p>
+      </div>
+    </ng-template>
   </div>
 </div>

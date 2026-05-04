@@ -1,8 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { VisitaService } from '../../services/visita.service';
+
+import { VisitasService } from '../../services/visitas.service';
+import { ReoService } from '../../../reos/services/reos.service';
+import { CrearVisitaRequest } from '../../models/crear-visita.request';
+import { Reo } from '../../../reos/models/reo.model';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-visitas-form',
@@ -11,54 +16,74 @@ import { VisitaService } from '../../services/visita.service';
   templateUrl: './visitas-form.component.html',
   styleUrls: ['./visitas-form.component.scss']
 })
-export class VisitasFormComponent {
-  private visitaService = inject(VisitaService);
+export class VisitasFormComponent implements OnInit {
+  private visitasService = inject(VisitasService);
+  private reoService = inject(ReoService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Ajustamos el objeto para que coincida EXACTAMENTE con Visita.java del Backend
-  nuevaVisita: any = {
-    fechaVisita: '', // En Java: private LocalDate fechaVisita
+  nombreVisitante = 'Visitante autenticado';
+  reos: Reo[] = [];
+  cargandoReos = false;
+  guardando = false;
+
+  nuevaVisita: CrearVisitaRequest = {
+    reoId: 0,
+    fechaVisita: '',
     horaEntrada: null,
-    horaSalida: null,
-    autorizado: true,
-    // Java espera objetos, no IDs sueltos
-    reo: { 
-      id: null 
-    }, 
-    visitante: { 
-      id: 2 // Aquí deberías usar el ID del usuario logueado
-    }
+    horaSalida: null
   };
 
-  guardar() {
-    if (!this.nuevaVisita.fechaVisita || !this.nuevaVisita.reo.id) {
-      alert('Por favor, completa la fecha y selecciona un reo');
-      return;
-    }
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    this.nombreVisitante = user?.username ?? 'Visitante autenticado';
+    this.cargarReos();
+  }
 
-    // Al poner ': any', TypeScript dejará de marcar errores en rojo
-    const payload: any = {
-      fechaVisita: new Date(this.nuevaVisita.fechaVisita).toISOString().split('T')[0],
-      autorizado: this.nuevaVisita.autorizado,
-      reo: { id: Number(this.nuevaVisita.reo.id) },
-      visitante: { id: Number(this.nuevaVisita.visitante.id) }
-    };
+  cargarReos(): void {
+    this.cargandoReos = true;
 
-    console.log('Enviando datos:', payload);
-
-    this.visitaService.createVisita(payload).subscribe({
-      next: () => {
-        alert('Solicitud enviada');
-        this.router.navigate(['/visitas']);
+    this.reoService.obtener_todos().subscribe({
+      next: (data: Reo[]) => {
+        this.reos = data ?? [];
+        this.cargandoReos = false;
       },
-      error: (err) => {
-        console.error('Error:', err);
-        alert('Error al guardar');
+      error: (err: any) => {
+        console.error('Error al cargar internos:', err);
+        this.cargandoReos = false;
+        alert('No se pudieron cargar los internos disponibles');
       }
     });
   }
 
-  cancelar() {
-    this.router.navigate(['/visitas']);
+  guardar(): void {
+    if (this.nuevaVisita.reoId <= 0) {
+      alert('Debes seleccionar un interno');
+      return;
+    }
+
+    if (!this.nuevaVisita.fechaVisita) {
+      alert('Debes indicar la fecha de la visita');
+      return;
+    }
+
+    this.guardando = true;
+
+    this.visitasService.crearVisita(this.nuevaVisita).subscribe({
+      next: () => {
+        this.guardando = false;
+        alert('Solicitud de visita enviada correctamente');
+        this.router.navigate(['/visitante/mis-visitas']);
+      },
+      error: (err: any) => {
+        console.error('Error al guardar:', err);
+        this.guardando = false;
+        alert('Hubo un error al guardar la visita');
+      }
+    });
+  }
+
+  cancelar(): void {
+    this.router.navigate(['/visitante/mis-visitas']);
   }
 }

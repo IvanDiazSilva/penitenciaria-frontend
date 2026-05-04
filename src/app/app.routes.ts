@@ -5,13 +5,13 @@ import { authGuard } from './core/auth/guards/auth.guard';
 import { roleGuard } from './core/auth/guards/role.guard';
 
 import { AdminLayoutComponent } from './core/layout/pages/admin-layout/admin-layout.component';
-import { VisitorLayoutComponent } from './core/layout/pages/visitor-layout/visitor-layout.component';
 
 import { MonitorPageComponent } from './features/monitor/pages/monitor-page/monitor-page.component';
 import { NoAutorizadoComponent } from './features/monitor/components/noAutorizadoComponent';
 
 import { VisitasListComponent } from './features/visitas/pages/visitas-list/visitas-list.component';
 import { VisitasFormComponent } from './features/visitas/pages/visitas-form/visitas-form.component';
+import { ValidarQrComponent } from './features/visitas/pages/validar-qr/validar-qr.component';
 
 import { ReoListComponent } from './features/reos/pages/reo-list/reo-list.component';
 import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component';
@@ -20,8 +20,6 @@ import { PreregistroVisitanteComponent } from './features/visitantes/pages/prere
 
 import { IncidenciaListComponent } from './features/incidentes/pages/incidente-list/incidencia-list.component';
 import { IncidenciaFormComponent } from './features/incidentes/pages/incidente-form/incidencia-form.component';
-
-import { ValidacionQrPageComponent } from './features/validacion-qr/pages/validacion-qr-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -57,12 +55,6 @@ export const routes: Routes = [
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },
       {
-        path: 'validar-qr',
-        component: ValidacionQrPageComponent,
-        canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
-      },
-      {
         path: 'reos',
         component: ReoListComponent,
         canActivate: [roleGuard],
@@ -87,8 +79,26 @@ export const routes: Routes = [
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },
       {
+        path: 'visitas',
+        component: VisitasListComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'GUARDIA'] }
+      },
+      {
         path: 'visitas/nueva',
         component: VisitasFormComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'GUARDIA'] }
+      },
+      {
+        path: 'visitas/editar/:id',
+        component: VisitasFormComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'GUARDIA'] }
+      },
+      {
+        path: 'validar-qr',
+        component: ValidarQrComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },
@@ -99,7 +109,7 @@ export const routes: Routes = [
   // Zona visitante autenticado
   {
     path: 'visitante',
-    component: VisitorLayoutComponent,
+    component: AdminLayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: { roles: ['VISITANTE'] },
     children: [
@@ -107,6 +117,12 @@ export const routes: Routes = [
       {
         path: 'mis-visitas',
         component: VisitasListComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['VISITANTE'] }
+      },
+      {
+        path: 'solicitar-visita',
+        component: VisitasFormComponent,
         canActivate: [roleGuard],
         data: { roles: ['VISITANTE'] }
       }

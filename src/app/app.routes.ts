@@ -86,7 +86,19 @@ export const routes: Routes = [
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },
       {
+        path: 'visitas',
+        component: VisitasListComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'GUARDIA'] }
+      },
+      {
         path: 'visitas/nueva',
+        component: VisitasFormComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'GUARDIA'] }
+      },
+      {
+        path: 'visitas/editar/:id',
         component: VisitasFormComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
@@ -106,6 +118,12 @@ export const routes: Routes = [
       {
         path: 'mis-visitas',
         component: VisitasListComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['VISITANTE'] }
+      },
+      {
+        path: 'solicitar-visita',
+        component: VisitasFormComponent,
         canActivate: [roleGuard],
         data: { roles: ['VISITANTE'] }
       }

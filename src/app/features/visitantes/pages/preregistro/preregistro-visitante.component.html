@@ -4,101 +4,182 @@
     <p>Rellene el formulario con sus datos personales para solicitar el alta como visitante.</p>
   </div>
 
-  <p-card header="Pre-registro de visitante" subheader="Complete sus datos para solicitar el alta en el sistema.">
+  <p-card
+    header="Pre-registro de visitante"
+    subheader="Complete sus datos para solicitar el alta en el sistema."
+  >
     <form [formGroup]="preregistroForm" (ngSubmit)="onSubmit()" class="formulario">
-
       <div class="grid-form">
         <div class="campo campo-full">
           <label for="nombreCompleto">Nombre completo</label>
-          <input id="nombreCompleto" type="text" pInputText formControlName="nombreCompleto" />
-          <small *ngIf="preregistroForm.get('nombreCompleto')?.touched && preregistroForm.get('nombreCompleto')?.invalid">
+          <input
+            id="nombreCompleto"
+            type="text"
+            pInputText
+            formControlName="nombreCompleto"
+            placeholder="Introduce tu nombre completo"
+          />
+          <small
+            *ngIf="preregistroForm.get('nombreCompleto')?.touched && preregistroForm.get('nombreCompleto')?.invalid"
+            class="error-text"
+          >
             El nombre completo es obligatorio.
           </small>
         </div>
 
         <div class="campo">
           <label for="dniNie">DNI / NIE</label>
-          <input id="dniNie" type="text" pInputText formControlName="dniNie" />
-          <small *ngIf="preregistroForm.get('dniNie')?.touched && preregistroForm.get('dniNie')?.invalid">
+          <input
+            id="dniNie"
+            type="text"
+            pInputText
+            formControlName="dniNie"
+            placeholder="Introduce tu DNI o NIE"
+          />
+          <small
+            *ngIf="preregistroForm.get('dniNie')?.touched && preregistroForm.get('dniNie')?.invalid"
+            class="error-text"
+          >
             El DNI/NIE es obligatorio.
           </small>
         </div>
 
         <div class="campo">
           <label for="password">Contraseña</label>
-          <p-password inputId="password" formControlName="password" [toggleMask]="true" [feedback]="false"
-            styleClass="w-full" inputStyleClass="w-full">
+          <p-password
+            inputId="password"
+            formControlName="password"
+            [toggleMask]="true"
+            [feedback]="false"
+            placeholder="Introduce una contraseña"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          >
           </p-password>
-          <small *ngIf="preregistroForm.get('password')?.touched && preregistroForm.get('password')?.invalid">
+          <small
+            *ngIf="preregistroForm.get('password')?.touched && preregistroForm.get('password')?.invalid"
+            class="error-text"
+          >
             La contraseña debe tener al menos 4 caracteres.
           </small>
         </div>
 
         <div class="campo">
           <label for="telefono">Teléfono</label>
-          <input id="telefono" type="text" pInputText formControlName="telefono" />
+          <input
+            id="telefono"
+            type="text"
+            pInputText
+            formControlName="telefono"
+            placeholder="Introduce tu teléfono"
+          />
         </div>
 
         <div class="campo">
           <label for="email">Correo electrónico</label>
-          <input id="email" type="email" pInputText formControlName="email" />
-          <small *ngIf="preregistroForm.get('email')?.touched && preregistroForm.get('email')?.invalid">
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="Introduce tu correo electrónico"
+          />
+          <small
+            *ngIf="preregistroForm.get('email')?.touched && preregistroForm.get('email')?.invalid"
+            class="error-text"
+          >
             Formato de correo no válido.
           </small>
         </div>
 
         <div class="campo">
           <label for="nacionalidad">Nacionalidad</label>
-          <input id="nacionalidad" type="text" pInputText formControlName="nacionalidad" />
+          <input
+            id="nacionalidad"
+            type="text"
+            pInputText
+            formControlName="nacionalidad"
+            placeholder="Introduce tu nacionalidad"
+          />
         </div>
 
         <div class="campo campo-full">
           <label for="direccion">Dirección</label>
-          <input id="direccion" type="text" pInputText formControlName="direccion" />
-        </div>
-
-        <div class="campo">
-          <label for="nombreInterno">Nombre del interno</label>
-          <input id="nombreInterno" type="text" pInputText formControlName="nombreInterno" />
+          <input
+            id="direccion"
+            type="text"
+            pInputText
+            formControlName="direccion"
+            placeholder="Introduce tu dirección"
+          />
         </div>
 
         <div class="campo">
           <label for="parentesco">Parentesco</label>
-          <input id="parentesco" type="text" pInputText formControlName="parentesco" />
+          <input
+            id="parentesco"
+            type="text"
+            pInputText
+            formControlName="parentesco"
+            placeholder="Ej. hermano, madre, pareja..."
+          />
         </div>
       </div>
 
       <div class="normativa mt-4">
-        <p-checkbox inputId="aceptaNormativa" binary="true" formControlName="aceptaNormativa"></p-checkbox>
-        <label for="aceptaNormativa" class="ml-2">Acepto la normativa del centro penitenciario</label>
-        <div *ngIf="preregistroForm.get('aceptaNormativa')?.touched && preregistroForm.get('aceptaNormativa')?.invalid">
-          <small class="text-red-500">Debes aceptar la normativa.</small>
+        <p-checkbox
+          inputId="aceptaNormativa"
+          binary="true"
+          formControlName="aceptaNormativa"
+        ></p-checkbox>
+        <label for="aceptaNormativa" class="ml-2">
+          Acepto la normativa del centro penitenciario
+        </label>
+
+        <div
+          *ngIf="preregistroForm.get('aceptaNormativa')?.touched && preregistroForm.get('aceptaNormativa')?.invalid"
+        >
+          <small class="error-text">Debes aceptar la normativa.</small>
         </div>
       </div>
 
       <div class="acciones mt-5" style="display: flex; gap: 1rem; justify-content: flex-end;">
-        <p-button 
-          type="button" 
-          label="Cancelar" 
-          icon="pi pi-times" 
-          styleClass="p-button-secondary p-button-outlined" 
-          (onClick)="onCancelar()">
+        <p-button
+          type="button"
+          label="Cancelar"
+          icon="pi pi-times"
+          styleClass="p-button-secondary p-button-outlined"
+          (onClick)="onCancelar()"
+          [disabled]="loading"
+        >
         </p-button>
 
-        <p-button 
-          type="submit" 
-          label="Enviar pre-registro" 
+        <p-button
+          type="submit"
+          label="Enviar pre-registro"
           icon="pi pi-check"
           styleClass="btn-submit"
-          [disabled]="preregistroForm.invalid">
+          [disabled]="preregistroForm.invalid || loading"
+          [loading]="loading"
+        >
         </p-button>
       </div>
 
       <div class="mt-3">
-        <p-message *ngIf="mensaje" severity="success" [text]="mensaje" class="block w-full"></p-message>
-        <p-message *ngIf="error" severity="error" [text]="error" class="block w-full"></p-message>
-      </div>
+        <p-message
+          *ngIf="mensaje"
+          severity="success"
+          [text]="mensaje"
+          class="block w-full"
+        ></p-message>
 
+        <p-message
+          *ngIf="error"
+          severity="error"
+          [text]="error"
+          class="block w-full"
+        ></p-message>
+      </div>
     </form>
   </p-card>
 </div>

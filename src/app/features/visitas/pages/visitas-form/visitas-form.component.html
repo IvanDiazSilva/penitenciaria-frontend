@@ -1,27 +1,94 @@
 <div class="form-container">
   <h2>Nueva Solicitud de Visita</h2>
-  
+  <p class="form-subtitle">
+    Completa los datos para solicitar una nueva visita.
+  </p>
+
   <form (ngSubmit)="guardar()" #visitaForm="ngForm">
     <div class="form-group">
-      <label>ID del Interno (Reo):</label>
-      <input type="number" name="reo_id" [(ngModel)]="nuevaVisita.reo_id" required class="form-control">
+      <label for="solicitante">Solicitante:</label>
+      <input
+        type="text"
+        id="solicitante"
+        [value]="nombreVisitante || 'Visitante autenticado'"
+        disabled
+        class="form-control disabled">
+      <p class="form-help">
+        Tu usuario autenticado se usará para asociar la visita automáticamente.
+      </p>
     </div>
 
     <div class="form-group">
-      <label>Fecha de la Visita:</label>
-      <input type="date" name="fecha_visita" [(ngModel)]="nuevaVisita.fecha_visita" required class="form-control">
+      <label for="reoId">Interno a visitar:</label>
+      <select
+        id="reoId"
+        name="reoId"
+        [(ngModel)]="nuevaVisita.reoId"
+        required
+        class="form-control"
+        [disabled]="cargandoReos || guardando">
+        <option [ngValue]="0" disabled>Selecciona un interno</option>
+        <option *ngFor="let reo of reos" [ngValue]="reo.id">
+          {{ reo.nombre }} - {{ reo.dni }}
+        </option>
+      </select>
+
+      <p class="form-help" *ngIf="!cargandoReos">
+        Selecciona el interno al que deseas visitar.
+      </p>
+
+      <p class="form-help" *ngIf="cargandoReos">
+        Cargando internos disponibles...
+      </p>
     </div>
 
     <div class="form-group">
-      <label>Nombre del Visitante (Tú):</label>
-      <input type="text" [value]="nuevaVisita.visitante_nombre" disabled class="form-control disabled">
+      <label for="fechaVisita">Fecha de la visita:</label>
+      <input
+        type="date"
+        id="fechaVisita"
+        name="fechaVisita"
+        [(ngModel)]="nuevaVisita.fechaVisita"
+        required
+        class="form-control"
+        [disabled]="guardando">
+    </div>
+
+    <div class="form-group">
+      <label for="horaEntrada">Hora de entrada:</label>
+      <input
+        type="time"
+        id="horaEntrada"
+        name="horaEntrada"
+        [(ngModel)]="nuevaVisita.horaEntrada"
+        class="form-control"
+        [disabled]="guardando">
+    </div>
+
+    <div class="form-group">
+      <label for="horaSalida">Hora de salida:</label>
+      <input
+        type="time"
+        id="horaSalida"
+        name="horaSalida"
+        [(ngModel)]="nuevaVisita.horaSalida"
+        class="form-control"
+        [disabled]="guardando">
     </div>
 
     <div class="form-actions">
-      <button type="submit" [disabled]="!visitaForm.form.valid" class="btn-save">
-        Enviar Solicitud
+      <button
+        type="submit"
+        [disabled]="!visitaForm.form.valid || cargandoReos || guardando"
+        class="btn-save">
+        {{ guardando ? 'Enviando...' : 'Enviar solicitud' }}
       </button>
-      <button type="button" (click)="cancelar()" class="btn-cancel">
+
+      <button
+        type="button"
+        (click)="cancelar()"
+        class="btn-cancel"
+        [disabled]="guardando">
         Cancelar
       </button>
     </div>

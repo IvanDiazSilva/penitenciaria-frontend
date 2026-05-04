@@ -6,7 +6,6 @@ export interface PreregistroVisitanteRequest {
   telefono?: string;
   email?: string;
   direccion?: string;
-  nombreInterno?: string;
   parentesco?: string;
-  aceptaNormativa?: boolean;
+  aceptaNormativa: boolean;
 }

@@ -7,6 +7,6 @@ import { serverRoutes } from './app.routes.server';
 @NgModule({
   imports: [],
   providers: [provideServerRendering(withRoutes(serverRoutes))],
-  bootstrap: [App],
+ 
 })
 export class AppServerModule {}

@@ -1,10 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { VisitaService } from '../../services/visita.service';
-import { VisitantesService } from '../../../visitantes/services/visitantes.service';
-import { Visita } from '../../models/visita.model';
+
+import { VisitasService } from '../../services/visitas.service';
+import { ReoService } from '../../../reos/services/reos.service';
+import { CrearVisitaRequest } from '../../models/crear-visita.request';
+import { Reo } from '../../../reos/models/reo.model';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-visitas-form',
@@ -13,37 +16,74 @@ import { Visita } from '../../models/visita.model';
   templateUrl: './visitas-form.component.html',
   styleUrls: ['./visitas-form.component.scss']
 })
-export class VisitasFormComponent {
-  private visitaService = inject(VisitaService);
+export class VisitasFormComponent implements OnInit {
+  private visitasService = inject(VisitasService);
+  private reoService = inject(ReoService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Creamos un objeto vacío basado en tu modelo
-  nuevaVisita: Visita = {
-    id: 0,
-    reo_id: 0,
-    visitante_nombre: 'Estefanía García', // Datos por defecto del usuario logueado
-    visitante_dni: '12345678X',
-    fecha_visita: '',
-    hora_entrada: null,
-    hora_salida: null,
-    autorizado: false,
-    codigo_qr: ''
+  nombreVisitante = 'Visitante autenticado';
+  reos: Reo[] = [];
+  cargandoReos = false;
+  guardando = false;
+
+  nuevaVisita: CrearVisitaRequest = {
+    reoId: 0,
+    fechaVisita: '',
+    horaEntrada: null,
+    horaSalida: null
   };
 
-  guardar() {
-    this.visitaService.createVisita(this.nuevaVisita).subscribe({
-      next: () => {
-        alert('Solicitud de visita enviada correctamente');
-        this.router.navigate(['/visitas']); // Cuando guarda, te manda de vuelta a la lista
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    this.nombreVisitante = user?.username ?? 'Visitante autenticado';
+    this.cargarReos();
+  }
+
+  cargarReos(): void {
+    this.cargandoReos = true;
+
+    this.reoService.obtener_todos().subscribe({
+      next: (data: Reo[]) => {
+        this.reos = data ?? [];
+        this.cargandoReos = false;
       },
-      error: (err) => {
-        console.error('Error al guardar:', err);
-        alert('Hubo un error al conectar con el servidor de Iván');
+      error: (err: any) => {
+        console.error('Error al cargar internos:', err);
+        this.cargandoReos = false;
+        alert('No se pudieron cargar los internos disponibles');
       }
     });
   }
 
-  cancelar() {
-    this.router.navigate(['/visitas']);
+  guardar(): void {
+    if (this.nuevaVisita.reoId <= 0) {
+      alert('Debes seleccionar un interno');
+      return;
+    }
+
+    if (!this.nuevaVisita.fechaVisita) {
+      alert('Debes indicar la fecha de la visita');
+      return;
+    }
+
+    this.guardando = true;
+
+    this.visitasService.crearVisita(this.nuevaVisita).subscribe({
+      next: () => {
+        this.guardando = false;
+        alert('Solicitud de visita enviada correctamente');
+        this.router.navigate(['/visitante/mis-visitas']);
+      },
+      error: (err: any) => {
+        console.error('Error al guardar:', err);
+        this.guardando = false;
+        alert('Hubo un error al guardar la visita');
+      }
+    });
+  }
+
+  cancelar(): void {
+    this.router.navigate(['/visitante/mis-visitas']);
   }
 }

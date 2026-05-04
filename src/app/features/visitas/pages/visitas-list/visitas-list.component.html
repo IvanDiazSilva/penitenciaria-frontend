@@ -33,29 +33,14 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let v of visitas">
+        <tr *ngFor="let v of visitasPaginadas">
+          <td><strong>#{{ v.id }}</strong></td>
+          <td>{{ v.reo.id }}</td>
+          <td>{{ v.visitante.nombreCompleto || 'Sin nombre' }}</td>
+          <td>{{ v.visitante.dniNie || '-' }}</td>
+          <td>{{ v.fechaVisita | date:'dd/MM/yyyy' }}</td>
           <td>
-            <strong>#{{ v.id }}</strong>
-          </td>
-
-          <td>
-            {{ v.reo_id }}
-          </td>
-
-          <td>
-            {{ v.visitante_nombre }}
-          </td>
-
-          <td>
-            {{ v.visitante_dni }}
-          </td>
-
-          <td>
-            {{ v.fecha_visita | date:'dd/MM/yyyy' }}
-          </td>
-
-          <td>
-            <small>{{ v.hora_entrada || '--:--' }} / {{ v.hora_salida || '--:--' }}</small>
+            <small>{{ v.horaEntrada || '--:--' }} / {{ v.horaSalida || '--:--' }}</small>
           </td>
 
           <td>
@@ -65,7 +50,33 @@
           </td>
 
           <td>
-            <code class="qr-code">{{ v.codigo_qr || 'Pte. generar' }}</code>
+            <div class="qr-cell">
+              <code class="qr-code">
+                {{ v.codigoQr || 'Pte. generar' }}
+              </code>
+
+              <div class="qr-actions" *ngIf="esVisitante">
+                <button
+                  *ngIf="v.autorizado"
+                  class="btn-generate-qr"
+                  type="button"
+                  (click)="generarQr(v)">
+                  {{ v.codigoQr ? 'Regenerar QR' : 'Generar QR' }}
+                </button>
+
+                <button
+                  *ngIf="v.codigoQr"
+                  class="btn-view-qr"
+                  type="button"
+                  (click)="verQr(v)">
+                  Ver QR
+                </button>
+              </div>
+
+              <small *ngIf="esVisitante && !v.autorizado" class="qr-help">
+                Disponible cuando la visita sea autorizada
+              </small>
+            </div>
           </td>
 
           <td class="actions" *ngIf="mostrarAcciones()">
@@ -81,7 +92,7 @@
             <button
               class="btn-action delete"
               type="button"
-              (click)="eliminar(v.id)"
+              (click)="eliminar(v.id!)"
               title="Eliminar"
               *ngIf="puedeEliminar()">
               🗑️
@@ -91,9 +102,70 @@
       </tbody>
     </table>
 
+    <div class="pagination" *ngIf="visitas.length > itemsPerPage">
+      <button
+        type="button"
+        class="page-btn"
+        (click)="paginaAnterior()"
+        [disabled]="currentPage === 1">
+        Anterior
+      </button>
+
+      <button
+        type="button"
+        class="page-btn"
+        *ngFor="let page of paginas"
+        (click)="irAPagina(page)"
+        [class.active]="page === currentPage">
+        {{ page }}
+      </button>
+
+      <button
+        type="button"
+        class="page-btn"
+        (click)="paginaSiguiente()"
+        [disabled]="currentPage === totalPages">
+        Siguiente
+      </button>
+    </div>
+
+    <div class="qr-viewer" *ngIf="qrSeleccionado && visitaSeleccionada">
+      <div class="qr-viewer-header">
+        <div>
+          <h3>QR de la visita #{{ visitaSeleccionada.id }}</h3>
+          <p>
+            Visitante: {{ visitaSeleccionada.visitante.nombreCompleto || 'Sin nombre' }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close-qr"
+          (click)="cerrarQr()">
+          Cerrar
+        </button>
+      </div>
+
+      <div class="qr-viewer-body">
+        <qrcode
+          *ngIf="qrSeleccionado"
+          [qrdata]="qrSeleccionado"
+          [width]="220"
+          [errorCorrectionLevel]="'M'"
+          [elementType]="'canvas'">
+        </qrcode>
+
+        <code class="qr-selected-code">{{ qrSeleccionado }}</code>
+      </div>
+    </div>
+
     <ng-template #emptyState>
       <div class="empty-state">
-        <p>{{ esVisitante ? 'Todavía no tienes visitas registradas.' : 'No se encontraron registros de visitas.' }}</p>
+        <p>
+          {{ esVisitante
+            ? 'Todavía no tienes visitas registradas.'
+            : 'No se encontraron registros de visitas.' }}
+        </p>
       </div>
     </ng-template>
   </div>

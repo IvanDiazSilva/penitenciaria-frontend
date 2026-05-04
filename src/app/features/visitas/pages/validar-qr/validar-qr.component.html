@@ -1,0 +1,16 @@
+<div class="qr-container">
+  <h2>Escanear QR de acceso</h2>
+
+  <zxing-scanner
+    [formats]="allowedFormats"
+    (scanSuccess)="onScanSuccess($event)">
+  </zxing-scanner>
+
+  <p *ngIf="scanResult">
+    Código leído: {{ scanResult }}
+  </p>
+
+  <p *ngIf="mensaje">
+    {{ mensaje }}
+  </p>
+</div>

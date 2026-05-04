@@ -11,7 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 import { IncidenciasService } from '../../service/incidencias.service';
-import { ReoService } from '../../../reos/service/reo.service';
+import { ReoService } from '../../../reos/services/reos.service';
 
 @Component({
   selector: 'app-incidencia-form',

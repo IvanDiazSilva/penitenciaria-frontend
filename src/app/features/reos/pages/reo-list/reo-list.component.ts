@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
-import { ReoService} from '../../service/reo.service';
+import { ReoService} from '../../services/reos.service';
 import {Reo} from '../../models/reo.model'
 import { RouterModule, Router } from '@angular/router'; 
 import { CardModule } from 'primeng/card'; 

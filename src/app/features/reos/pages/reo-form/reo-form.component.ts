@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReoService } from '../../service/reo.service';
+import { ReoService } from '../../services/reos.service';
 import {Reo} from '../../models/reo.model'
 
 // PrimeNG

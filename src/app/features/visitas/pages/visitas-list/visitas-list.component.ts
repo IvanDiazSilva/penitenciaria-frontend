@@ -1,14 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { VisitaService } from '../../services/visitas.service';
+import { QRCodeComponent } from 'angularx-qrcode';
+import { VisitasService } from '../../services/visitas.service';
 import { Visita } from '../../models/visita.model';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-visitas-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, QRCodeComponent],
   templateUrl: './visitas-list.component.html',
   styleUrls: ['./visitas-list.component.scss']
 })
@@ -19,13 +20,19 @@ export class VisitasListComponent implements OnInit {
   esVisitante = false;
   rolActual: string | null = null;
 
-  private visitaService = inject(VisitaService);
+  currentPage = 1;
+  itemsPerPage = 5;
+
+  qrSeleccionado: string | null = null;
+  visitaSeleccionada: Visita | null = null;
+
+  private visitasService = inject(VisitasService);
   private router = inject(Router);
   private authService = inject(AuthService);
 
   ngOnInit(): void {
     this.rolActual = this.authService.getRol();
-    this.esVisitante = this.rolActual === 'VISITANTE' || this.router.url.startsWith('/visitante');
+    this.esVisitante = this.rolActual === 'VISITANTE';
 
     this.obtenerVisitas();
   }
@@ -34,12 +41,13 @@ export class VisitasListComponent implements OnInit {
     this.loading = true;
 
     const request$ = this.esVisitante
-      ? this.visitaService.getMisVisitas()
-      : this.visitaService.getAllVisitas();
+      ? this.visitasService.getMisVisitas()
+      : this.visitasService.getAllVisitas();
 
     request$.subscribe({
       next: (data) => {
         this.visitas = data;
+        this.currentPage = 1;
         this.loading = false;
       },
       error: (err) => {
@@ -47,6 +55,40 @@ export class VisitasListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.visitas.length / this.itemsPerPage) || 1;
+  }
+
+  get paginas(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  get visitasPaginadas(): Visita[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.visitas.slice(start, end);
+  }
+
+  irAPagina(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+  }
+
+  paginaAnterior(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  paginaSiguiente(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
   }
 
   irANuevaVisita(): void {
@@ -58,13 +100,44 @@ export class VisitasListComponent implements OnInit {
     this.router.navigate(['/visitas/nueva']);
   }
 
+  generarQr(visita: Visita): void {
+    if (!visita.id || !this.esVisitante || !visita.autorizado) {
+      return;
+    }
+
+    this.visitasService.generarQr(visita.id).subscribe({
+      next: (res) => {
+        visita.codigoQr = res.qr;
+        this.verQr(visita);
+      },
+      error: (err) => {
+        console.error('Error al generar QR:', err);
+        alert('No se pudo generar el QR');
+      }
+    });
+  }
+
+  verQr(visita: Visita): void {
+    if (!visita.codigoQr) {
+      return;
+    }
+
+    this.visitaSeleccionada = visita;
+    this.qrSeleccionado = visita.codigoQr;
+  }
+
+  cerrarQr(): void {
+    this.visitaSeleccionada = null;
+    this.qrSeleccionado = null;
+  }
+
   eliminar(id: number): void {
     if (!this.puedeEliminar()) {
       return;
     }
 
     if (confirm('¿Estás seguro de que deseas eliminar esta solicitud de visita?')) {
-      this.visitaService.deleteVisita(id).subscribe({
+      this.visitasService.deleteVisita(id).subscribe({
         next: () => {
           this.obtenerVisitas();
         },
@@ -77,12 +150,7 @@ export class VisitasListComponent implements OnInit {
   }
 
   editar(visita: Visita): void {
-    if (!this.puedeEditar(visita)) {
-      return;
-    }
-
-    if (this.esVisitante) {
-      this.router.navigate(['/visitante/mis-visitas']);
+    if (!this.puedeEditar(visita) || !visita.id) {
       return;
     }
 
@@ -94,7 +162,11 @@ export class VisitasListComponent implements OnInit {
   }
 
   puedeCrearVisita(): boolean {
-    return this.rolActual === 'ADMIN' || this.rolActual === 'GUARDIA' || this.rolActual === 'VISITANTE';
+    return (
+      this.rolActual === 'ADMIN' ||
+      this.rolActual === 'GUARDIA' ||
+      this.rolActual === 'VISITANTE'
+    );
   }
 
   puedeEditar(_visita: Visita): boolean {

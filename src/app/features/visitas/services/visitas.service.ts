@@ -1,13 +1,26 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { Visita } from '../models/visita.model';
+import { CrearVisitaRequest } from '../models/crear-visita.request';
+import { ValidarQrRequest } from '../models/validar-qr.request';
+
+export interface GenerarQrResponse {
+  mensaje: string;
+  qr: string;
+  visitaId: number;
+}
+
+export interface ValidarQrResponse {
+  valido: boolean;
+  visitante?: string;
+  mensaje?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class VisitaService {
+export class VisitasService {
   private http = inject(HttpClient);
 
   private apiUrl = 'http://localhost:8080/penitenciaria-api/api/visitas';
@@ -24,15 +37,34 @@ export class VisitaService {
     return this.http.get<Visita>(`${this.apiUrl}/${id}`);
   }
 
-  crearVisita(payload: any): Observable<Visita> {
+  crearVisita(payload: CrearVisitaRequest): Observable<Visita> {
     return this.http.post<Visita>(this.apiUrl, payload);
   }
 
-  actualizarVisita(id: number, payload: any): Observable<Visita> {
+  actualizarVisita(id: number, payload: Partial<Visita>): Observable<Visita> {
     return this.http.put<Visita>(`${this.apiUrl}/${id}`, payload);
   }
 
   deleteVisita(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  generarQr(id: number): Observable<GenerarQrResponse> {
+    return this.http.post<GenerarQrResponse>(`${this.apiUrl}/qr/${id}`, {});
+  }
+
+  validarQr(payload: ValidarQrRequest): Observable<ValidarQrResponse> {
+    const body = new URLSearchParams();
+    body.set('qr', payload.qr);
+
+    return this.http.post<ValidarQrResponse>(
+      `${this.apiUrl}/validar-qr`,
+      body.toString(),
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/x-www-form-urlencoded'
+        })
+      }
+    );
   }
 }

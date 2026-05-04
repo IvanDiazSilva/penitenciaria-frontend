@@ -11,6 +11,7 @@ import { NoAutorizadoComponent } from './features/monitor/components/noAutorizad
 
 import { VisitasListComponent } from './features/visitas/pages/visitas-list/visitas-list.component';
 import { VisitasFormComponent } from './features/visitas/pages/visitas-form/visitas-form.component';
+import { ValidarQrComponent } from './features/visitas/pages/validar-qr/validar-qr.component';
 
 import { ReoListComponent } from './features/reos/pages/reo-list/reo-list.component';
 import { ReoFormComponent } from './features/reos/pages/reo-form/reo-form.component';
@@ -19,8 +20,6 @@ import { PreregistroVisitanteComponent } from './features/visitantes/pages/prere
 
 import { IncidenciaListComponent } from './features/incidentes/pages/incidente-list/incidencia-list.component';
 import { IncidenciaFormComponent } from './features/incidentes/pages/incidente-form/incidencia-form.component';
-
-import { ValidacionQrPageComponent } from './features/validacion-qr/pages/validacion-qr-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -52,12 +51,6 @@ export const routes: Routes = [
       {
         path: 'incidentes/nuevo',
         component: IncidenciaFormComponent,
-        canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
-      },
-      {
-        path: 'validar-qr',
-        component: ValidacionQrPageComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },
@@ -100,6 +93,12 @@ export const routes: Routes = [
       {
         path: 'visitas/editar/:id',
         component: VisitasFormComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'GUARDIA'] }
+      },
+      {
+        path: 'validar-qr',
+        component: ValidarQrComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },

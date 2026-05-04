@@ -1,119 +1,341 @@
 .list-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100%;
+}
 
-  .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-    h2 {
-      color: #2c3e50;
-      margin: 0;
-      font-weight: 600;
-    }
+.list-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
 
-    .btn-add {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.3s;
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
 
-      &:hover {
-        background-color: #2980b9;
-      }
-    }
-  }
+.btn-add:hover {
+  background: #1d4ed8;
+}
 
-  .visitas-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+.icon {
+  font-size: 1rem;
+  line-height: 1;
+}
 
-    th {
-      background: #f8f9fa;
-      color: #7f8c8d;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      padding: 15px;
-      text-align: left;
-      border-bottom: 2px solid #edf2f7;
-    }
+.loading-box,
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
 
-    td {
-      padding: 15px;
-      border-bottom: 1px solid #edf2f7;
-      color: #2d3436;
-      font-size: 0.9rem;
-    }
+.table-responsive {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
 
-    tr:hover {
-      background-color: #f1f2f6;
-    }
-  }
+.visitas-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1100px;
+}
+
+.visitas-table thead {
+  background: #f1f5f9;
+}
+
+.visitas-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.visitas-table td {
+  padding: 1rem;
+  vertical-align: top;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.visitas-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.badge-success,
+.badge-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .badge-success {
-  background: #e1f7e3;
-  color: #27ae60;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: #dcfce7;
+  color: #15803d;
 }
 
 .badge-pending {
-  background: #fff4e5;
-  color: #d35400;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.qr-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-width: 220px;
 }
 
 .qr-code {
-  background: #f1f2f6;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  color: #2c3e50;
+  display: inline-block;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.82rem;
+  color: #0f172a;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.qr-code.empty {
+  color: #64748b;
+}
+
+.btn-generate-qr {
+  align-self: flex-start;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-generate-qr:hover {
+  background: #1d4ed8;
+}
+
+.qr-help {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.35;
 }
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
 
-  .btn-action {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 5px;
-    border-radius: 4px;
-    transition: background 0.2s;
+.btn-action {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
 
-    &:hover { background: #dfe6e9; }
-    &.delete:hover { background: #fadbd8; }
+.btn-action:hover {
+  transform: translateY(-1px);
+}
+
+.btn-action.edit {
+  background: #dbeafe;
+}
+
+.btn-action.delete {
+  background: #fee2e2;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 1rem 1.25rem 1.25rem;
+  flex-wrap: wrap;
+  background: #ffffff;
+}
+
+.page-btn {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.page-btn.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .list-container {
+    padding: 1rem;
+  }
+
+  .list-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .btn-add {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .visitas-table th,
+  .visitas-table td {
+    padding: 0.75rem;
+  }
+
+  .qr-cell {
+    max-width: 180px;
   }
 }
 
-.loading-box, .empty-state {
-  text-align: center;
-  padding: 50px;
-  color: #95a5a6;
-  background: white;
-  border-radius: 12px;
+// ... (mantiene todo tu código anterior hasta .btn-generate-qr)
+
+.btn-generate-qr {
+  align-self: flex-start;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
+
+.btn-generate-qr:hover {
+  background: #1d4ed8;
+}
+
+// NUEVO: Estilos para el botón Ver QR
+.btn-view-qr {
+  align-self: flex-start;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-qr:hover {
+  background: #f1f5f9;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// NUEVO: Estilos para el visor de QR
+.qr-viewer {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+  text-align: center;
+}
+
+.qr-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.btn-close-qr {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qr-viewer-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qr-selected-code {
+  font-family: monospace;
+  font-size: 1rem;
+  color: #0f172a;
+  background: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+// ... (mantiene el resto de tus estilos originales de .qr-help, .actions, .pagination, etc.)

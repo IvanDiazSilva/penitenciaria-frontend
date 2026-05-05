@@ -1,10 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Visita } from '../models/visita.model';
 import { CrearVisitaRequest } from '../models/crear-visita.request';
-import { ValidarQrRequest } from '../models/validar-qr.request';
+import { timeout, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
+// Definimos las interfaces aquí o impórtalas si las tienes en archivos aparte
 export interface GenerarQrResponse {
   mensaje: string;
   qr: string;
@@ -22,7 +24,7 @@ export interface ValidarQrResponse {
 })
 export class VisitasService {
   private http = inject(HttpClient);
-
+  // Nota: La URL base ya termina en /visitas
   private apiUrl = 'http://localhost:8080/penitenciaria-api/api/visitas';
 
   getAllVisitas(): Observable<Visita[]> {
@@ -53,18 +55,15 @@ export class VisitasService {
     return this.http.post<GenerarQrResponse>(`${this.apiUrl}/qr/${id}`, {});
   }
 
-  validarQr(payload: ValidarQrRequest): Observable<ValidarQrResponse> {
-    const body = new URLSearchParams();
-    body.set('qr', payload.qr);
-
-    return this.http.post<ValidarQrResponse>(
-      `${this.apiUrl}/validar-qr`,
-      body.toString(),
-      {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/x-www-form-urlencoded'
-        })
-      }
+  /**
+   * Método corregido: 
+   * Recibe un string, pero envía un objeto JSON al backend.
+   */
+  validarQr(qrCode: string): Observable<ValidarQrResponse> {
+  return this.http.post<ValidarQrResponse>(`${this.apiUrl}/validar-qr`, { qr: qrCode })
+    .pipe(
+      timeout(5000), // Si tarda más de 5s, salta al bloque error
+      catchError(err => throwError(() => err))
     );
-  }
+}
 }

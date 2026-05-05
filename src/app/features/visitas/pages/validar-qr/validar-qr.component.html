@@ -1,16 +1,48 @@
-<div class="qr-container">
-  <h2>Escanear QR de acceso</h2>
+<div class="container mt-4">
+  <div class="card border-0 shadow-lg mx-auto" style="max-width: 450px; border-radius: 20px;">
+    
+    <div class="card-body p-4 text-center">
+      <h4 class="fw-bold mb-4" style="color: #2d3748;">Control de Acceso</h4>
 
-  <zxing-scanner
-    [formats]="allowedFormats"
-    (scanSuccess)="onScanSuccess($event)">
-  </zxing-scanner>
+      <!-- SECCIÓN ESCÁNER -->
+      <div *ngIf="scannerEnabled && !isProcessing">
+        <div class="scanner-container-final">
+          <zxing-scanner
+            [formats]="allowedFormats"
+            [enable]="scannerEnabled"
+            [autofocusEnabled]="true"
+            [tryHarder]="false"
+            (scanSuccess)="onScanSuccess($event)">
+          </zxing-scanner>
+        </div>
+        
+        <!-- BOTÓN DETENER: Ahora con el mismo estilo que el de siguiente -->
+        <div class="mt-4">
+          <button class="btn btn-secondary btn-lg w-100 shadow-sm custom-btn" (click)="cancelarEscaneo()">
+            <i class="fas fa-stop-circle me-2"></i>DETENER LECTURA
+          </button>
+        </div>
+      </div>
 
-  <p *ngIf="scanResult">
-    Código leído: {{ scanResult }}
-  </p>
+      <!-- PANTALLA DE CARGA -->
+      <div *ngIf="isProcessing" class="py-5">
+        <div class="spinner-grow text-primary" role="status"></div>
+        <p class="mt-3 fw-medium text-muted">Validando código...</p>
+      </div>
 
-  <p *ngIf="mensaje">
-    {{ mensaje }}
-  </p>
+      <!-- PANTALLA DE RESULTADOS -->
+      <div *ngIf="mensaje && !isProcessing" class="py-4">
+        <div class="mb-4">
+          <i class="fas" [ngClass]="tipoMensaje === 'success' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" style="font-size: 4rem;"></i>
+          <h3 class="mt-3 fw-bold">{{ mensaje }}</h3>
+        </div>
+
+        <!-- BOTÓN SIGUIENTE -->
+        <button class="btn btn-primary btn-lg w-100 shadow-sm custom-btn" (click)="resetScanner()">
+          <i class="fas fa-qrcode me-2"></i>ESCANEAR NUEVO ACCESO
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>

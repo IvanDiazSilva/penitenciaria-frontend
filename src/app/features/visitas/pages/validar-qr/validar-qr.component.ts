@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { BarcodeFormat } from '@zxing/library';
 import { VisitasService } from '../../services/visitas.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-validar-qr',
@@ -12,40 +13,58 @@ import { VisitasService } from '../../services/visitas.service';
   styleUrls: ['./validar-qr.component.scss']
 })
 export class ValidarQrComponent {
-  scanResult: string = '';
-  mensaje: string = '';
   allowedFormats = [BarcodeFormat.QR_CODE];
-  
-  // Flag para evitar múltiples llamadas al mismo QR
-  private isProcessing = false;
+  scannerEnabled = true;
+  isProcessing = false;
+  mensaje = '';
+  public tipoMensaje: 'success' | 'error' | 'info' | '' = '';
 
   constructor(private visitasService: VisitasService) {}
 
   onScanSuccess(result: string) {
-    // Si ya estamos procesando o es el mismo, no hacemos nada
-    if (this.isProcessing || this.scanResult === result) return;
+  if (this.isProcessing || !this.scannerEnabled) return;
 
-    this.scanResult = result;
-    this.isProcessing = true;
-    this.mensaje = 'Validando...';
+  this.isProcessing = true;
+  this.scannerEnabled = false;
+  this.mensaje = 'Consultando sistema...';
+  
 
-    this.visitasService.validarQr({ qr: result }).subscribe({
-      next: (res) => {
-        this.mensaje = 'Acceso concedido: ' + res.visitante;
-        this.isProcessing = false;
-        // Limpiamos tras 3 segundos para permitir escanear a otro
-        setTimeout(() => this.limpiar(), 3000);
-      },
-      error: (err) => {
-        this.mensaje = 'Error: ' + (err.error?.mensaje || 'QR no válido');
-        this.isProcessing = false;
-        setTimeout(() => this.limpiar(), 3000);
+  this.visitasService.validarQr(result).pipe(
+    finalize(() => {
+      // ESTO SE EJECUTA SIEMPRE: Detiene el estado de carga
+      this.isProcessing = false; 
+    })
+  ).subscribe({
+    next: (res) => {
+      if (res.valido) {
+        this.mensaje = '✅ ACCESO PERMITIDO: ' + (res.visitante || 'Autorizado');
+        this.tipoMensaje = 'success';
+      } else {
+        this.mensaje = '❌ ' + (res.mensaje || 'QR no válido');
+        this.tipoMensaje = 'error';
       }
-    });
-  }
+    },
+    error: (err) => {
+      // Si el interceptor añade el token pero no hay respuesta, 
+      // el timeout de arriba nos mandará aquí.
+      this.mensaje = '❌ Sin respuesta del servidor (Timeout)';
+      this.tipoMensaje = 'error';
+    }
+  });
+}
 
-  private limpiar() {
-    this.scanResult = '';
-    this.mensaje = '';
-  }
+  // Dentro de tu clase ValidarQrComponent
+public cancelarEscaneo() {
+  this.scannerEnabled = false; // Apaga la cámara
+  this.mensaje = 'Escaneo cancelado por el usuario';
+  this.tipoMensaje = 'info'; // Un color neutro
+}
+
+public resetScanner() {
+  this.mensaje = '';
+  this.tipoMensaje = '';
+  this.isProcessing = false;
+  this.scannerEnabled = true; // Vuelve a encender la cámara
+}
+  
 }

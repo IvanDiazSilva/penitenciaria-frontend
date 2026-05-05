@@ -1,0 +1,46 @@
+<p-toast></p-toast>
+
+<p-dialog
+  [header]="modoEditar ? 'Editar Incidencia' : 'Nueva Incidencia'"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '600px' }"
+  (onHide)="cerrarDialogo()">
+
+  <div class="grid-form">
+    <div class="campo">
+      <label>Tipo *</label>
+      <input pInputText [(ngModel)]="incidente.tipo" />
+    </div>
+
+    <div class="campo">
+      <label>ID Guardia *</label>
+      <input type="number" pInputText [(ngModel)]="incidente.idGuardia" />
+    </div>
+
+    <div class="campo">
+      <label>Reo</label>
+      <select [(ngModel)]="incidente.idReo" class="custom-select">
+        <option [ngValue]="null">-- Sin asignar --</option>
+        <option *ngFor="let r of reos" [value]="r.id">
+          {{ r.nombre }} {{ r.apellido }}
+        </option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Fecha *</label>
+      <input type="datetime-local" pInputText [(ngModel)]="incidente.fechaHora" />
+    </div>
+
+    <div class="campo campo-full">
+      <label>Descripción *</label>
+      <textarea [(ngModel)]="incidente.descripcion" rows="4"></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="cerrarDialogo()"></button>
+    <button pButton label="Guardar" class="btn-submit" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

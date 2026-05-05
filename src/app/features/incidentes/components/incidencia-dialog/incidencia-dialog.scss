@@ -1,0 +1,102 @@
+:host ::ng-deep .p-dialog {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+:host ::ng-deep .p-dialog-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+}
+
+:host ::ng-deep .p-dialog-content {
+  background: #ffffff;
+  padding: 1.5rem;
+}
+
+:host ::ng-deep .p-dialog-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+}
+
+:host ::ng-deep .p-dialog-mask {
+  background: rgba(0, 0, 0, 0.55) !important;
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.campo,
+.form-group,
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-full,
+.full {
+  grid-column: span 2;
+  width: 100%;
+}
+
+label {
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+:host ::ng-deep .p-inputtext,
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+:host ::ng-deep .p-inputtext:hover,
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #94a3b8;
+}
+
+:host ::ng-deep .p-inputtext:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+  background: #ffffff;
+}
+
+.custom-select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.p-error {
+  color: #ef4444;
+  font-size: 0.8rem;
+}
+
+.p-info-text {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+:host ::ng-deep .p-dialog-footer .p-button {
+  min-width: 100px;
+}

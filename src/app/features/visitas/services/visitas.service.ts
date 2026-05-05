@@ -67,4 +67,10 @@ export class VisitasService {
       }
     );
   }
+  autorizarVisita(id: number) {
+    return this.http.patch<{ mensaje: string }>(
+      `${this.apiUrl}/${id}/autorizar`,
+      {}
+    );
+  }
 }

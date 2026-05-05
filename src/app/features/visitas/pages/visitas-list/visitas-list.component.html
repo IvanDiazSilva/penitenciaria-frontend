@@ -38,22 +38,22 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let v of visitasPaginadas">
+        <tr *ngFor="let v of visitasPaginadas; trackBy: trackByVisitaId">
 
           <td><strong>#{{ v.id }}</strong></td>
 
           <td>{{ v.reo.id }}</td>
 
-          <td>{{ v.visitante.nombreCompleto || 'Sin nombre' }}</td>
+          <td>{{ v.visitante.nombreCompleto ?? 'Sin nombre' }}</td>
 
-          <td>{{ v.visitante.dniNie || '-' }}</td>
+          <td>{{ v.visitante.dniNie ?? '-' }}</td>
 
           <td>{{ v.fechaVisita | date:'dd/MM/yyyy' }}</td>
 
           <td>
             <small>
-              {{ v.horaEntrada || '--:--' }} /
-              {{ v.horaSalida || '--:--' }}
+              {{ v.horaEntrada ?? '--:--' }} /
+              {{ v.horaSalida ?? '--:--' }}
             </small>
           </td>
 
@@ -69,21 +69,29 @@
             <div class="qr-cell">
 
               <code class="qr-code">
-                {{ v.codigoQr || 'Pte. generar' }}
+                {{ v.codigoQr ?? 'Pte. generar' }}
               </code>
 
               <div class="qr-actions" *ngIf="esVisitante">
 
                 <button
-                  *ngIf="v.autorizado"
+                  *ngIf="puedeGenerarQr(v) && !v.codigoQr"
                   class="btn-generate-qr"
                   type="button"
                   (click)="generarQr(v)">
-                  {{ v.codigoQr ? 'Regenerar QR' : 'Generar QR' }}
+                  Generar QR
                 </button>
 
                 <button
-                  *ngIf="v.codigoQr"
+                  *ngIf="puedeGenerarQr(v) && !!v.codigoQr"
+                  class="btn-generate-qr"
+                  type="button"
+                  (click)="generarQr(v)">
+                  Regenerar QR
+                </button>
+
+                <button
+                  *ngIf="puedeVerQr(v)"
                   class="btn-view-qr"
                   type="button"
                   (click)="verQr(v)">
@@ -101,6 +109,15 @@
 
           <!-- ACCIONES -->
           <td class="actions" *ngIf="mostrarAccionesFlag">
+
+            <button
+              class="btn-action approve"
+              type="button"
+              title="Autorizar"
+              *ngIf="puedeAutorizarVisita(v)"
+              (click)="autorizar(v)">
+              ✅
+            </button>
 
             <button
               class="btn-action edit"
@@ -163,7 +180,7 @@
         <div>
           <h3>QR de la visita #{{ visitaSeleccionada.id }}</h3>
           <p>
-            Visitante: {{ visitaSeleccionada.visitante.nombreCompleto || 'Sin nombre' }}
+            Visitante: {{ visitaSeleccionada.visitante.nombreCompleto ?? 'Sin nombre' }}
           </p>
         </div>
 

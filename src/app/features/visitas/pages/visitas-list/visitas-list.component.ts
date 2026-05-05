@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { QRCodeComponent } from 'angularx-qrcode';
@@ -40,9 +40,12 @@ export class VisitasListComponent implements OnInit {
   qrSeleccionado: string | null = null;
   visitaSeleccionada: Visita | null = null;
 
+  autorizandoIds = new Set<number>();
+
   private visitasService = inject(VisitasService);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.rolActual = this.authService.getRol();
@@ -53,16 +56,16 @@ export class VisitasListComponent implements OnInit {
 
     this.puedeCrear = this.esVisitante;
     this.puedeAutorizar = this.esAdmin;
-    this.puedeEditarFlag = this.esAdmin;
+    this.puedeEditarFlag = false;
     this.puedeEliminarFlag = this.esAdmin;
-    this.mostrarAccionesFlag =
-      this.esVisitante || this.esAdmin || this.esGuardia;
+    this.mostrarAccionesFlag = this.esVisitante || this.esAdmin;
 
     this.obtenerVisitas();
   }
 
   obtenerVisitas(): void {
     this.loading = true;
+    this.cdr.detectChanges();
 
     const request$ = this.esVisitante
       ? this.visitasService.getMisVisitas()
@@ -70,43 +73,46 @@ export class VisitasListComponent implements OnInit {
 
     request$.subscribe({
       next: (data) => {
-        this.visitas = data ?? [];
-        this.currentPage = 1;
+        this.visitas = [...(data ?? [])];
+
+        if (this.currentPage > Math.ceil((this.visitas.length || 1) / this.itemsPerPage)) {
+          this.currentPage = 1;
+        }
+
         this.actualizarPaginacion();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar visitas:', err);
         this.visitas = [];
         this.visitasPaginadas = [];
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   actualizarPaginacion(): void {
     this.totalPages = Math.ceil(this.visitas.length / this.itemsPerPage) || 1;
-
-    this.paginas = Array.from(
-      { length: this.totalPages },
-      (_, i) => i + 1
-    );
+    this.paginas = Array.from({ length: this.totalPages }, (_, i) => i + 1);
 
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    this.visitasPaginadas = this.visitas.slice(start, start + this.itemsPerPage);
+    this.visitasPaginadas = [...this.visitas.slice(start, start + this.itemsPerPage)];
   }
 
   irAPagina(page: number): void {
     if (page < 1 || page > this.totalPages) return;
-
     this.currentPage = page;
     this.actualizarPaginacion();
+    this.cdr.detectChanges();
   }
 
   paginaAnterior(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.actualizarPaginacion();
+      this.cdr.detectChanges();
     }
   }
 
@@ -114,17 +120,13 @@ export class VisitasListComponent implements OnInit {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.actualizarPaginacion();
+      this.cdr.detectChanges();
     }
   }
 
   irANuevaVisita(): void {
     if (!this.puedeCrear) return;
     this.router.navigate(['/visitante/solicitar-visita']);
-  }
-
-  editar(visita: Visita): void {
-    if (!this.puedeEditarFlag || !visita.id) return;
-    this.router.navigate(['/visitas/editar', visita.id]);
   }
 
   eliminar(id: number): void {
@@ -140,6 +142,7 @@ export class VisitasListComponent implements OnInit {
           }
 
           this.actualizarPaginacion();
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Error al eliminar visita:', err);
@@ -151,15 +154,26 @@ export class VisitasListComponent implements OnInit {
 
   autorizar(visita: Visita): void {
     if (!this.puedeAutorizar || !visita.id || visita.autorizado) return;
+    if (this.autorizandoIds.has(visita.id)) return;
+
+    console.log('click autorizar', visita.id, visita.autorizado);
+
+    this.autorizandoIds.add(visita.id);
+    this.cdr.detectChanges();
 
     this.visitasService.autorizarVisita(visita.id).subscribe({
       next: () => {
-        visita.autorizado = true;
-        this.actualizarPaginacion();
+        this.obtenerVisitas();
       },
       error: (err) => {
         console.error('Error al autorizar visita:', err);
         alert('No se pudo autorizar la visita');
+        this.autorizandoIds.delete(visita.id!);
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.autorizandoIds.delete(visita.id!);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -171,6 +185,7 @@ export class VisitasListComponent implements OnInit {
       next: (res) => {
         visita.codigoQr = res.qr;
         this.verQr(visita);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al generar QR:', err);
@@ -181,14 +196,15 @@ export class VisitasListComponent implements OnInit {
 
   verQr(visita: Visita): void {
     if (!visita.codigoQr) return;
-
     this.visitaSeleccionada = visita;
     this.qrSeleccionado = visita.codigoQr;
+    this.cdr.detectChanges();
   }
 
   cerrarQr(): void {
     this.visitaSeleccionada = null;
     this.qrSeleccionado = null;
+    this.cdr.detectChanges();
   }
 
   puedeGenerarQr(visita: Visita): boolean {

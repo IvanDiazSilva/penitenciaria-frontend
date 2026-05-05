@@ -24,6 +24,10 @@ export class VisitasFormComponent implements OnInit {
 
   nombreVisitante = 'Visitante autenticado';
   reos: Reo[] = [];
+
+  reosFiltrados: Reo[] = []; // <--- Nueva lista para el buscador
+  terminoBusqueda: string = ''; // <--- Lo que escribe el usuario
+
   cargandoReos = false;
   guardando = false;
 
@@ -46,6 +50,7 @@ export class VisitasFormComponent implements OnInit {
     this.reoService.obtener_todos().subscribe({
       next: (data: Reo[]) => {
         this.reos = data ?? [];
+        this.reosFiltrados = []; // Empezamos vacío para que no cargue todo de golpe
         this.cargandoReos = false;
       },
       error: (err: any) => {
@@ -54,6 +59,26 @@ export class VisitasFormComponent implements OnInit {
         alert('No se pudieron cargar los internos disponibles');
       }
     });
+  }
+
+  buscarReo(): void {
+    const busqueda = this.terminoBusqueda.toLowerCase().trim();
+    
+    if (busqueda.length < 2) {
+      this.reosFiltrados = []; // No buscamos hasta que escriba al menos 2 letras
+      return;
+    }
+
+    this.reosFiltrados = this.reos.filter(reo => 
+      reo.nombre.toLowerCase().includes(busqueda) || 
+      reo.dni.toLowerCase().includes(busqueda)
+    ).slice(0, 10); // Limitamos a 10 resultados para que sea ultra rápido
+  }
+
+  seleccionarReo(reo: Reo): void {
+    this.nuevaVisita.reoId = reo.id;
+    this.terminoBusqueda = `${reo.nombre} (${reo.dni})`;
+    this.reosFiltrados = []; // Cerramos la lista de sugerencias
   }
 
   guardar(): void {

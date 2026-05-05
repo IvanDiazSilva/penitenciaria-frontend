@@ -19,27 +19,39 @@
     </div>
 
     <div class="form-group">
-      <label for="reoId">Interno a visitar:</label>
-      <select
-        id="reoId"
-        name="reoId"
-        [(ngModel)]="nuevaVisita.reoId"
-        required
-        class="form-control"
-        [disabled]="cargandoReos || guardando">
-        <option [ngValue]="0" disabled>Selecciona un interno</option>
-        <option *ngFor="let reo of reos" [ngValue]="reo.id">
-          {{ reo.nombre }} - {{ reo.dni }}
-        </option>
-      </select>
+      <label for="buscadorReo">Interno a visitar (Nombre o DNI):</label>
+      
+      <div class="search-container" style="position: relative;">
+        <input
+          type="text"
+          id="buscadorReo"
+          name="terminoBusqueda"
+          [(ngModel)]="terminoBusqueda"
+          (input)="buscarReo()"
+          class="form-control"
+          placeholder="Escriba para buscar..."
+          autocomplete="off"
+          [disabled]="cargandoReos || guardando">
 
-      <p class="form-help" *ngIf="!cargandoReos">
-        Selecciona el interno al que deseas visitar.
+        <!-- Lista de resultados sugeridos -->
+        <ul *ngIf="reosFiltrados.length > 0" class="search-results-dropdown">
+          <li *ngFor="let reo of reosFiltrados" (click)="seleccionarReo(reo)">
+            <strong>{{ reo.nombre }}</strong> <small style="color: #64748b;">- {{ reo.dni }}</small>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Mensaje de éxito al seleccionar -->
+      <p class="form-help" *ngIf="nuevaVisita.reoId > 0" style="color: #10b981; font-weight: 500;">
+        <i class="pi pi-check"></i> Seleccionado: {{ terminoBusqueda }}
       </p>
 
       <p class="form-help" *ngIf="cargandoReos">
-        Cargando internos disponibles...
+        Sincronizando base de datos de internos...
       </p>
+      
+      <!-- Validación oculta para que el botón de enviar funcione -->
+      <input type="hidden" name="reoIdValid" [(ngModel)]="nuevaVisita.reoId">      <!-- HASTA AQUÍ -->
     </div>
 
     <div class="form-group">
@@ -78,11 +90,11 @@
 
     <div class="form-actions">
       <button
-        type="submit"
-        [disabled]="!visitaForm.form.valid || cargandoReos || guardando"
-        class="btn-save">
-        {{ guardando ? 'Enviando...' : 'Enviar solicitud' }}
-      </button>
+  type="submit"
+  [disabled]="!visitaForm.form.valid || nuevaVisita.reoId <= 0 || cargandoReos || guardando"
+  class="btn-save">
+  {{ guardando ? 'Enviando...' : 'Enviar solicitud' }}
+</button>
 
       <button
         type="button"

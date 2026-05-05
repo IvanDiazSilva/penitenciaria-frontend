@@ -141,3 +141,75 @@ label {
     width: 100%;
   }
 }
+.search-container {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-height: 200px;
+  overflow-y: auto;
+
+  li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+}
+/* El contenedor de los resultados */
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #cbd5e1; /* Color igual a tus inputs */
+  border-radius: 10px;        /* Redondeado igual a tus inputs */
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+
+  li {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: #334155;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: #f8fafc; /* Gris clarito al pasar el ratón */
+      color: #2563eb;           /* Azul de tu botón guardar */
+    }
+
+    strong {
+      display: block; /* Nombre arriba */
+    }
+
+    small {
+      color: #64748b; /* DNI más discreto abajo */
+    }
+  }
+}

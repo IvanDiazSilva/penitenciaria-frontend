@@ -68,7 +68,7 @@ export class IncidenciaListComponent implements OnInit {
     if (id) {
       this.router.navigate(['/incidencias/editar', id]);
     } else {
-      this.router.navigate(['/incidencias/nuevo']);
+      this.router.navigate(['/incidentes/nuevo']);
     }
   }
 

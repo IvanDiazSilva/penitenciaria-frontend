@@ -50,8 +50,8 @@
         Sincronizando base de datos de internos...
       </p>
       
-      <!-- Validación oculta para que el botón de enviar funcione -->
-      <input type="hidden" name="reoIdValid" [(ngModel)]="nuevaVisita.reoId">      <!-- HASTA AQUÍ -->
+      <!-- Validación oculta SIN required -->
+      <input type="hidden" name="reoIdValid" [(ngModel)]="nuevaVisita.reoId">
     </div>
 
     <div class="form-group">
@@ -90,11 +90,11 @@
 
     <div class="form-actions">
       <button
-  type="submit"
-  [disabled]="!visitaForm.form.valid || nuevaVisita.reoId <= 0 || cargandoReos || guardando"
-  class="btn-save">
-  {{ guardando ? 'Enviando...' : 'Enviar solicitud' }}
-</button>
+        type="submit"
+        [disabled]="!visitaForm.form.valid || nuevaVisita.reoId <= 0 || cargandoReos || guardando"
+        class="btn-save">
+        {{ guardando ? 'Enviando...' : 'Enviar solicitud' }}
+      </button>
 
       <button
         type="button"

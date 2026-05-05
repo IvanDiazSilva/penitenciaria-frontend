@@ -1,4 +1,5 @@
 <div class="list-container">
+
   <div class="list-header">
     <h2>{{ esVisitante ? 'Mis visitas' : 'Historial de visitas' }}</h2>
 
@@ -6,18 +7,22 @@
       class="btn-add"
       type="button"
       (click)="irANuevaVisita()"
-      *ngIf="puedeCrearVisita()">
+      *ngIf="puedeCrear">
       <span class="icon">+</span>
       {{ esVisitante ? 'Nueva solicitud' : 'Nueva visita' }}
     </button>
   </div>
 
+  <!-- LOADING -->
   <div *ngIf="loading" class="loading-box">
     <p>Consultando base de datos...</p>
   </div>
 
+  <!-- TABLA -->
   <div class="table-responsive" *ngIf="!loading">
+
     <table class="visitas-table" *ngIf="visitas.length > 0; else emptyState">
+
       <thead>
         <tr>
           <th>ID</th>
@@ -28,34 +33,47 @@
           <th>Entrada/Salida</th>
           <th>Estado</th>
           <th>Código QR</th>
-          <th *ngIf="mostrarAcciones()">Acciones</th>
+          <th *ngIf="mostrarAccionesFlag">Acciones</th>
         </tr>
       </thead>
 
       <tbody>
         <tr *ngFor="let v of visitasPaginadas">
+
           <td><strong>#{{ v.id }}</strong></td>
+
           <td>{{ v.reo.id }}</td>
+
           <td>{{ v.visitante.nombreCompleto || 'Sin nombre' }}</td>
+
           <td>{{ v.visitante.dniNie || '-' }}</td>
+
           <td>{{ v.fechaVisita | date:'dd/MM/yyyy' }}</td>
+
           <td>
-            <small>{{ v.horaEntrada || '--:--' }} / {{ v.horaSalida || '--:--' }}</small>
+            <small>
+              {{ v.horaEntrada || '--:--' }} /
+              {{ v.horaSalida || '--:--' }}
+            </small>
           </td>
 
+          <!-- ESTADO -->
           <td>
             <span [ngClass]="v.autorizado ? 'badge-success' : 'badge-pending'">
               {{ v.autorizado ? 'Autorizado' : 'Pendiente' }}
             </span>
           </td>
 
+          <!-- QR -->
           <td>
             <div class="qr-cell">
+
               <code class="qr-code">
                 {{ v.codigoQr || 'Pte. generar' }}
               </code>
 
               <div class="qr-actions" *ngIf="esVisitante">
+
                 <button
                   *ngIf="v.autorizado"
                   class="btn-generate-qr"
@@ -71,21 +89,25 @@
                   (click)="verQr(v)">
                   Ver QR
                 </button>
+
               </div>
 
               <small *ngIf="esVisitante && !v.autorizado" class="qr-help">
                 Disponible cuando la visita sea autorizada
               </small>
+
             </div>
           </td>
 
-          <td class="actions" *ngIf="mostrarAcciones()">
+          <!-- ACCIONES -->
+          <td class="actions" *ngIf="mostrarAccionesFlag">
+
             <button
               class="btn-action edit"
               type="button"
               (click)="editar(v)"
               title="Editar"
-              *ngIf="puedeEditar(v)">
+              *ngIf="puedeEditarFlag">
               ✏️
             </button>
 
@@ -94,15 +116,19 @@
               type="button"
               (click)="eliminar(v.id!)"
               title="Eliminar"
-              *ngIf="puedeEliminar()">
+              *ngIf="puedeEliminarFlag">
               🗑️
             </button>
+
           </td>
+
         </tr>
       </tbody>
     </table>
 
+    <!-- PAGINACIÓN -->
     <div class="pagination" *ngIf="visitas.length > itemsPerPage">
+
       <button
         type="button"
         class="page-btn"
@@ -127,9 +153,12 @@
         [disabled]="currentPage === totalPages">
         Siguiente
       </button>
+
     </div>
 
+    <!-- VISOR QR -->
     <div class="qr-viewer" *ngIf="qrSeleccionado && visitaSeleccionada">
+
       <div class="qr-viewer-header">
         <div>
           <h3>QR de la visita #{{ visitaSeleccionada.id }}</h3>
@@ -148,17 +177,20 @@
 
       <div class="qr-viewer-body">
         <qrcode
-          *ngIf="qrSeleccionado"
           [qrdata]="qrSeleccionado"
           [width]="220"
           [errorCorrectionLevel]="'M'"
           [elementType]="'canvas'">
         </qrcode>
 
-        <code class="qr-selected-code">{{ qrSeleccionado }}</code>
+        <code class="qr-selected-code">
+          {{ qrSeleccionado }}
+        </code>
       </div>
+
     </div>
 
+    <!-- EMPTY -->
     <ng-template #emptyState>
       <div class="empty-state">
         <p>
@@ -168,5 +200,6 @@
         </p>
       </div>
     </ng-template>
+
   </div>
 </div>

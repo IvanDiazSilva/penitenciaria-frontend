@@ -14,15 +14,28 @@ import { AuthService } from '../../../../core/auth/services/auth.service';
   styleUrls: ['./visitas-list.component.scss']
 })
 export class VisitasListComponent implements OnInit {
+
   visitas: Visita[] = [];
+  visitasPaginadas: Visita[] = [];
+
   loading = true;
 
   esVisitante = false;
   rolActual: string | null = null;
 
+  // 🔥 FLAGS PRECALCULADOS
+  puedeCrear = false;
+  puedeEditarFlag = false;
+  puedeEliminarFlag = false;
+  mostrarAccionesFlag = false;
+
+  // 📄 PAGINACIÓN
   currentPage = 1;
   itemsPerPage = 5;
+  totalPages = 1;
+  paginas: number[] = [];
 
+  // 🔳 QR
   qrSeleccionado: string | null = null;
   visitaSeleccionada: Visita | null = null;
 
@@ -33,6 +46,12 @@ export class VisitasListComponent implements OnInit {
   ngOnInit(): void {
     this.rolActual = this.authService.getRol();
     this.esVisitante = this.rolActual === 'VISITANTE';
+
+    // 🔥 FLAGS (NO funciones en HTML)
+    this.puedeCrear = ['ADMIN', 'GUARDIA', 'VISITANTE'].includes(this.rolActual || '');
+    this.puedeEditarFlag = ['ADMIN', 'GUARDIA'].includes(this.rolActual || '');
+    this.puedeEliminarFlag = this.rolActual === 'ADMIN';
+    this.mostrarAccionesFlag = this.puedeEditarFlag || this.puedeEliminarFlag;
 
     this.obtenerVisitas();
   }
@@ -46,9 +65,11 @@ export class VisitasListComponent implements OnInit {
 
     request$.subscribe({
       next: (data) => {
-        console.log('Datos recibidos de la API:', data);
         this.visitas = data;
         this.currentPage = 1;
+
+        this.actualizarPaginacion();
+
         this.loading = false;
       },
       error: (err) => {
@@ -58,70 +79,80 @@ export class VisitasListComponent implements OnInit {
     });
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.visitas.length / this.itemsPerPage) || 1;
-  }
+  // 📄 PAGINACIÓN OPTIMIZADA
+  actualizarPaginacion(): void {
+    this.totalPages = Math.ceil(this.visitas.length / this.itemsPerPage) || 1;
 
-  get paginas(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
+    this.paginas = Array.from({ length: this.totalPages }, (_, i) => i + 1);
 
-  get visitasPaginadas(): Visita[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.visitas.slice(start, end);
+    this.visitasPaginadas = this.visitas.slice(start, start + this.itemsPerPage);
   }
 
   irAPagina(page: number): void {
-    if (page < 1 || page > this.totalPages) {
-      return;
-    }
+    if (page < 1 || page > this.totalPages) return;
 
     this.currentPage = page;
+    this.actualizarPaginacion();
   }
 
   paginaAnterior(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.actualizarPaginacion();
     }
   }
 
   paginaSiguiente(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.actualizarPaginacion();
     }
   }
 
+  // ➕ CREAR
   irANuevaVisita(): void {
     if (this.esVisitante) {
       this.router.navigate(['/visitante/solicitar-visita']);
-      return;
+    } else {
+      this.router.navigate(['/visitas/nueva']);
     }
-
-    this.router.navigate(['/visitas/nueva']);
   }
 
-  generarQr(visita: Visita): void {
-    if (!visita.id || !this.esVisitante || !visita.autorizado) {
-      return;
+  // ✏️ EDITAR
+  editar(visita: Visita): void {
+    if (!this.puedeEditarFlag || !visita.id) return;
+
+    this.router.navigate(['/visitas/editar', visita.id]);
+  }
+
+  // ❌ ELIMINAR
+  eliminar(id: number): void {
+    if (!this.puedeEliminarFlag) return;
+
+    if (confirm('¿Eliminar esta visita?')) {
+      this.visitasService.deleteVisita(id).subscribe({
+        next: () => this.obtenerVisitas(),
+        error: () => alert('No se pudo eliminar')
+      });
     }
+  }
+
+  // 🔳 QR
+  generarQr(visita: Visita): void {
+    if (!visita.id || !this.esVisitante || !visita.autorizado) return;
 
     this.visitasService.generarQr(visita.id).subscribe({
       next: (res) => {
         visita.codigoQr = res.qr;
         this.verQr(visita);
       },
-      error: (err) => {
-        console.error('Error al generar QR:', err);
-        alert('No se pudo generar el QR');
-      }
+      error: () => alert('No se pudo generar el QR')
     });
   }
 
   verQr(visita: Visita): void {
-    if (!visita.codigoQr) {
-      return;
-    }
+    if (!visita.codigoQr) return;
 
     this.visitaSeleccionada = visita;
     this.qrSeleccionado = visita.codigoQr;
@@ -130,47 +161,5 @@ export class VisitasListComponent implements OnInit {
   cerrarQr(): void {
     this.visitaSeleccionada = null;
     this.qrSeleccionado = null;
-  }
-
-  eliminar(id: number): void {
-    if (!this.puedeEliminar()) {
-      return;
-    }
-
-    if (confirm('¿Estás seguro de que deseas eliminar esta solicitud de visita?')) {
-      this.visitasService.deleteVisita(id).subscribe({
-        next: () => {
-          this.obtenerVisitas();
-        },
-        error: (err) => {
-          console.error('No se pudo eliminar la visita', err);
-          alert('No se pudo eliminar la visita');
-        }
-      });
-    }
-  }
-
-  editar(visita: Visita): void {
-    if (!this.puedeEditar(visita) || !visita.id) {
-    this.router.navigate(['/visitas/editar', visita.id]);
-  }
-
-  mostrarAcciones(): boolean {
-  }
-
-  puedeCrearVisita(): boolean {
-    return (
-      this.rolActual === 'ADMIN' ||
-      this.rolActual === 'GUARDIA' ||
-      this.rolActual === 'VISITANTE'
-    );
-  }
-
-  puedeEditar(_visita: Visita): boolean {
-    return this.rolActual === 'ADMIN' || this.rolActual === 'GUARDIA';
-  }
-
-  puedeEliminar(): boolean {
-    return this.rolActual === 'ADMIN';
   }
 }

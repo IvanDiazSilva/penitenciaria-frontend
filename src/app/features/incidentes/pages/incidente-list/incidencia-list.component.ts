@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IncidenciasService } from '../../service/incidencias.service';
 import { IncidenciaDialogComponent } from '../../components/incidencia-dialog/incidencia-dialog';
@@ -23,6 +23,7 @@ import { CardModule } from 'primeng/card';
   styleUrls: ['./incidencia-list.component.scss']
 })
 export class IncidenciasListComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private incidenciasService = inject(IncidenciasService);
 
   incidencias: any[] = [];
@@ -43,10 +44,12 @@ export class IncidenciasListComponent implements OnInit {
         this.incidencias = data;
         this.incidenciasFiltradas = [...data];
         this.loading = false;
+        this.cdr.detectChanges(); // ← AÑADE ESTO
       },
       error: (err) => {
         console.error('Error al cargar incidencias:', err);
         this.loading = false;
+        this.cdr.detectChanges(); // ← AÑADE ESTO
       }
     });
   }

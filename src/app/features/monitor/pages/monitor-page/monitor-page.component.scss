@@ -1,35 +1,36 @@
 :host {
   display: block;
+  width: 100%;
 }
 
 .monitor-page {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  background-color: #f8fafc;
-  min-height: 100vh;
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100%;
 }
 
 .monitor-page__header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
+}
 
-  h1 {
-    margin: 0 0 0.35rem;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #0f172a;
-  }
+.monitor-page__intro h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
 
-  p {
-    margin: 0;
-    color: #475569;
-    max-width: 760px;
-  }
+.monitor-page__subtitle {
+  margin: 0.4rem 0 0;
+  color: #64748b;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  max-width: 700px;
 }
 
 .monitor-page__actions {
@@ -38,30 +39,63 @@
   flex-wrap: wrap;
 }
 
-button {
-  min-height: 44px;
-  padding: 0.75rem 1rem;
-  border: none;
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
   border-radius: 10px;
-  background: #2563eb;
-  color: #ffffff;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  border: none;
 }
 
-button:hover {
+.btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
   background: #1d4ed8;
 }
 
-button:active {
-  transform: translateY(1px);
+.btn-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #dbe3ee;
 }
 
-button:disabled {
-  background: #94a3b8;
+.btn-secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+.monitor-page__loading {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.monitor-page__section {
+  margin-bottom: 1.5rem;
+}
+
+.monitor-page__section:last-child {
+  margin-bottom: 0;
 }
 
 @media (max-width: 768px) {
@@ -69,16 +103,16 @@ button:disabled {
     padding: 1rem;
   }
 
-  .monitor-page__header {
-    flex-direction: column;
-    align-items: stretch;
+  .monitor-page__intro h1 {
+    font-size: 1.6rem;
   }
 
   .monitor-page__actions {
     width: 100%;
   }
 
-  .monitor-page__actions button {
-    flex: 1 1 auto;
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
   }
 }

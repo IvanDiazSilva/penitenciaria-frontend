@@ -1,8 +1,8 @@
 <section class="monitor-page">
   <div class="monitor-page__header">
-    <div>
+    <div class="monitor-page__intro">
       <h1>Monitor</h1>
-      <p>
+      <p class="monitor-page__subtitle">
         Consulta el estado general del centro y las visitas del día.
       </p>
     </div>
@@ -10,6 +10,7 @@
     <div class="monitor-page__actions">
       <button
         type="button"
+        class="btn-secondary"
         (click)="recargarTodo()"
         [disabled]="loadingStats || loadingVisitasHoy">
         Recargar datos
@@ -17,6 +18,7 @@
 
       <button
         type="button"
+        class="btn-primary"
         (click)="descargarPdf()"
         [disabled]="downloadingPdf">
         {{ downloadingPdf ? 'Generando PDF...' : 'Descargar informe PDF' }}
@@ -30,15 +32,19 @@
     Cargando información del monitor...
   </div>
 
-  <app-monitor-stats
-    [stats]="stats"
-    [loading]="loadingStats"
-    [errorMessage]="errorStats">
-  </app-monitor-stats>
+  <div class="monitor-page__section">
+    <app-monitor-stats
+      [stats]="stats"
+      [loading]="loadingStats"
+      [errorMessage]="errorStats">
+    </app-monitor-stats>
+  </div>
 
-  <app-monitor-visitas-hoy
-    [visitasHoy]="visitasHoy"
-    [loading]="loadingVisitasHoy"
-    [errorMessage]="errorVisitasHoy">
-  </app-monitor-visitas-hoy>
+  <div class="monitor-page__section">
+    <app-monitor-visitas-hoy
+      [visitasHoy]="visitasHoy"
+      [loading]="loadingVisitasHoy"
+      [errorMessage]="errorVisitasHoy">
+    </app-monitor-visitas-hoy>
+  </div>
 </section>

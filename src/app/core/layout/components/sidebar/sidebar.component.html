@@ -1,63 +1,36 @@
 <nav class="sidebar-nav">
-  <!-- ADMIN -->
-  <a
-    routerLink="/monitor"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
+  <a routerLink="/monitor" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
     *ngIf="canAccess(['ADMIN'])">
     Monitor
   </a>
 
-  <a
-    routerLink="/reos"
-    routerLinkActive="active"
-    *ngIf="canAccess(['ADMIN'])">
+  <a routerLink="/reos" routerLinkActive="active" *ngIf="canAccess(['ADMIN'])">
     Reos
   </a>
 
-  <a
-    routerLink="/validacion-visitante"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN'])">
+  <a routerLink="/validacion-visitante" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Validación visitantes
   </a>
 
-  <!-- ADMIN / GUARDIA -->
-  <a
-    routerLink="/visitas"
-    routerLinkActive="active"
-    *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
+  <a routerLink="/visitas" routerLinkActive="active" *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Visitas
   </a>
 
-  <a
-    routerLink="/incidentes"
-    routerLinkActive="active"
-    *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
+  <a routerLink="/incidentes" routerLinkActive="active" *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Incidencias
   </a>
 
-  <a
-    routerLink="/validar-qr"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
+  <a routerLink="/validar-qr" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
     *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Acceso QR
   </a>
 
-  <!-- VISITANTE -->
-  <a
-    routerLink="/visitante/mis-visitas"
-    routerLinkActive="active"
-    *ngIf="canAccess(['VISITANTE'])">
+  <a routerLink="/visitante/mis-visitas" routerLinkActive="active" *ngIf="canAccess(['VISITANTE'])">
     Mis visitas
   </a>
 
-  <a
-    routerLink="/visitante/solicitar-visita"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
+  <a routerLink="/visitante/solicitar-visita" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
     *ngIf="canAccess(['VISITANTE'])">
     Solicitar visita
   </a>

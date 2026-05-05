@@ -1,90 +1,78 @@
-<div class="formulario-wrapper">
+<div class="list-container">
+  <div class="list-header">
+    <div>
+      <h2>Listado de reos</h2>
+      <p class="list-subtitle">Gestión de internos y expedientes activos.</p>
+    </div>
 
-  <div class="hero-formulario">
-    <h1>Listado de Reos</h1>
-    <p>Gestión de internos y expedientes activos.</p>
-  </div>
-
-  <p-card>
-
-    <!-- HEADER -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="margin:0">Expedientes</h2>
-
-      <!-- 🔥 BOTÓN NUEVO -->
-      <button 
-        pButton 
-        label="Añadir Reo" 
-        icon="pi pi-plus" 
-        class="btn-submit"
+    <div class="header-actions">
+      <button
+        class="btn-add"
+        type="button"
         (click)="abrirNuevo()">
+        <span class="icon">+</span>
+        Añadir reo
       </button>
     </div>
+  </div>
 
-    <!-- 🔍 BUSCADOR -->
-    <div style="margin-bottom: 25px; max-width: 400px;">
-      <div class="search-box-custom" style="position: relative;">
-        <i class="pi pi-search" style="position: absolute; left: 12px; top: 10px;"></i>
-
-        <input 
-          type="text"
-          pInputText
-          placeholder="Buscar por ID, nombre o DNI"
-          style="padding-left: 35px;"
-          (input)="filtrarReclusos($event)" />
-      </div>
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        placeholder="Buscar por ID, nombre o DNI"
+        (input)="filtrarReclusos($event)" />
     </div>
+  </div>
 
-    <!-- TABLA -->
-    <p-table [value]="reosFiltrados" [rows]="10" [paginator]="true">
-
-      <ng-template pTemplate="header">
+  <div class="table-responsive">
+    <table class="visitas-table" *ngIf="reosFiltrados.length > 0; else emptyState">
+      <thead>
         <tr>
           <th>ID</th>
-          <th>Nombre</th>
+          <th>Nombre completo</th>
           <th>DNI</th>
           <th>Delito</th>
-          <th style="text-align: center;">Acciones</th>
+          <th class="text-center">Acciones</th>
         </tr>
-      </ng-template>
+      </thead>
 
-      <ng-template pTemplate="body" let-item>
-        <tr>
-          <td>#{{ item.id }}</td>
+      <tbody>
+        <tr *ngFor="let item of reosFiltrados">
+          <td><strong>#{{ item.id }}</strong></td>
           <td>{{ item.nombre }} {{ item.apellido }}</td>
           <td>{{ item.dni }}</td>
           <td>{{ item.delito }}</td>
-          <td>
-            <div style="display: flex; justify-content: center; gap: 8px;">
-              
-              <!-- EDITAR -->
-              <button 
-                pButton 
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-warning"
-                (click)="editarReo(item)">
-              </button>
+          <td class="actions actions-center">
+            <button
+              class="btn-action edit"
+              type="button"
+              title="Editar"
+              (click)="editarReo(item)">
+              ✏️
+            </button>
 
-              <!-- ELIMINAR -->
-              <button 
-                pButton 
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-text p-button-danger"
-                (click)="confirmarEliminar(item)">
-              </button>
-
-            </div>
+            <button
+              class="btn-action delete"
+              type="button"
+              title="Eliminar"
+              (click)="confirmarEliminar(item)">
+              🗑️
+            </button>
           </td>
         </tr>
-      </ng-template>
+      </tbody>
+    </table>
 
-    </p-table>
-
-  </p-card>
-
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <p>No se encontraron reos registrados.</p>
+      </div>
+    </ng-template>
+  </div>
 </div>
 
-<!-- 🔥 DIALOG -->
 <app-reo-dialog
   [visible]="dialogVisible"
   [reoId]="reoSeleccionadoId"

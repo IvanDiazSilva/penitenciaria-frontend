@@ -1,37 +1,34 @@
-<div class="formulario-wrapper">
-  <div class="hero-formulario">
-    <h1>Listado de Incidencias</h1>
-    <p>Gestión de incidencias registradas en el sistema.</p>
-  </div>
+<div class="list-container">
+  <div class="list-header">
+    <div>
+      <h2>Listado de incidencias</h2>
+      <p class="list-subtitle">Gestión de incidencias registradas en el sistema.</p>
+    </div>
 
-  <p-card>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="margin:0">Incidencias</h2>
-
+    <div class="header-actions">
       <button
-        pButton
-        label="Nueva incidencia"
-        icon="pi pi-plus"
-        class="btn-submit"
+        class="btn-add"
         type="button"
         (click)="abrirDialog()">
+        <span class="icon">+</span>
+        Nueva incidencia
       </button>
     </div>
+  </div>
 
-    <div style="margin-bottom: 25px; max-width: 400px;">
-      <div class="search-box-custom" style="position: relative;">
-        <i class="pi pi-search" style="position: absolute; left: 12px; top: 10px;"></i>
-        <input
-          type="text"
-          pInputText
-          placeholder="Buscar por ID, tipo, descripción o reo"
-          style="padding-left: 35px;"
-          (input)="filtrarIncidencias($event)" />
-      </div>
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        placeholder="Buscar por ID, tipo, descripción o reo"
+        (input)="filtrarIncidencias($event)" />
     </div>
+  </div>
 
-    <p-table [value]="incidenciasFiltradas" [rows]="10" [paginator]="true">
-      <ng-template pTemplate="header">
+  <div class="table-responsive">
+    <table class="visitas-table" *ngIf="incidenciasFiltradas.length > 0; else emptyState">
+      <thead>
         <tr>
           <th>ID</th>
           <th>Tipo</th>
@@ -39,41 +36,47 @@
           <th>Fecha</th>
           <th>Reo</th>
           <th>Guardia</th>
-          <th style="text-align: center;">Acciones</th>
+          <th class="text-center">Acciones</th>
         </tr>
-      </ng-template>
+      </thead>
 
-      <ng-template pTemplate="body" let-inc>
-        <tr>
-          <td>#{{ inc.id }}</td>
-          <td>{{ inc.tipo }}</td>
-          <td>{{ inc.descripcion }}</td>
+      <tbody>
+        <tr *ngFor="let inc of incidenciasFiltradas">
+          <td><strong>#{{ inc.id }}</strong></td>
+          <td>
+            <span class="badge-pending">{{ inc.tipo }}</span>
+          </td>
+          <td class="description-cell">{{ inc.descripcion }}</td>
           <td>{{ inc.fechaHora | date:'dd/MM/yyyy HH:mm' }}</td>
           <td>{{ inc.reo?.nombre }} {{ inc.reo?.apellido }}</td>
           <td>ID: {{ inc.guardia?.id }}</td>
-          <td>
-            <div style="display: flex; justify-content: center; gap: 8px;">
-              <button
-                pButton
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-warning"
-                type="button"
-                (click)="editar(inc)">
-              </button>
+          <td class="actions actions-center">
+            <button
+              class="btn-action edit"
+              type="button"
+              title="Editar"
+              (click)="editar(inc)">
+              ✏️
+            </button>
 
-              <button
-                pButton
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-text p-button-danger"
-                type="button"
-                (click)="eliminar(inc.id)">
-              </button>
-            </div>
+            <button
+              class="btn-action delete"
+              type="button"
+              title="Eliminar"
+              (click)="eliminar(inc.id)">
+              🗑️
+            </button>
           </td>
         </tr>
-      </ng-template>
-    </p-table>
-  </p-card>
+      </tbody>
+    </table>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <p>No se encontraron incidencias registradas.</p>
+      </div>
+    </ng-template>
+  </div>
 </div>
 
 <app-incidencia-dialog

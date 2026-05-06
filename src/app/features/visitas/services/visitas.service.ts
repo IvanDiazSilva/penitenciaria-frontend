@@ -59,11 +59,9 @@ export class VisitasService {
    * Método corregido: 
    * Recibe un string, pero envía un objeto JSON al backend.
    */
-  validarQr(qrCode: string): Observable<ValidarQrResponse> {
-  return this.http.post<ValidarQrResponse>(`${this.apiUrl}/validar-qr`, { qr: qrCode })
-    .pipe(
-      timeout(5000), // Si tarda más de 5s, salta al bloque error
-      catchError(err => throwError(() => err))
-    );
+  validarQr(qrCode: string): Observable<any> {
+  // El nombre de la propiedad "qr" debe ser igual al que buscas en Java con body.get("qr")
+  const payload = { qr: qrCode }; 
+  return this.http.post(`${this.apiUrl}/validar-qr`, payload);
 }
 }

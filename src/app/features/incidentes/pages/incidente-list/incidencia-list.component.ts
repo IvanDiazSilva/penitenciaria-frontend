@@ -1,86 +1,91 @@
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { IncidenciasService } from '../../service/incidencias.service';
+import { IncidenciaDialogComponent } from '../../components/incidencia-dialog/incidencia-dialog';
+
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-import { Incidente } from '../../models/incidente.models';
-import { IncidenciasService } from '../../service/incidencias.service';
+import { CardModule } from 'primeng/card';
 
 @Component({
-  selector: 'app-incidencia-list',
+  selector: 'app-incidencias-list',
   standalone: true,
   imports: [
-    CommonModule, RouterModule, TableModule, ButtonModule, 
-    CardModule, InputTextModule
+    CommonModule,
+    IncidenciaDialogComponent,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    CardModule
   ],
   templateUrl: './incidencia-list.component.html',
-  styleUrl: './incidencia-list.component.scss'
+  styleUrls: ['./incidencia-list.component.scss']
 })
-export class IncidenciaListComponent implements OnInit {
-  incidentes: Incidente[] = [];
-  incidentesFiltrados: Incidente[] = [];
-  loading: boolean = false;
+export class IncidenciasListComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
+  private incidenciasService = inject(IncidenciasService);
 
-  constructor(
-    private incidenciaService: IncidenciasService,
-    private cd: ChangeDetectorRef, // Usamos la misma técnica que en Reos
-    private router: Router
-  ) {}
+  incidencias: any[] = [];
+  incidenciasFiltradas: any[] = [];
+  loading = true;
+
+  dialogVisible = false;
+  incidenciaSeleccionada: any = null;
 
   ngOnInit(): void {
-    this.cargarDatos();
+    this.obtenerIncidencias();
   }
 
-  cargarDatos(): void {
+  obtenerIncidencias(): void {
     this.loading = true;
-    this.incidenciaService.obtener_todos().subscribe({
+    this.incidenciasService.obtener_todos().subscribe({
       next: (data) => {
-        this.incidentes = data;
-        this.incidentesFiltrados = data; // Igualamos para que la tabla no nazca vacía
-        
+        this.incidencias = data;
+        this.incidenciasFiltradas = [...data];
         this.loading = false;
-        this.cd.detectChanges(); // Forzamos la detección de cambios como en Reos
-        console.log('Incidencias cargadas:', this.incidentesFiltrados);
+        this.cdr.detectChanges(); // ← AÑADE ESTO
       },
       error: (err) => {
-        console.error('Error al conectar:', err.message);
+        console.error('Error al cargar incidencias:', err);
         this.loading = false;
+        this.cdr.detectChanges(); // ← AÑADE ESTO
       }
     });
   }
 
-  filtrar(event: any): void {
-    const valor = event.target.value.toLowerCase().trim();
-    if (!valor) {
-      this.incidentesFiltrados = [...this.incidentes];
-      return;
-    }
-    this.incidentesFiltrados = this.incidentes.filter(i => 
-      i.tipo.toLowerCase().includes(valor) || 
-      i.descripcion.toLowerCase().includes(valor) ||
-      i.id?.toString().includes(valor)
-    );
+  abrirDialog(): void {
+    this.incidenciaSeleccionada = null;
+    this.dialogVisible = true;
   }
 
-  irAFormulario(id?: number): void {
-    if (id) {
-      this.router.navigate(['/incidencias/editar', id]);
-    } else {
-      this.router.navigate(['/incidentes/nuevo']);
-    }
+  editar(inc: any): void {
+    this.incidenciaSeleccionada = inc;
+    this.dialogVisible = true;
   }
 
-  confirmarEliminar(incidente: any) {
-    if (confirm(`¿Eliminar reporte #${incidente.id}?`)) {
-      this.incidenciaService.baja_incidente(incidente.id).subscribe({
-        next: () => {
-          this.cargarDatos();
-          alert('Eliminado correctamente');
-        },
-        error: (err) => alert(err.message)
+  eliminar(id: number): void {
+    if (confirm('¿Seguro que quieres eliminar esta incidencia?')) {
+      this.incidenciasService.baja_incidente(id).subscribe({
+        next: () => this.obtenerIncidencias(),
+        error: (err) => {
+          console.error('Error al eliminar:', err);
+          alert('No se pudo eliminar la incidencia');
+        }
       });
     }
+  }
+
+  recargar(): void {
+    this.obtenerIncidencias();
+  }
+
+  filtrarIncidencias(event: Event): void {
+    const valor = (event.target as HTMLInputElement).value.toLowerCase().trim();
+    this.incidenciasFiltradas = this.incidencias.filter(inc =>
+      `${inc.id} ${inc.tipo} ${inc.descripcion} ${inc.reo?.nombre ?? ''} ${inc.reo?.apellido ?? ''}`
+        .toLowerCase()
+        .includes(valor)
+    );
   }
 }

@@ -18,7 +18,7 @@ import { ReoDialogComponent } from './features/reos/reo-dialog/reo-dialog';
 import { ValidacionVisitanteComponent } from './features/visitantes/pages/validacion/validacion-visitante.component';
 import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';
 
-import { IncidenciaListComponent } from './features/incidentes/pages/incidente-list/incidencia-list.component';
+import { IncidenciasListComponent } from './features/incidentes/pages/incidente-list/incidencia-list.component';
 import { IncidenciaFormComponent } from './features/incidentes/pages/incidente-form/incidencia-form.component';
 
 export const routes: Routes = [
@@ -44,7 +44,7 @@ export const routes: Routes = [
       },
       {
         path: 'incidentes',
-        component: IncidenciaListComponent,
+        component: IncidenciasListComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },

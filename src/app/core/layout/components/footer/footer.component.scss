@@ -1,11 +1,27 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .app-footer {
-  padding: 0.85rem 1rem;
-  background-color: #e2e8f0;
-  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 1.5rem;
+  background: #3f4d63;
+  color: #e2e8f0;
+  min-width: 0;
 }
 
 .app-footer__text {
   margin: 0;
-  color: #334155;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { VisitantesService } from '../../services/visitantes.service';
 import { Visitante } from '../../models/visitante.model';
@@ -22,9 +22,10 @@ import { InputTextModule } from 'primeng/inputtext';
   ],
   templateUrl: './validacion-visitante.component.html',
   styleUrls: ['./validacion-visitante.component.scss'],
-  
+
 })
-export class ValidacionVisitanteComponent {
+export class ValidacionVisitanteComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef); // ← AÑADE ESTO
   private visitantesService = inject(VisitantesService);
   private router = inject(Router);
   private messageService = inject(MessageService);
@@ -41,18 +42,21 @@ export class ValidacionVisitanteComponent {
   cargarVisitantesPendientes() {
     this.loading = true;
     this.error = '';
+    this.visitantesPendientes = [];
+    this.visitantesFiltrados = [];
 
     this.visitantesService.getVisitantesPendientes().subscribe({
       next: (visitantes) => {
-        this.loading = false;
-
-        // Nueva referencia para que p-table note el cambio
         this.visitantesPendientes = [...visitantes];
         this.visitantesFiltrados = [...visitantes];
+        this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
         this.error = 'Error al cargar visitantes pendientes. Inténtelo de nuevo.';
+        this.cdr.detectChanges();
+
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -83,40 +87,41 @@ export class ValidacionVisitanteComponent {
   }
 
   aprobar(id: number) {
-  console.log('CLICK aprobar', id);
+    console.log('CLICK aprobar', id);
 
-  if (this.loading) return;
+    if (this.loading) return;
 
-  this.loading = true;
+    this.loading = true;
 
-  this.visitantesService.aprobarVisitante(id).subscribe({
-    next: () => {
-      console.log('APROBADO OK', id);
-      this.loading = false;
-      this.cargarVisitantesPendientes();
+    this.visitantesService.aprobarVisitante(id).subscribe({
+      next: () => {
+        console.log('APROBADO OK', id);
+        this.loading = false;
+        this.cdr.detectChanges(); // ← AÑADE ESTO
+        this.cargarVisitantesPendientes();
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Éxito',
-        detail: `Visitante con ID ${id} aprobado correctamente.`
-      });
-    },
-    error: (err) => {
-      console.error('ERROR aprobar', err);
-      this.loading = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: `Visitante con ID ${id} aprobado correctamente.`
+        });
+      },
+      error: (err) => {
+        console.error('ERROR aprobar', err);
+        this.loading = false;
 
-      const msg =
-        err?.error?.mensaje ||
-        'Error al aprobar el visitante. Inténtelo de nuevo.';
+        const msg =
+          err?.error?.mensaje ||
+          'Error al aprobar el visitante. Inténtelo de nuevo.';
 
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: msg
-      });
-    }
-  });
-}
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: msg
+        });
+      }
+    });
+  }
 
   rechazar(id: number) {
     if (this.loading) return;

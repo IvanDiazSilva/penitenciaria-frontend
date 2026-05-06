@@ -61,9 +61,23 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" class="p-button-text" (click)="cerrarDialogo()"></button>
-    <button pButton label="Guardar Incidencia" class="btn-save" 
-            (click)="guardar()" 
-            [disabled]="!incidente.idReo || !incidente.tipo"></button>
+    <div class="dialog-footer">
+    <button 
+      pButton 
+      label="Cancelar" 
+      icon="pi pi-times"
+      class="btn-cancel"
+      (click)="cerrarDialogo()">
+    </button>
+
+    <button 
+      pButton 
+      label="Guardar Incidencia" 
+      icon="pi pi-check"
+      class="btn-save"
+      (click)="guardar()" 
+      [disabled]="!incidente.idReo || !incidente.tipo">
+    </button>
+  </div>
   </ng-template>
 </p-dialog>

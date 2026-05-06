@@ -1,21 +1,22 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ReoService } from '../service/reo.service';
-
-// PrimeNG
+import { FormsModule } from '@angular/forms';
+import { TextareaModule } from 'primeng/textarea';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+
+import { ReoService } from '../service/reo.service';
 
 @Component({
   selector: 'app-reo-dialog',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule, // 🔥 CAMBIO IMPORTANTE
+    FormsModule, // 🔥 Para ngModel
     InputTextModule,
     ButtonModule,
+    TextareaModule,
     DialogModule
   ],
   templateUrl: './reo-dialog.html',
@@ -29,78 +30,75 @@ export class ReoDialogComponent implements OnChanges {
   @Output() cerrar = new EventEmitter<void>();
   @Output() guardado = new EventEmitter<void>();
 
-  reoForm: FormGroup;
+  private reoService = inject(ReoService);
+
+  // 🔥 Objeto directo como en incidencias
+  reo: any = {
+    nombre: '',
+    dni: '',
+    delito: ''
+  };
+
   isEditMode = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private reoService: ReoService
-  ) {
-    this.reoForm = this.fb.group({
-      nombre: ['', Validators.required],
-      dni: ['', [
-        Validators.required,
-        Validators.minLength(6),
-        Validators.maxLength(12),
-        Validators.pattern('^[a-zA-Z0-9]+$')
-      ]],
-      delito: ['', Validators.required]
-    });
-  }
-
-  // 🔥 CLAVE: esto sustituye al ngOnInit de la page
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (this.visible) {
-      this.reoForm.reset();
-
       if (this.reoId) {
         this.isEditMode = true;
         this.cargarDatosReo(this.reoId);
       } else {
         this.isEditMode = false;
+        this.resetForm();
       }
     }
   }
 
-  cargarDatosReo(id: number) {
+  cargarDatosReo(id: number): void {
     this.reoService.getReoById(id).subscribe({
       next: (reo) => {
-        this.reoForm.patchValue(reo);
+        this.reo = reo;
       },
       error: () => alert('Error al cargar el reo')
     });
   }
 
-  guardar() {
-    if (this.reoForm.invalid) {
-      alert('Formulario inválido');
+  guardar(): void {
+    if (!this.reo.nombre || !this.reo.dni || !this.reo.delito) {
+      alert('Completa todos los campos obligatorios');
       return;
     }
 
-    const data = this.reoForm.value;
-
     if (this.isEditMode && this.reoId) {
-      this.reoService.modificacion_recluso(this.reoId, data).subscribe({
+      this.reoService.modificacion_recluso(this.reoId, this.reo).subscribe({
         next: () => {
           alert('Reo actualizado');
           this.guardado.emit();
-          this.cerrar.emit();
+          this.cerrarDialogo();
         },
         error: (err) => alert(err.message)
       });
     } else {
-      this.reoService.alta_recluso(data).subscribe({
+      this.reoService.alta_recluso(this.reo).subscribe({
         next: () => {
           alert('Reo creado');
           this.guardado.emit();
-          this.cerrar.emit();
+          this.cerrarDialogo();
         },
         error: (err) => alert(err.message)
       });
     }
   }
 
-  cerrarDialogo() {
+  cerrarDialogo(): void {
     this.cerrar.emit();
+    this.resetForm();
+  }
+
+  resetForm(): void {
+    this.reo = {
+      nombre: '',
+      dni: '',
+      delito: ''
+    };
   }
 }

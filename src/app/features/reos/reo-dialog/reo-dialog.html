@@ -1,95 +1,58 @@
 <p-dialog
-  [header]="isEditMode ? 'Gestión de Expediente' : 'Registro de Interno'"
+  [header]="isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia'"
   [(visible)]="visible"
   [modal]="true"
   [style]="{ width: '600px' }"
-  (onHide)="cerrarDialogo()"
->
+  (onHide)="cerrarDialogo()">
 
-  <div class="hero-formulario" style="margin-bottom: 1rem;">
-    <p>
-      {{ isEditMode 
-        ? 'Modifique los datos del reo en el sistema.' 
-        : 'Introduzca los datos para dar de alta a un nuevo reo.' }}
-    </p>
-  </div>
-
-  <form [formGroup]="reoForm" class="formulario">
-
-    <div class="grid-form">
-
-      <!-- NOMBRE -->
-      <div class="campo campo-full">
-        <label>Nombre y Apellidos</label>
-        <input 
-          pInputText 
-          formControlName="nombre" 
-          placeholder="Ej: Juan Pérez García" />
-
-        <small 
-          *ngIf="reoForm.get('nombre')?.touched && reoForm.get('nombre')?.invalid"
-          class="p-error">
-          El nombre es obligatorio.
-        </small>
-      </div>
-
-      <!-- DNI -->
-      <div class="campo">
-        <label>Documento</label>
-        <input 
-          pInputText 
-          formControlName="dni" 
-          placeholder="12345678Z"
-          maxlength="12" />
-
-        <small class="p-info-text">
-          * Solo letras y números.
-        </small>
-
-        <small 
-          *ngIf="reoForm.get('dni')?.touched && reoForm.get('dni')?.invalid"
-          class="p-error">
-          Documento inválido.
-        </small>
-      </div>
-
-      <!-- DELITO -->
-      <div class="campo">
-        <label>Delito</label>
-        <input 
-          pInputText 
-          formControlName="delito" 
-          placeholder="Robo con fuerza" />
-
-        <small 
-          *ngIf="reoForm.get('delito')?.touched && reoForm.get('delito')?.invalid"
-          class="p-error">
-          Debe especificar el delito.
-        </small>
-      </div>
-
+  <div class="grid-form">
+    <!-- NOMBRE -->
+    <div class="campo">
+      <label>Nombre y Apellidos *</label>
+      <input 
+        pInputText 
+        [(ngModel)]="reo.nombre" 
+        placeholder="Ej: Juan Pérez García" />
     </div>
 
-  </form>
+    <!-- DNI -->
+    <div class="campo">
+      <label>DNI *</label>
+      <input 
+        pInputText 
+        [(ngModel)]="reo.dni" 
+        placeholder="12345678Z" />
+    </div>
 
-  <!-- FOOTER -->
+    <!-- DELITO -->
+    <div class="campo campo-full">
+      <label>Delito principal *</label>
+      <textarea 
+        [(ngModel)]="reo.delito" 
+        rows="3" 
+        pInputTextarea 
+        placeholder="Describa el delito cometido..."></textarea>
+    </div>
+  </div>
+
   <ng-template pTemplate="footer">
-    <button 
-      pButton 
-      label="Cancelar" 
-      icon="pi pi-times"
-      class="p-button-text p-button-secondary"
-      (click)="cerrarDialogo()">
-    </button>
+    <div class="dialog-footer">
+      <button 
+        pButton 
+        label="Cancelar" 
+        icon="pi pi-times"
+        class="btn-cancel"
+        (click)="cerrarDialogo()">
+      </button>
 
-    <button 
-      pButton 
-      [label]="isEditMode ? 'Guardar Cambios' : 'Registrar Interno'"
-      [icon]="isEditMode ? 'pi pi-save' : 'pi pi-check'"
-      class="btn-submit"
-      (click)="guardar()"
-      [disabled]="reoForm.invalid">
-    </button>
+      <button 
+        pButton 
+        label="Guardar Reo" 
+        icon="pi pi-check"
+        class="btn-save"
+        (click)="guardar()" 
+        [disabled]="!reo.nombre || !reo.dni">
+      </button>
+    </div>
   </ng-template>
-
 </p-dialog>

@@ -13,13 +13,25 @@
     </button>
   </div>
 
+  <!-- BARRA DE BÚSQUEDA AÑADIDA -->
+  <div class="toolbar" *ngIf="!loading">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        placeholder="Buscar por ID, nombre o fecha..."
+        (input)="filtrarVisitas($event)" />
+    </div>
+  </div>
+
   <div *ngIf="loading" class="loading-box">
     <p>Consultando base de datos...</p>
   </div>
 
   <div class="table-responsive" *ngIf="!loading">
 
-    <table class="visitas-table" *ngIf="visitas.length > 0; else emptyState">
+    <!-- Se cambia visitas.length por visitasFiltradas.length para que el emptyState funcione con la búsqueda -->
+    <table class="visitas-table" *ngIf="visitasFiltradas.length > 0; else emptyState">
       <thead>
         <tr>
           <th>ID</th>
@@ -57,10 +69,6 @@
 
           <td>
             <div class="qr-cell">
-              <code class="qr-code">
-                {{ v.codigoQr ?? 'Pte. generar' }}
-              </code>
-
               <div class="qr-actions" *ngIf="esVisitante">
                 <button
                   *ngIf="puedeGenerarQr(v) && !v.codigoQr"
@@ -117,7 +125,7 @@
       </tbody>
     </table>
 
-    <div class="pagination" *ngIf="visitas.length > itemsPerPage">
+    <div class="pagination" *ngIf="visitasFiltradas.length > itemsPerPage">
       <button
         type="button"
         class="page-btn"
@@ -169,9 +177,9 @@
           [elementType]="'canvas'">
         </qrcode>
 
-        <code class="qr-selected-code">
-          {{ qrSeleccionado }}
-        </code>
+        <p class="qr-instruction" style="margin-top: 15px; text-align: center; color: #666;">
+          Presente este código en el control de acceso
+        </p>
       </div>
     </div>
 

@@ -338,4 +338,37 @@
   border-radius: 8px;
 }
 
-// ... (mantiene el resto de tus estilos originales de .qr-help, .actions, .pagination, etc.)
+.toolbar {
+  margin-bottom: 1.5rem; /* Espacio entre buscador y tabla */
+}
+
+.search-box {
+  position: relative;
+  max-width: 420px; /* Tamaño similar al de Reos */
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.5rem; /* Espacio a la izquierda para el icono */
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1rem;
+}

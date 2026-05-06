@@ -1,19 +1,180 @@
-.qr-container {
+:host {
+  --primary-blue: #2c3e50;
+  --success-green: #27ae60;
+  --error-red: #c0392b;
+  --bg-gray: #f8f9fa;
+  --border-color: #dee2e6;
+}
+
+.admin-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+
+    h1 { margin: 0; font-size: 1.5rem; color: var(--primary-blue); font-weight: 600; }
+    p { margin: 5px 0 0; color: #6c757d; font-size: 0.9rem; }
+  }
+}
+
+// Indicador de cámara
+.status-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #6c757d;
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ced4da;
+    margin-right: 8px;
+  }
+  &.active .dot {
+    background: var(--success-green);
+    box-shadow: 0 0 5px var(--success-green);
+  }
+}
+
+// Estilo del Escáner
+.scanner-viewport {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  
-  zxing-scanner {
-    width: 100%;
-    max-width: 500px;
+
+  .video-frame {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+
+    zxing-scanner { width: 100%; height: 100%; object-fit: cover; }
   }
 
-  .status-msg {
-    margin-top: 20px;
-    padding: 15px;
-    font-weight: bold;
-    border-radius: 5px;
+  .instruction-text { margin-top: 1rem; color: #495057; font-size: 0.95rem; }
+}
+
+// Panel de Resultados (Estilo "Card")
+.result-panel {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+
+  .result-header {
+    padding: 1.5rem;
     text-align: center;
+    border-bottom: 1px solid var(--border-color);
+
+    .status-icon {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
   }
+
+  .result-body {
+    padding: 1.5rem;
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+      .label { color: #6c757d; }
+      .value { font-weight: 500; color: var(--primary-blue); }
+    }
+  }
+
+  .result-footer {
+    padding: 1rem;
+    background: var(--bg-gray);
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+  }
+
+  // Colores por estado
+  &.status-success .status-icon { background: #e8f5e9; color: var(--success-green); }
+  &.status-error .status-icon { background: #ffebee; color: var(--error-red); }
+}
+
+.btn-action {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px; // Mantenemos el radio de tus otros inputs
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover { 
+    opacity: 0.9;
+    transform: translateY(-1px); // Un pequeño efecto de feedback
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Estilizamos el botón de cancelar específicamente
+.scanner-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+
+  .btn-cancel {
+    // Hereda de btn-action en el HTML, pero aquí aplicamos su color específico
+    background-color: var(--error-red); 
+    padding: 0.6rem 1.5rem; // Misma medida que el botón de acción
+    
+    // Si quieres que sea un poco más discreto que el principal, 
+    // puedes usar un borde en lugar de fondo sólido:
+    // border: 1px solid var(--error-red);
+    // background: transparent;
+    // color: var(--error-red);
+  }
+}
+
+// Estilo extra para el panel de carga (Loading)
+.loading-panel {
+  text-align: center;
+  padding: 3rem;
+  color: var(--primary-blue);
+  
+  p {
+    font-weight: 500;
+    margin-top: 1rem;
+    // Animación simple de parpadeo
+    animation: pulse 1.5s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }

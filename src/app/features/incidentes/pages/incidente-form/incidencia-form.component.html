@@ -1,85 +1,113 @@
 <p-toast></p-toast>
 
-<div class="formulario-wrapper">
-  <div class="navigation-header" style="margin-bottom: 1rem;">
-    <button pButton 
-            label="Volver al Listado" 
-            icon="pi pi-arrow-left" 
-            class="p-button-text p-button-secondary"
-            routerLink="/incidentes"> 
-    </button>
-  </div>
-
-  <div class="hero-formulario">
-    <h1>{{ modoEditar ? 'Editar Reporte' : 'Alta de Incidencia' }}</h1>
-    <p>Complete los detalles del suceso ocurrido en el centro.</p>
-  </div>
+<div class="admin-container">
+  <header class="section-header">
+    <div class="title-group">
+      <h1>{{ modoEditar ? 'Editar Incidencia' : 'Nueva Incidencia' }}</h1>
+      <p>Registro de novedades y reportes de internos</p>
+    </div>
+    <button class="btn-action" routerLink="/incidentes">Volver</button>
+  </header>
 
   <p-card>
-    <div class="p-fluid" style="display: flex; flex-direction: column; gap: 20px;">
-      
-      <div style="display: flex; gap: 20px;">
-        <div style="flex: 1;">
-          <label class="font-bold">Tipo de Incidente *</label>
-          <input pInputText 
-                 name="tipo"
-                 [(ngModel)]="incidente.tipo" 
-                 placeholder="Ej: Pelea, Intento fuga" />
-        </div>
+    <form (ngSubmit)="guardar()" #formIncidencia="ngForm">
+      <div class="grid-form">
         
-        <div style="flex: 1;">
-          <label class="font-bold">ID Guardia Responsable *</label>
-          <input type="number" 
-                 name="idGuardia"
-                 pInputText 
-                 [(ngModel)]="incidente.idGuardia" 
-                 placeholder="Ingrese su ID de guardia" />
+        <!-- BUSCADOR DE REOS -->
+        <div class="form-field full-width">
+          <label for="reoBusqueda">Buscar Interno (Nombre o DNI)</label>
+          <div class="buscador-relativo">
+            <input 
+              type="text" 
+              pInputText 
+              id="reoBusqueda"
+              name="terminoBusqueda"
+              [(ngModel)]="terminoBusqueda" 
+              (input)="buscarReo()" 
+              placeholder="Escriba para buscar..."
+              class="w-full"
+              required
+              autocomplete="off"
+            />
+            
+            <!-- LISTA DE SUGERENCIAS -->
+            <ul class="sugerencias-lista" *ngIf="reosFiltrados.length > 0">
+              <li *ngFor="let reo of reosFiltrados" (click)="seleccionarReo(reo)">
+                <span class="nombre">{{ reo.nombre }} {{ reo.apellido }}</span>
+                <span class="dni">DNI: {{ reo.dni }}</span>
+              </li>
+            </ul>
+          </div>
+          <small class="text-secondary" *ngIf="incidente.idReo">
+            Seleccionado ID: {{ incidente.idReo }}
+          </small>
         </div>
+
+        <!-- TIPO DE INCIDENCIA -->
+        <div class="form-field">
+          <label for="tipo">Tipo de Incidencia</label>
+          <input 
+            type="text" 
+            pInputText 
+            id="tipo" 
+            name="tipo"
+            [(ngModel)]="incidente.tipo" 
+            placeholder="Ej: Riña, Intento de fuga, Salud..."
+            required
+            class="w-full"
+          />
+        </div>
+
+        <!-- FECHA Y HORA -->
+        <div class="form-field">
+          <label for="fechaHora">Fecha y Hora</label>
+          <input 
+            type="datetime-local" 
+            pInputText 
+            id="fechaHora" 
+            name="fechaHora"
+            [(ngModel)]="incidente.fechaHora" 
+            required
+            class="w-full"
+          />
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+        <div class="form-field full-width">
+          <label for="descripcion">Descripción de los hechos</label>
+          <textarea 
+            pInputTextarea 
+            id="descripcion" 
+            name="descripcion"
+            [(ngModel)]="incidente.descripcion" 
+            rows="5"
+            placeholder="Detalle lo sucedido de forma clara..."
+            required
+            class="w-full custom-textarea"
+          ></textarea>
+        </div>
+
+        <!-- DATOS INVISIBLES PERO NECESARIOS -->
+        <div class="form-field info-box">
+          <p><strong>Guardia responsable:</strong> ID 2 (Asignado automáticamente)</p>
+        </div>
+
       </div>
 
-      <div style="display: flex; gap: 20px;">
-        <div style="flex: 1;">
-          <label class="font-bold">Reo Involucrado</label>
-          <select name="idReo"
-                  [(ngModel)]="incidente.idReo" 
-                  class="p-inputtext w-full" 
-                  style="appearance: auto; padding: 0.5rem; height: 38px; border: 1px solid #ced4da;">
-            <option [ngValue]="null">-- Sin reo asignado / Desconocido --</option>
-            <option *ngFor="let r of reos" [value]="r.id">
-              {{r.nombre}} {{r.apellido}} (ID: {{r.id}})
-            </option>
-          </select>
-        </div>
-
-        <div style="flex: 1;">
-          <label class="font-bold">Fecha y Hora del Suceso *</label>
-          <input type="datetime-local" 
-                 name="fechaHora"
-                 pInputText 
-                 [(ngModel)]="incidente.fechaHora" 
-                 style="width: 100%;" />
-        </div>
-      </div>
-
-      <div>
-        <label class="font-bold">Descripción Detallada *</label>
-        <textarea pInputTextarea 
-                  name="descripcion"
-                  [(ngModel)]="incidente.descripcion" 
-                  rows="5" 
-                  placeholder="Describa lo ocurrido..." 
-                  style="width: 100%; border: 1px solid #ced4da; border-radius: 6px; padding: 10px;">
-        </textarea>
-      </div>
-
-      <div style="margin-top: 20px; text-align: right;">
-        <button pButton 
-                [label]="modoEditar ? 'Actualizar Reporte' : 'Registrar Incidencia'" 
-                icon="pi pi-save" 
-                class="btn-submit" 
-                (click)="guardar()">
+      <footer class="form-footer">
+        <button 
+          type="button" 
+          class="btn-secondary" 
+          routerLink="/incidentes">
+          Cancelar
         </button>
-      </div>
-    </div>
+        <button 
+          type="submit" 
+          class="btn-action" 
+          [disabled]="!formIncidencia.valid || !incidente.idReo">
+          {{ modoEditar ? 'Actualizar Reporte' : 'Guardar Incidencia' }}
+        </button>
+      </footer>
+    </form>
   </p-card>
 </div>

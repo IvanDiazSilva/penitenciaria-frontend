@@ -8,39 +8,62 @@
   (onHide)="cerrarDialogo()">
 
   <div class="grid-form">
+    <!-- TIPO -->
     <div class="campo">
       <label>Tipo *</label>
-      <input pInputText [(ngModel)]="incidente.tipo" />
+      <input pInputText [(ngModel)]="incidente.tipo" placeholder="Ej: Riña, Intento fuga" />
     </div>
 
+    <!-- GUARDIA (ID fijo 2) -->
     <div class="campo">
       <label>ID Guardia *</label>
-      <input type="number" pInputText [(ngModel)]="incidente.idGuardia" />
+      <input type="number" pInputText [(ngModel)]="incidente.idGuardia" disabled />
     </div>
 
+    <!-- BUSCADOR IGUAL AL DE VISITAS -->
     <div class="campo">
-      <label>Reo</label>
-      <select [(ngModel)]="incidente.idReo" class="custom-select">
-        <option [ngValue]="null">-- Sin asignar --</option>
-        <option *ngFor="let r of reos" [value]="r.id">
-          {{ r.nombre }} {{ r.apellido }}
-        </option>
-      </select>
+      <label>Interno a reportar (Nombre o DNI):</label>
+      <div class="search-container" style="position: relative;">
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="terminoBusqueda"
+          (input)="buscarReo()"
+          placeholder="Escriba para buscar..."
+          autocomplete="off">
+
+        <!-- Lista de resultados sugeridos (Desplegable) -->
+        <ul *ngIf="reosFiltrados.length > 0" class="search-results-dropdown">
+          <li *ngFor="let reo of reosFiltrados" (click)="seleccionarReo(reo)">
+            <strong>{{ reo.nombre }} {{ reo.apellido }}</strong> 
+            <small style="color: #64748b;">- {{ reo.dni }}</small>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Mensaje de éxito al seleccionar -->
+      <p class="form-help" *ngIf="incidente.idReo > 0" style="color: #10b981; font-weight: 500; margin-top: 5px;">
+        <i class="pi pi-check"></i> Seleccionado correctamente
+      </p>
     </div>
 
+    <!-- FECHA -->
     <div class="campo">
-      <label>Fecha *</label>
+      <label>Fecha de la incidencia:</label>
       <input type="datetime-local" pInputText [(ngModel)]="incidente.fechaHora" />
     </div>
 
+    <!-- DESCRIPCIÓN -->
     <div class="campo campo-full">
-      <label>Descripción *</label>
-      <textarea [(ngModel)]="incidente.descripcion" rows="4"></textarea>
+      <label>Descripción detallada *</label>
+      <textarea [(ngModel)]="incidente.descripcion" rows="4" pInputTextarea></textarea>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
     <button pButton label="Cancelar" class="p-button-text" (click)="cerrarDialogo()"></button>
-    <button pButton label="Guardar" class="btn-submit" (click)="guardar()"></button>
+    <button pButton label="Guardar Incidencia" class="btn-save" 
+            (click)="guardar()" 
+            [disabled]="!incidente.idReo || !incidente.tipo"></button>
   </ng-template>
 </p-dialog>

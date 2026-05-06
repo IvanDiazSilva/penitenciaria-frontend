@@ -1,16 +1,42 @@
-<div class="qr-container">
-  <h2>Escanear QR de acceso</h2>
+<div class="admin-container">
+  <header class="section-header">
+    <h1>Control de Accesos</h1>
+  </header>
 
-  <zxing-scanner
-    [formats]="allowedFormats"
-    (scanSuccess)="onScanSuccess($event)">
-  </zxing-scanner>
+  <main class="content-wrapper">
+    <!-- 1. ESCÁNER -->
+    <section class="scanner-viewport" *ngIf="mostrarScanner && !cargando">
+      <div class="video-frame">
+        <zxing-scanner [formats]="allowedFormats" (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+      </div>
+      <p class="instruction-text">Escaneando código QR...</p>
+      
+      <!-- BOTÓN CANCELAR: Usando tu clase de botones existente -->
+      <div class="scanner-actions">
+        <button class="btn-action btn-cancel" (click)="cancelarEscaneo()">
+          Cancelar Escaneo
+        </button>
+      </div>
+    </section>
 
-  <p *ngIf="scanResult">
-    Código leído: {{ scanResult }}
-  </p>
+    <!-- 2. CARGANDO -->
+    <section class="loading-panel" *ngIf="cargando">
+      <p>Procesando validación...</p>
+    </section>
 
-  <p *ngIf="mensaje">
-    {{ mensaje }}
-  </p>
+    <!-- 3. RESULTADO -->
+    <section class="result-panel" *ngIf="!mostrarScanner && !cargando && mensaje" 
+             [ngClass]="esValido ? 'status-success' : 'status-error'">
+      <div class="result-header">
+        <span class="status-icon">{{ esValido ? '✓' : '✕' }}</span>
+        <h2>{{ esValido ? 'Entrada Autorizada' : 'Acceso Denegado' }}</h2>
+      </div>
+      <div class="result-body">
+        <p>{{ mensaje }}</p>
+      </div>
+      <footer class="result-footer">
+        <button class="btn-action" (click)="reiniciar()">Siguiente Escaneo</button>
+      </footer>
+    </section>
+  </main>
 </div>

@@ -8,19 +8,23 @@
     Reos
   </a>
 
+  <!-- CAMBIO: Se eliminó 'GUARDIA', ahora solo lo ve el ADMIN -->
   <a routerLink="/validacion-visitante" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-    *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
+    *ngIf="canAccess(['ADMIN'])">
     Validación visitantes
   </a>
 
-  <a routerLink="/visitas" routerLinkActive="active" *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
+  <!-- CAMBIO: Se eliminó 'GUARDIA', ahora solo lo ve el ADMIN -->
+  <a routerLink="/visitas" routerLinkActive="active" *ngIf="canAccess(['ADMIN'])">
     Visitas
   </a>
 
+  <!-- Se mantiene: Lo ven ambos -->
   <a routerLink="/incidentes" routerLinkActive="active" *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Incidencias
   </a>
 
+  <!-- Se mantiene: Lo ven ambos -->
   <a routerLink="/validar-qr" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
     *ngIf="canAccess(['ADMIN', 'GUARDIA'])">
     Acceso QR

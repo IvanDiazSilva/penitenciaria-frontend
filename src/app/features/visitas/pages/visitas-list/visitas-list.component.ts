@@ -17,6 +17,7 @@ import { AuthService } from '../../../../core/auth/services/auth.service';
 export class VisitasListComponent implements OnInit {
 
   visitas: Visita[] = [];
+  visitasFiltradas: Visita[] = []; // Array para el buscador
   visitasPaginadas: Visita[] = [];
 
   loading = true;
@@ -74,8 +75,9 @@ export class VisitasListComponent implements OnInit {
     request$.subscribe({
       next: (data) => {
         this.visitas = [...(data ?? [])];
+        this.visitasFiltradas = [...this.visitas]; // Inicializamos el filtro con todos los datos
 
-        if (this.currentPage > Math.ceil((this.visitas.length || 1) / this.itemsPerPage)) {
+        if (this.currentPage > Math.ceil((this.visitasFiltradas.length || 1) / this.itemsPerPage)) {
           this.currentPage = 1;
         }
 
@@ -86,6 +88,7 @@ export class VisitasListComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar visitas:', err);
         this.visitas = [];
+        this.visitasFiltradas = [];
         this.visitasPaginadas = [];
         this.loading = false;
         this.cdr.detectChanges();
@@ -93,12 +96,34 @@ export class VisitasListComponent implements OnInit {
     });
   }
 
+  // 🔍 NUEVO MÉTODO DE BÚSQUEDA
+  filtrarVisitas(event: any): void {
+    const valor = event.target.value.toLowerCase().trim();
+
+    if (!valor) {
+      this.visitasFiltradas = [...this.visitas];
+    } else {
+      this.visitasFiltradas = this.visitas.filter(v =>
+        v.id?.toString().includes(valor) ||
+        // Ajusta estos campos según los nombres exactos en tu modelo Visita
+        (v as any).reo?.nombre?.toLowerCase().includes(valor) ||
+        (v as any).visitante?.nombre?.toLowerCase().includes(valor) ||
+        v.fechaVisita?.toString().includes(valor)
+      );
+    }
+
+    this.currentPage = 1; // Reiniciar a la primera página al buscar
+    this.actualizarPaginacion();
+    this.cdr.detectChanges();
+  }
+
   actualizarPaginacion(): void {
-    this.totalPages = Math.ceil(this.visitas.length / this.itemsPerPage) || 1;
+    // Ahora calculamos sobre el array filtrado
+    this.totalPages = Math.ceil(this.visitasFiltradas.length / this.itemsPerPage) || 1;
     this.paginas = Array.from({ length: this.totalPages }, (_, i) => i + 1);
 
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    this.visitasPaginadas = [...this.visitas.slice(start, start + this.itemsPerPage)];
+    this.visitasPaginadas = [...this.visitasFiltradas.slice(start, start + this.itemsPerPage)];
   }
 
   irAPagina(page: number): void {
@@ -136,8 +161,9 @@ export class VisitasListComponent implements OnInit {
       this.visitasService.deleteVisita(id).subscribe({
         next: () => {
           this.visitas = this.visitas.filter(v => v.id !== id);
+          this.visitasFiltradas = this.visitasFiltradas.filter(v => v.id !== id);
 
-          if ((this.currentPage - 1) * this.itemsPerPage >= this.visitas.length && this.currentPage > 1) {
+          if ((this.currentPage - 1) * this.itemsPerPage >= this.visitasFiltradas.length && this.currentPage > 1) {
             this.currentPage--;
           }
 
@@ -181,6 +207,8 @@ export class VisitasListComponent implements OnInit {
   generarQr(visita: Visita): void {
     if (!visita.id || !this.esVisitante || !visita.autorizado) return;
 
+    this.qrSeleccionado = null;
+    
     this.visitasService.generarQr(visita.id).subscribe({
       next: (res) => {
         visita.codigoQr = res.qr;

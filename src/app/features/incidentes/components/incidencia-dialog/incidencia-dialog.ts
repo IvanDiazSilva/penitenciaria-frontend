@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
+
+import { Component, Input, Output, EventEmitter, OnInit, inject, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -29,7 +30,7 @@ import { ReoService } from '../../../reos/services/reos.service';
   templateUrl: './incidencia-dialog.html',
   styleUrls: ['./incidencia-dialog.scss']
 })
-export class IncidenciaDialogComponent implements OnInit {
+export class IncidenciaDialogComponent implements OnInit, OnChanges {
 
   @Input() visible = false;
   @Input() incidenciaEditar: any = null;
@@ -43,6 +44,10 @@ export class IncidenciaDialogComponent implements OnInit {
 
   modoEditar = false;
   reos: any[] = [];
+  
+  // Lógica de búsqueda
+  reosFiltrados: any[] = [];
+  terminoBusqueda: string = '';
 
   incidente: any = {
     id: null,
@@ -58,22 +63,27 @@ export class IncidenciaDialogComponent implements OnInit {
   }
 
   ngOnChanges(): void {
-    if (this.incidenciaEditar) {
-      this.modoEditar = true;
-
-      this.incidente = {
-        id: this.incidenciaEditar.id,
-        tipo: this.incidenciaEditar.tipo || '',
-        descripcion: this.incidenciaEditar.descripcion || '',
-        fechaHora: this.incidenciaEditar.fechaHora
-          ? this.incidenciaEditar.fechaHora.replace(' ', 'T').slice(0, 16)
-          : '',
-        idReo: this.incidenciaEditar.reo?.id || null,
-        idGuardia: this.incidenciaEditar.guardia?.id || 2
-      };
-    } else {
-      this.modoEditar = false;
-      this.resetForm();
+    if (this.visible) {
+      if (this.incidenciaEditar) {
+        this.modoEditar = true;
+        this.incidente = {
+          id: this.incidenciaEditar.id,
+          tipo: this.incidenciaEditar.tipo || '',
+          descripcion: this.incidenciaEditar.descripcion || '',
+          fechaHora: this.incidenciaEditar.fechaHora
+            ? this.incidenciaEditar.fechaHora.replace(' ', 'T').slice(0, 16)
+            : '',
+          idReo: this.incidenciaEditar.reo?.id || null,
+          idGuardia: this.incidenciaEditar.guardia?.id || 2
+        };
+        // Para que aparezca el nombre en el buscador al editar
+        this.terminoBusqueda = this.incidenciaEditar.reo 
+          ? `${this.incidenciaEditar.reo.nombre} ${this.incidenciaEditar.reo.apellido}` 
+          : '';
+      } else {
+        this.modoEditar = false;
+        this.resetForm();
+      }
     }
   }
 
@@ -84,9 +94,36 @@ export class IncidenciaDialogComponent implements OnInit {
     });
   }
 
+  // --- NUEVAS FUNCIONES PARA EL BUSCADOR ---
+  buscarReo(): void {
+  const busqueda = this.terminoBusqueda ? this.terminoBusqueda.toLowerCase().trim() : '';
+  
+  if (busqueda.length < 2) {
+    this.reosFiltrados = [];
+    return;
+  }
+
+  this.reosFiltrados = this.reos.filter(reo => {
+    // Validamos que reo, reo.nombre y reo.dni existan antes de usar toLowerCase()
+    const nombre = reo?.nombre ? reo.nombre.toLowerCase() : '';
+    const dni = reo?.dni ? reo.dni.toLowerCase() : '';
+    
+    return nombre.includes(busqueda) || dni.includes(busqueda);
+  }).slice(0, 10);
+}
+
+seleccionarReo(reo: any): void {
+  this.incidente.idReo = reo.id;
+  // Actualizamos el input con el nombre completo para que el usuario vea qué seleccionó
+  this.terminoBusqueda = `${reo.nombre} ${reo.apellido}`;
+  // Vaciamos la lista para que el desplegable desaparezca
+  this.reosFiltrados = [];
+}
+  // ---------------------------------------
+
   guardar(): void {
-    if (!this.incidente.tipo || !this.incidente.descripcion || !this.incidente.fechaHora) {
-      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Faltan campos obligatorios' });
+    if (!this.incidente.tipo || !this.incidente.descripcion || !this.incidente.fechaHora || !this.incidente.idReo) {
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Faltan campos obligatorios o seleccionar interno' });
       return;
     }
 
@@ -97,12 +134,9 @@ export class IncidenciaDialogComponent implements OnInit {
       tipo: this.incidente.tipo,
       descripcion: this.incidente.descripcion,
       fechaHora: fechaJava,
-      guardia: { id: Number(this.incidente.idGuardia) }
+      guardia: { id: Number(this.incidente.idGuardia) },
+      reo: { id: Number(this.incidente.idReo) }
     };
-
-    if (this.incidente.idReo) {
-      payload.reo = { id: Number(this.incidente.idReo) };
-    }
 
     const request$ = this.modoEditar
       ? this.incidenciaService.modificacion_incidente(this.incidente.id, payload)
@@ -115,7 +149,6 @@ export class IncidenciaDialogComponent implements OnInit {
           summary: 'OK',
           detail: this.modoEditar ? 'Actualizado' : 'Creado'
         });
-
         this.guardado.emit();
         this.cerrarDialogo();
       },
@@ -123,7 +156,7 @@ export class IncidenciaDialogComponent implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: err.message
+          detail: err.error?.mensaje || 'Error al guardar'
         });
       }
     });
@@ -144,5 +177,7 @@ export class IncidenciaDialogComponent implements OnInit {
       idReo: null,
       idGuardia: 2
     };
+    this.terminoBusqueda = '';
+    this.reosFiltrados = [];
   }
 }

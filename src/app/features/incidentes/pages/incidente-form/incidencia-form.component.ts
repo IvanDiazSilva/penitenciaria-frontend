@@ -35,19 +35,23 @@ export class IncidenciaFormComponent implements OnInit {
   private messageService = inject(MessageService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private cdr = inject(ChangeDetectorRef); // Inyectamos el detector de cambios
+  private cdr = inject(ChangeDetectorRef);
 
   modoEditar: boolean = false;
   reos: any[] = []; 
   
-  // Objeto inicial igualado a la estructura del formulario
+  // Lógica del buscador
+  reosFiltrados: any[] = [];
+  terminoBusqueda: string = '';
+
+  // Objeto inicial con idGuardia fijo en 2
   incidente: any = {
     id: null,
     tipo: '',
     descripcion: '',
     fechaHora: '', 
     idReo: null,
-    idGuardia: 2
+    idGuardia: 2 // <--- ID FIJO
   };
 
   ngOnInit(): void {
@@ -56,28 +60,28 @@ export class IncidenciaFormComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.modoEditar = true;
-      this.cargarIncidencia(id); // Llamada al método de carga siguiendo estilo "Reos"
+      this.cargarIncidencia(id);
     }
   }
 
-  // MÉTODO PARA CARGAR DATOS EN EDICIÓN
   cargarIncidencia(id: number): void {
     this.incidenciaService.getIncidenciaById(id).subscribe({
       next: (res: any) => {
-        // Mapeamos los campos y forzamos un objeto nuevo para refrescar la vista
         this.incidente = {
           id: res.id,
           tipo: res.tipo || '',
           descripcion: res.descripcion || '',
-          // Formateo vital para que el input datetime-local lo reconozca
           fechaHora: res.fechaHora ? res.fechaHora.replace(' ', 'T').slice(0, 16) : '',
           idReo: res.reo ? res.reo.id : null,
-          idGuardia: res.guardia ? res.guardia.id : null
+          idGuardia: 2 // <--- Forzamos que siga siendo 2 al cargar
         };
+
+        // Si hay un reo al cargar, actualizamos el texto del buscador
+        if (this.incidente.idReo) {
+          this.actualizarTextoBusquedaEdicion();
+        }
         
-        // Forzamos a Angular a detectar los cambios inmediatamente
         this.cdr.detectChanges();
-        console.log('Incidencia cargada para edición:', this.incidente);
       },
       error: (err) => {
         console.error('Error al obtener incidencia:', err);
@@ -89,20 +93,56 @@ export class IncidenciaFormComponent implements OnInit {
   cargarReos(): void {
     this.reoService.obtener_todos().subscribe({
       next: (res) => {
-        this.reos = res;  //aqui carga los reos
+        this.reos = res;
+        this.reosFiltrados = [];
+        // Por si los reos cargan después que la incidencia en edición
+        if (this.modoEditar && this.incidente.idReo) {
+          this.actualizarTextoBusquedaEdicion();
+        }
         this.cdr.detectChanges();
       },
       error: () => console.error('Error al cargar reos')
     });
   }
 
+  // Métodos del Buscador
+  buscarReo(): void {
+    const busqueda = this.terminoBusqueda.toLowerCase().trim();
+    if (busqueda.length < 2) {
+      this.reosFiltrados = [];
+      return;
+    }
+    this.reosFiltrados = this.reos.filter(reo => 
+      reo.nombre.toLowerCase().includes(busqueda) || 
+      reo.dni.toLowerCase().includes(busqueda)
+    ).slice(0, 10);
+  }
+
+  seleccionarReo(reo: any): void {
+    this.incidente.idReo = reo.id;
+    this.terminoBusqueda = `${reo.nombre} (${reo.dni})`;
+    this.reosFiltrados = [];
+  }
+
+  private actualizarTextoBusquedaEdicion(): void {
+    const reoEncontrado = this.reos.find(r => r.id === this.incidente.idReo);
+    if (reoEncontrado) {
+      this.terminoBusqueda = `${reoEncontrado.nombre} (${reoEncontrado.dni})`;
+    }
+  }
+
   guardar(): void {
-    if (!this.incidente.tipo || !this.incidente.descripcion || !this.incidente.fechaHora || !this.incidente.idGuardia) {
-      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Faltan campos obligatorios' });
+    // Validación estricta de todos los campos necesarios
+    if (!this.incidente.tipo || !this.incidente.descripcion || !this.incidente.fechaHora || !this.incidente.idReo) {
+      this.messageService.add({ 
+        severity: 'warn', 
+        summary: 'Campos incompletos', 
+        detail: 'Por favor, rellene todos los campos y seleccione un interno.' 
+      });
       return;
     }
 
-    // Formateo de fecha para el backend de Java (yyyy-MM-dd HH:mm:ss)
+    // Aseguramos el formato de fecha
     let fechaJava = this.incidente.fechaHora.replace('T', ' ');
     if (fechaJava.length === 16) fechaJava += ":00";
 
@@ -110,15 +150,9 @@ export class IncidenciaFormComponent implements OnInit {
       tipo: this.incidente.tipo,
       descripcion: this.incidente.descripcion,
       fechaHora: fechaJava,
-      guardia: { id: Number(this.incidente.idGuardia) }
+      guardia: { id: 2 }, // <--- ID SIEMPRE FIJO EN EL ENVÍO
+      reo: { id: Number(this.incidente.idReo) }
     };
-
-    // Si hay un reo seleccionado, lo añadimos como objeto con su ID
-    if (this.incidente.idReo && this.incidente.idReo !== "null") {
-      payload.reo = { id: Number(this.incidente.idReo) };
-    } else {
-      payload.reo = null; // Para limpiar la relación si se desea
-    }
 
     if (this.modoEditar) {
       payload.id = this.incidente.id;
@@ -141,7 +175,7 @@ export class IncidenciaFormComponent implements OnInit {
 
   private notificarError(err: any) {
     console.error('Error del servidor:', err);
-    const errorMsg = err.error?.error || 'Error 400: Datos inválidos';
+    const errorMsg = err.error?.error || 'Error al procesar la solicitud';
     this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg });
   }
 }

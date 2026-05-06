@@ -64,7 +64,7 @@ export const routes: Routes = [
         path: 'validacion-visitante',
         component: ValidacionVisitanteComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'reos/nuevo',
@@ -82,13 +82,13 @@ export const routes: Routes = [
         path: 'visitas',
         component: VisitasListComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'visitas/nueva',
         component: VisitasFormComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'visitas/editar/:id',

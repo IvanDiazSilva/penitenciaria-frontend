@@ -1,7 +1,12 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { QRCodeComponent } from 'angularx-qrcode';
+
+// PrimeNG
+import { Table, TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
 
 import { VisitasService } from '../../services/visitas.service';
 import { Visita } from '../../models/visita.model';
@@ -10,16 +15,20 @@ import { AuthService } from '../../../../core/auth/services/auth.service';
 @Component({
   selector: 'app-visitas-list',
   standalone: true,
-  imports: [CommonModule, QRCodeComponent],
+  imports: [
+    CommonModule,
+    QRCodeComponent,
+    TableModule,
+    InputTextModule,
+    ButtonModule
+  ],
   templateUrl: './visitas-list.component.html',
   styleUrls: ['./visitas-list.component.scss']
 })
 export class VisitasListComponent implements OnInit {
+  @ViewChild('dt') dt!: Table;
 
   visitas: Visita[] = [];
-  visitasFiltradas: Visita[] = []; // Array para el buscador
-  visitasPaginadas: Visita[] = [];
-
   loading = true;
 
   rolActual: string | null = null;
@@ -32,11 +41,6 @@ export class VisitasListComponent implements OnInit {
   puedeEditarFlag = false;
   puedeEliminarFlag = false;
   mostrarAccionesFlag = false;
-
-  currentPage = 1;
-  itemsPerPage = 5;
-  totalPages = 1;
-  paginas: number[] = [];
 
   qrSeleccionado: string | null = null;
   visitaSeleccionada: Visita | null = null;
@@ -75,78 +79,21 @@ export class VisitasListComponent implements OnInit {
     request$.subscribe({
       next: (data) => {
         this.visitas = [...(data ?? [])];
-        this.visitasFiltradas = [...this.visitas]; // Inicializamos el filtro con todos los datos
-
-        if (this.currentPage > Math.ceil((this.visitasFiltradas.length || 1) / this.itemsPerPage)) {
-          this.currentPage = 1;
-        }
-
-        this.actualizarPaginacion();
         this.loading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar visitas:', err);
         this.visitas = [];
-        this.visitasFiltradas = [];
-        this.visitasPaginadas = [];
         this.loading = false;
         this.cdr.detectChanges();
       }
     });
   }
 
-  // 🔍 NUEVO MÉTODO DE BÚSQUEDA
-  filtrarVisitas(event: any): void {
-    const valor = event.target.value.toLowerCase().trim();
-
-    if (!valor) {
-      this.visitasFiltradas = [...this.visitas];
-    } else {
-      this.visitasFiltradas = this.visitas.filter(v =>
-        v.id?.toString().includes(valor) ||
-        // Ajusta estos campos según los nombres exactos en tu modelo Visita
-        (v as any).reo?.nombre?.toLowerCase().includes(valor) ||
-        (v as any).visitante?.nombre?.toLowerCase().includes(valor) ||
-        v.fechaVisita?.toString().includes(valor)
-      );
-    }
-
-    this.currentPage = 1; // Reiniciar a la primera página al buscar
-    this.actualizarPaginacion();
-    this.cdr.detectChanges();
-  }
-
-  actualizarPaginacion(): void {
-    // Ahora calculamos sobre el array filtrado
-    this.totalPages = Math.ceil(this.visitasFiltradas.length / this.itemsPerPage) || 1;
-    this.paginas = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    this.visitasPaginadas = [...this.visitasFiltradas.slice(start, start + this.itemsPerPage)];
-  }
-
-  irAPagina(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.actualizarPaginacion();
-    this.cdr.detectChanges();
-  }
-
-  paginaAnterior(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.actualizarPaginacion();
-      this.cdr.detectChanges();
-    }
-  }
-
-  paginaSiguiente(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.actualizarPaginacion();
-      this.cdr.detectChanges();
-    }
+  filtrarVisitas(event: Event): void {
+    const valor = (event.target as HTMLInputElement).value;
+    this.dt.filterGlobal(valor, 'contains');
   }
 
   irANuevaVisita(): void {
@@ -161,13 +108,6 @@ export class VisitasListComponent implements OnInit {
       this.visitasService.deleteVisita(id).subscribe({
         next: () => {
           this.visitas = this.visitas.filter(v => v.id !== id);
-          this.visitasFiltradas = this.visitasFiltradas.filter(v => v.id !== id);
-
-          if ((this.currentPage - 1) * this.itemsPerPage >= this.visitasFiltradas.length && this.currentPage > 1) {
-            this.currentPage--;
-          }
-
-          this.actualizarPaginacion();
           this.cdr.detectChanges();
         },
         error: (err) => {
@@ -181,8 +121,6 @@ export class VisitasListComponent implements OnInit {
   autorizar(visita: Visita): void {
     if (!this.puedeAutorizar || !visita.id || visita.autorizado) return;
     if (this.autorizandoIds.has(visita.id)) return;
-
-    console.log('click autorizar', visita.id, visita.autorizado);
 
     this.autorizandoIds.add(visita.id);
     this.cdr.detectChanges();
@@ -208,7 +146,7 @@ export class VisitasListComponent implements OnInit {
     if (!visita.id || !this.esVisitante || !visita.autorizado) return;
 
     this.qrSeleccionado = null;
-    
+
     this.visitasService.generarQr(visita.id).subscribe({
       next: (res) => {
         visita.codigoQr = res.qr;

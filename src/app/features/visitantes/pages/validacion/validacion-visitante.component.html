@@ -1,12 +1,15 @@
 <div class="list-container">
   <div class="list-header">
-    <h2>Validación de visitantes pendientes</h2>
+    <div>
+      <h2>Validación de visitantes pendientes</h2>
+      <p class="list-subtitle">Gestión y validación de accesos pendientes.</p>
+    </div>
   </div>
 
-  <div class="toolbar" [hidden]="loading">
+  <div class="toolbar" *ngIf="!loading && !error">
     <div class="search-box">
       <span class="search-icon">⌕</span>
-      <input type="text" placeholder="Buscar por ID, nombre o DNI/NIE" (input)="filtrarVisitantes($event)" />
+      <input type="text" pInputText placeholder="Buscar por ID, nombre o DNI/NIE" (input)="filtrarVisitantes($event)" />
     </div>
   </div>
 
@@ -19,45 +22,61 @@
     <button class="btn-add" (click)="cargarVisitantesPendientes()">Reintentar</button>
   </div>
 
-  <div [hidden]="loading || error" class="table-responsive">
-    <table class="visitas-table" *ngIf="visitantesFiltrados.length > 0; else emptyState">
-      <thead>
+  <div *ngIf="!loading && !error" class="table-shell">
+    <p-table #dt [value]="visitantesPendientes" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15, 20]"
+      [showCurrentPageReport]="true" currentPageReportTemplate="{first} - {last} de {totalRecords}"
+      [globalFilterFields]="['id', 'nombreCompleto', 'dniNie', 'parentesco', 'estado']" responsiveLayout="scroll"
+      styleClass="visitantes-table">
+
+      <ng-template pTemplate="header">
         <tr>
           <th>ID</th>
           <th>Nombre completo</th>
           <th>DNI/NIE</th>
           <th>Parentesco</th>
           <th>Estado</th>
-          <th>Acciones</th>
+          <th class="text-center">Acciones</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let v of visitantesFiltrados; trackBy: trackById">
+      </ng-template>
+
+      <ng-template pTemplate="body" let-v>
+        <tr>
           <td><strong>#{{ v.id }}</strong></td>
           <td>{{ v.nombreCompleto || 'Sin nombre' }}</td>
           <td>{{ v.dniNie || '-' }}</td>
           <td>{{ v.parentesco || 'N/A' }}</td>
           <td>
-            <span [ngClass]="{
-              'badge-pending': v.estado === 'PENDIENTE',
-              'badge-success': v.estado === 'APROBADO',
-              'badge-danger': v.estado === 'RECHAZADO'
-            }">
+            <span class="status-badge" [ngClass]="{
+                'badge-pending': v.estado === 'PENDIENTE',
+                'badge-success': v.estado === 'APROBADO',
+                'badge-danger': v.estado === 'RECHAZADO'
+              }">
               {{ v.estado }}
             </span>
           </td>
-          <td class="actions">
-            <button class="btn-action approve" (click)="aprobar(v.id!)">✅</button>
-            <button class="btn-action reject" (click)="rechazar(v.id!)">❌</button>
+          <td class="actions actions-center">
+            <button class="btn-action approve" type="button" [disabled]="loading" title="Aprobar"
+              (click)="aprobar(v.id!)">
+              ✅
+            </button>
+
+            <button class="btn-action reject" type="button" [disabled]="loading" title="Rechazar"
+              (click)="rechazar(v.id!)">
+              ❌
+            </button>
           </td>
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
 
-    <ng-template #emptyState>
-      <div class="empty-state">
-        <p>No hay visitantes pendientes de validación.</p>
-      </div>
-    </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <p>No hay visitantes pendientes de validación.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 </div>

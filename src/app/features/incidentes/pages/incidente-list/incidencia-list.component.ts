@@ -1,12 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { IncidenciasService } from '../../service/incidencias.service';
 import { IncidenciaDialogComponent } from '../../components/incidencia-dialog/incidencia-dialog';
 
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-incidencias-list',
@@ -16,8 +16,7 @@ import { CardModule } from 'primeng/card';
     IncidenciaDialogComponent,
     TableModule,
     ButtonModule,
-    InputTextModule,
-    CardModule
+    InputTextModule
   ],
   templateUrl: './incidencia-list.component.html',
   styleUrls: ['./incidencia-list.component.scss']
@@ -26,8 +25,9 @@ export class IncidenciasListComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private incidenciasService = inject(IncidenciasService);
 
+  @ViewChild('dt') dt!: Table;
+
   incidencias: any[] = [];
-  incidenciasFiltradas: any[] = [];
   loading = true;
 
   dialogVisible = false;
@@ -39,17 +39,18 @@ export class IncidenciasListComponent implements OnInit {
 
   obtenerIncidencias(): void {
     this.loading = true;
+
     this.incidenciasService.obtener_todos().subscribe({
       next: (data) => {
-        this.incidencias = data;
-        this.incidenciasFiltradas = [...data];
+        this.incidencias = [...(data ?? [])];
         this.loading = false;
-        this.cdr.detectChanges(); // ← AÑADE ESTO
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar incidencias:', err);
+        this.incidencias = [];
         this.loading = false;
-        this.cdr.detectChanges(); // ← AÑADE ESTO
+        this.cdr.detectChanges();
       }
     });
   }
@@ -81,11 +82,7 @@ export class IncidenciasListComponent implements OnInit {
   }
 
   filtrarIncidencias(event: Event): void {
-    const valor = (event.target as HTMLInputElement).value.toLowerCase().trim();
-    this.incidenciasFiltradas = this.incidencias.filter(inc =>
-      `${inc.id} ${inc.tipo} ${inc.descripcion} ${inc.reo?.nombre ?? ''} ${inc.reo?.apellido ?? ''}`
-        .toLowerCase()
-        .includes(valor)
-    );
+    const valor = (event.target as HTMLInputElement).value;
+    this.dt.filterGlobal(valor, 'contains');
   }
 }

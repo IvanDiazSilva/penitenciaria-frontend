@@ -16,19 +16,43 @@
     </div>
   </div>
 
-  <div class="toolbar">
+  <div class="toolbar" *ngIf="!loading">
     <div class="search-box">
       <span class="search-icon">⌕</span>
       <input
         type="text"
+        pInputText
         placeholder="Buscar por ID, tipo, descripción o reo"
         (input)="filtrarIncidencias($event)" />
     </div>
   </div>
 
-  <div class="table-responsive">
-    <table class="visitas-table" *ngIf="incidenciasFiltradas.length > 0; else emptyState">
-      <thead>
+  <div *ngIf="loading" class="loading-box">
+    <p>Consultando incidencias...</p>
+  </div>
+
+  <div class="table-shell" *ngIf="!loading">
+    <p-table
+      #dt
+      [value]="incidencias"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 15, 20]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords}"
+      [globalFilterFields]="[
+        'id',
+        'tipo',
+        'descripcion',
+        'fechaHora',
+        'reo.nombre',
+        'reo.apellido',
+        'guardia.id'
+      ]"
+      responsiveLayout="scroll"
+      styleClass="incidencias-table">
+
+      <ng-template pTemplate="header">
         <tr>
           <th>ID</th>
           <th>Tipo</th>
@@ -38,18 +62,34 @@
           <th>Guardia</th>
           <th class="text-center">Acciones</th>
         </tr>
-      </thead>
+      </ng-template>
 
-      <tbody>
-        <tr *ngFor="let inc of incidenciasFiltradas">
+      <ng-template pTemplate="body" let-inc>
+        <tr>
           <td><strong>#{{ inc.id }}</strong></td>
+
           <td>
             <span class="badge-pending">{{ inc.tipo }}</span>
           </td>
-          <td class="description-cell">{{ inc.descripcion }}</td>
+
+          <td class="description-cell">
+            {{ inc.descripcion }}
+          </td>
+
           <td>{{ inc.fechaHora | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td>{{ inc.reo?.nombre }} {{ inc.reo?.apellido }}</td>
-          <td>ID: {{ inc.guardia?.id }}</td>
+
+          <td>
+            <div class="reo-cell">
+              <span class="reo-name">
+                {{ inc.reo?.nombre || 'Sin nombre' }} {{ inc.reo?.apellido || '' }}
+              </span>
+            </div>
+          </td>
+
+          <td>
+            <span class="guardia-chip">ID: {{ inc.guardia?.id || '-' }}</span>
+          </td>
+
           <td class="actions actions-center">
             <button
               class="btn-action edit"
@@ -68,14 +108,18 @@
             </button>
           </td>
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
 
-    <ng-template #emptyState>
-      <div class="empty-state">
-        <p>No se encontraron incidencias registradas.</p>
-      </div>
-    </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <p>No se encontraron incidencias registradas.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 </div>
 

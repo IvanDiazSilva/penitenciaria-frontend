@@ -1,10 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReoService } from '../../service/reo.service';
 import { Reo } from '../../models/reo.model';
 
 // PrimeNG
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { CardModule } from 'primeng/card';
@@ -23,19 +23,18 @@ import { ReoDialogComponent } from '../../reo-dialog/reo-dialog';
     RippleModule,
     CardModule,
     InputTextModule,
-    ReoDialogComponent // 🔥 IMPORTANTE
+    ReoDialogComponent
   ],
   templateUrl: './reo-list.component.html',
   styleUrls: ['./reo-list.component.scss']
 })
 export class ReoListComponent implements OnInit {
-
   reos: Reo[] = [];
-  reosFiltrados: Reo[] = [];
 
-  // 🔥 CONTROL DEL DIALOG
   dialogVisible = false;
   reoSeleccionadoId: number | null = null;
+
+  @ViewChild('dt') dt!: Table;
 
   constructor(
     private reoService: ReoService,
@@ -49,8 +48,7 @@ export class ReoListComponent implements OnInit {
   cargarDatos(): void {
     this.reoService.obtener_todos().subscribe({
       next: (data) => {
-        this.reos = data;
-        this.reosFiltrados = data;
+        this.reos = data ?? [];
         this.cd.detectChanges();
       },
       error: (err) => {
@@ -59,36 +57,21 @@ export class ReoListComponent implements OnInit {
     });
   }
 
-  // 🔍 FILTRO
-  filtrarReclusos(event: any): void {
-    const valor = event.target.value.toLowerCase().trim();
-
-    if (!valor) {
-      this.reosFiltrados = [...this.reos];
-      return;
-    }
-
-    this.reosFiltrados = this.reos.filter(reo =>
-      reo.id?.toString().includes(valor) ||
-      reo.nombre.toLowerCase().includes(valor) ||
-      reo.apellido?.toLowerCase().includes(valor) ||
-      reo.dni.toLowerCase().includes(valor)
-    );
+  filtrarReclusos(event: Event): void {
+    const valor = (event.target as HTMLInputElement).value;
+    this.dt.filterGlobal(valor, 'contains');
   }
 
-  // ➕ NUEVO
   abrirNuevo(): void {
     this.reoSeleccionadoId = null;
     this.dialogVisible = true;
   }
 
-  // ✏️ EDITAR
   editarReo(reo: Reo): void {
     this.reoSeleccionadoId = reo.id;
     this.dialogVisible = true;
   }
 
-  // ❌ ELIMINAR
   confirmarEliminar(reo: Reo): void {
     const mensaje = `¿Dar de baja a ${reo.nombre}?`;
 
@@ -103,7 +86,6 @@ export class ReoListComponent implements OnInit {
     }
   }
 
-  // 🔄 REFRESCO TRAS GUARDAR
   onGuardado(): void {
     this.dialogVisible = false;
     this.cargarDatos();
@@ -111,5 +93,6 @@ export class ReoListComponent implements OnInit {
 
   cerrarDialog(): void {
     this.dialogVisible = false;
+    this.reoSeleccionadoId = null;
   }
 }

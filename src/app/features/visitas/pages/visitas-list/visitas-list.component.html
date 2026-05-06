@@ -1,7 +1,13 @@
 <div class="list-container">
-
   <div class="list-header">
-    <h2>{{ esVisitante ? 'Mis visitas' : 'Historial de visitas' }}</h2>
+    <div>
+      <h2>{{ esVisitante ? 'Mis visitas' : 'Historial de visitas' }}</h2>
+      <p class="list-subtitle">
+        {{ esVisitante
+          ? 'Consulta el estado de tus solicitudes y gestiona tu código QR.'
+          : 'Gestión e historial de visitas registradas en el sistema.' }}
+      </p>
+    </div>
 
     <button
       class="btn-add"
@@ -13,13 +19,13 @@
     </button>
   </div>
 
-  <!-- BARRA DE BÚSQUEDA AÑADIDA -->
   <div class="toolbar" *ngIf="!loading">
     <div class="search-box">
       <span class="search-icon">⌕</span>
       <input
         type="text"
-        placeholder="Buscar por ID, nombre o fecha..."
+        pInputText
+        placeholder="Buscar por ID, visitante, DNI o fecha..."
         (input)="filtrarVisitas($event)" />
     </div>
   </div>
@@ -28,36 +34,57 @@
     <p>Consultando base de datos...</p>
   </div>
 
-  <div class="table-responsive" *ngIf="!loading">
+  <div class="table-shell" *ngIf="!loading">
+    <p-table
+      #dt
+      [value]="visitas"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 15, 20]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords}"
+      [globalFilterFields]="[
+        'id',
+        'reo.id',
+        'reo.nombre',
+        'visitante.nombreCompleto',
+        'visitante.dniNie',
+        'fechaVisita'
+      ]"
+      responsiveLayout="scroll"
+      styleClass="visitas-table">
 
-    <!-- Se cambia visitas.length por visitasFiltradas.length para que el emptyState funcione con la búsqueda -->
-    <table class="visitas-table" *ngIf="visitasFiltradas.length > 0; else emptyState">
-      <thead>
+      <ng-template pTemplate="header">
         <tr>
           <th>ID</th>
-          <th>Interno (ID)</th>
+          <th>Interno</th>
           <th>Visitante</th>
           <th>DNI</th>
           <th>Fecha</th>
-          <th>Entrada/Salida</th>
+          <th>Entrada / Salida</th>
           <th>Estado</th>
-          <th>Código QR</th>
-          <th *ngIf="mostrarAccionesFlag">Acciones</th>
+          <th *ngIf="mostrarAccionesFlag || esVisitante" class="text-center">Acciones</th>
         </tr>
-      </thead>
+      </ng-template>
 
-      <tbody>
-        <tr *ngFor="let v of visitasPaginadas; trackBy: trackByVisitaId">
+      <ng-template pTemplate="body" let-v>
+        <tr>
           <td><strong>#{{ v.id }}</strong></td>
-          <td>{{ v.reo.id }}</td>
+
+          <td>
+            <div class="reo-cell">
+              <span class="reo-id">#{{ v.reo.id }}</span>
+              <span class="reo-name">{{ v.reo.nombre ?? 'Sin nombre' }}</span>
+            </div>
+          </td>
+
           <td>{{ v.visitante.nombreCompleto ?? 'Sin nombre' }}</td>
           <td>{{ v.visitante.dniNie ?? '-' }}</td>
           <td>{{ v.fechaVisita | date:'dd/MM/yyyy' }}</td>
 
           <td>
             <small>
-              {{ v.horaEntrada ?? '--:--' }} /
-              {{ v.horaSalida ?? '--:--' }}
+              {{ v.horaEntrada ?? '--:--' }} / {{ v.horaSalida ?? '--:--' }}
             </small>
           </td>
 
@@ -67,41 +94,7 @@
             </span>
           </td>
 
-          <td>
-            <div class="qr-cell">
-              <div class="qr-actions" *ngIf="esVisitante">
-                <button
-                  *ngIf="puedeGenerarQr(v) && !v.codigoQr"
-                  class="btn-generate-qr"
-                  type="button"
-                  (click)="generarQr(v)">
-                  Generar QR
-                </button>
-
-                <button
-                  *ngIf="puedeGenerarQr(v) && !!v.codigoQr"
-                  class="btn-generate-qr"
-                  type="button"
-                  (click)="generarQr(v)">
-                  Regenerar QR
-                </button>
-
-                <button
-                  *ngIf="puedeVerQr(v)"
-                  class="btn-view-qr"
-                  type="button"
-                  (click)="verQr(v)">
-                  Ver QR
-                </button>
-              </div>
-
-              <small *ngIf="esVisitante && !v.autorizado" class="qr-help">
-                Disponible cuando la visita sea autorizada
-              </small>
-            </div>
-          </td>
-
-          <td class="actions" *ngIf="mostrarAccionesFlag">
+          <td class="actions actions-center" *ngIf="mostrarAccionesFlag || esVisitante">
             <button
               class="btn-action approve"
               type="button"
@@ -115,42 +108,59 @@
             <button
               class="btn-action delete"
               type="button"
-              (click)="eliminar(v.id!)"
               title="Eliminar"
-              *ngIf="puedeEliminarFlag">
+              *ngIf="puedeEliminarFlag"
+              (click)="eliminar(v.id!)">
               🗑️
             </button>
+
+            <button
+              *ngIf="esVisitante && puedeGenerarQr(v) && !v.codigoQr"
+              class="btn-inline-action qr-generate"
+              type="button"
+              (click)="generarQr(v)">
+              Generar QR
+            </button>
+
+            <button
+              *ngIf="esVisitante && puedeGenerarQr(v) && !!v.codigoQr"
+              class="btn-inline-action qr-generate"
+              type="button"
+              (click)="generarQr(v)">
+              Regenerar QR
+            </button>
+
+            <button
+              *ngIf="esVisitante && puedeVerQr(v)"
+              class="btn-inline-action qr-view"
+              type="button"
+              (click)="verQr(v)">
+              Ver QR
+            </button>
+
+            <small
+              *ngIf="esVisitante && !v.autorizado"
+              class="qr-help-inline">
+              Esperando autorización
+            </small>
           </td>
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
 
-    <div class="pagination" *ngIf="visitasFiltradas.length > itemsPerPage">
-      <button
-        type="button"
-        class="page-btn"
-        (click)="paginaAnterior()"
-        [disabled]="currentPage === 1">
-        Anterior
-      </button>
-
-      <button
-        type="button"
-        class="page-btn"
-        *ngFor="let page of paginas"
-        (click)="irAPagina(page)"
-        [class.active]="page === currentPage">
-        {{ page }}
-      </button>
-
-      <button
-        type="button"
-        class="page-btn"
-        (click)="paginaSiguiente()"
-        [disabled]="currentPage === totalPages">
-        Siguiente
-      </button>
-    </div>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="(mostrarAccionesFlag || esVisitante) ? 8 : 7">
+            <div class="empty-state">
+              <p>
+                {{ esVisitante
+                  ? 'Todavía no tienes visitas registradas.'
+                  : 'No se encontraron registros de visitas.' }}
+              </p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
 
     <div class="qr-viewer" *ngIf="qrSeleccionado && visitaSeleccionada">
       <div class="qr-viewer-header">
@@ -177,21 +187,10 @@
           [elementType]="'canvas'">
         </qrcode>
 
-        <p class="qr-instruction" style="margin-top: 15px; text-align: center; color: #666;">
+        <p class="qr-instruction">
           Presente este código en el control de acceso
         </p>
       </div>
     </div>
-
-    <ng-template #emptyState>
-      <div class="empty-state">
-        <p>
-          {{ esVisitante
-            ? 'Todavía no tienes visitas registradas.'
-            : 'No se encontraron registros de visitas.' }}
-        </p>
-      </div>
-    </ng-template>
-
   </div>
 </div>

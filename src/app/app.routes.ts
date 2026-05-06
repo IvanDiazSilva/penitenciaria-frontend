@@ -19,7 +19,6 @@ import { ValidacionVisitanteComponent } from './features/visitantes/pages/valida
 import { PreregistroVisitanteComponent } from './features/visitantes/pages/preregistro/preregistro-visitante.component';
 
 import { IncidenciasListComponent } from './features/incidentes/pages/incidente-list/incidencia-list.component';
-import { IncidenciaFormComponent } from './features/incidentes/pages/incidente-form/incidencia-form.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -45,12 +44,6 @@ export const routes: Routes = [
       {
         path: 'incidentes',
         component: IncidenciasListComponent,
-        canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'GUARDIA'] }
-      },
-      {
-        path: 'incidentes/nuevo',
-        component: IncidenciaFormComponent,
         canActivate: [roleGuard],
         data: { roles: ['ADMIN', 'GUARDIA'] }
       },

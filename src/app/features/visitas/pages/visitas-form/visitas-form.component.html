@@ -5,57 +5,77 @@
   </p>
 
   <form (ngSubmit)="guardar()" #visitaForm="ngForm">
+
+    <!-- Solicitante -->
     <div class="form-group">
-      <label for="solicitante">Solicitante:</label>
+      <label for="solicitante">Solicitante</label>
       <input
         type="text"
         id="solicitante"
-        [value]="nombreVisitante || 'Visitante autenticado'"
+        [value]="nombreVisitante"
         disabled
-        class="form-control disabled">
-      <p class="form-help">
-        Tu usuario autenticado se usará para asociar la visita automáticamente.
-      </p>
+        class="form-control disabled" />
+      <p class="form-help">Tu usuario autenticado se asociará automáticamente a la visita.</p>
     </div>
 
+    <!-- Buscador de reo -->
     <div class="form-group">
-      <label for="buscadorReo">Interno a visitar (Nombre o DNI):</label>
-      
-      <div class="search-container" style="position: relative;">
-        <input
-          type="text"
-          id="buscadorReo"
-          name="terminoBusqueda"
-          [(ngModel)]="terminoBusqueda"
-          (input)="buscarReo()"
-          class="form-control"
-          placeholder="Escriba para buscar..."
-          autocomplete="off"
-          [disabled]="cargandoReos || guardando">
+      <label for="buscadorReo">Interno a visitar <span class="required">*</span></label>
 
-        <!-- Lista de resultados sugeridos -->
-        <ul *ngIf="reosFiltrados.length > 0" class="search-results-dropdown">
-          <li *ngFor="let reo of reosFiltrados" (click)="seleccionarReo(reo)">
-            <strong>{{ reo.nombre }}</strong> <small style="color: #64748b;">- {{ reo.dni }}</small>
-          </li>
-        </ul>
+      <!-- Cargando -->
+      <div *ngIf="cargandoReos" class="loading-state">
+        <span class="spinner"></span>
+        Sincronizando base de datos de internos…
       </div>
 
-      <!-- Mensaje de éxito al seleccionar -->
-      <p class="form-help" *ngIf="nuevaVisita.reoId > 0" style="color: #10b981; font-weight: 500;">
-        <i class="pi pi-check"></i> Seleccionado: {{ terminoBusqueda }}
-      </p>
+      <!-- Buscador (visible solo cuando ya cargó) -->
+      <div *ngIf="!cargandoReos" class="search-wrapper">
 
-      <p class="form-help" *ngIf="cargandoReos">
-        Sincronizando base de datos de internos...
-      </p>
-      
-      <!-- Validación oculta SIN required -->
-      <input type="hidden" name="reoIdValid" [(ngModel)]="nuevaVisita.reoId">
+        <!-- Reo ya seleccionado -->
+        <div *ngIf="nuevaVisita.reoId > 0" class="selected-reo">
+          <span class="check-icon">✓</span>
+          <span>{{ terminoBusqueda }}</span>
+          <button type="button" class="btn-clear" (click)="limpiarSeleccion()">✕</button>
+        </div>
+
+        <!-- Input de búsqueda (oculto si ya hay selección) -->
+        <div *ngIf="nuevaVisita.reoId === 0" class="search-container">
+          <input
+            type="text"
+            id="buscadorReo"
+            name="terminoBusqueda"
+            [(ngModel)]="terminoBusqueda"
+            (input)="buscarReo()"
+            class="form-control"
+            placeholder="Nombre o DNI del interno…"
+            autocomplete="off"
+            [disabled]="guardando" />
+
+          <!-- Dropdown resultados -->
+          <ul *ngIf="reosFiltrados.length > 0" class="search-results-dropdown">
+            <li
+              *ngFor="let reo of reosFiltrados"
+              (click)="seleccionarReo(reo)">
+              <strong>{{ reo.nombre }}</strong>
+              <small>{{ reo.dni }}</small>
+            </li>
+          </ul>
+
+          <!-- Sin resultados -->
+          <p
+            *ngIf="terminoBusqueda.trim() && reosFiltrados.length === 0"
+            class="form-help no-results">
+            No se encontraron internos con ese nombre o DNI.
+          </p>
+        </div>
+      </div>
+
+      <input type="hidden" name="reoIdValid" [(ngModel)]="nuevaVisita.reoId" />
     </div>
 
+    <!-- Fecha -->
     <div class="form-group">
-      <label for="fechaVisita">Fecha de la visita:</label>
+      <label for="fechaVisita">Fecha de la visita <span class="required">*</span></label>
       <input
         type="date"
         id="fechaVisita"
@@ -63,46 +83,50 @@
         [(ngModel)]="nuevaVisita.fechaVisita"
         required
         class="form-control"
-        [disabled]="guardando">
+        [disabled]="guardando" />
     </div>
 
+    <!-- Hora entrada -->
     <div class="form-group">
-      <label for="horaEntrada">Hora de entrada:</label>
+      <label for="horaEntrada">Hora de entrada</label>
       <input
         type="time"
         id="horaEntrada"
         name="horaEntrada"
         [(ngModel)]="nuevaVisita.horaEntrada"
         class="form-control"
-        [disabled]="guardando">
+        [disabled]="guardando" />
     </div>
 
+    <!-- Hora salida -->
     <div class="form-group">
-      <label for="horaSalida">Hora de salida:</label>
+      <label for="horaSalida">Hora de salida</label>
       <input
         type="time"
         id="horaSalida"
         name="horaSalida"
         [(ngModel)]="nuevaVisita.horaSalida"
         class="form-control"
-        [disabled]="guardando">
+        [disabled]="guardando" />
     </div>
 
+    <!-- Acciones -->
     <div class="form-actions">
       <button
-        type="submit"
-        [disabled]="!visitaForm.form.valid || nuevaVisita.reoId <= 0 || cargandoReos || guardando"
-        class="btn-save">
-        {{ guardando ? 'Enviando...' : 'Enviar solicitud' }}
-      </button>
-
-      <button
         type="button"
-        (click)="cancelar()"
         class="btn-cancel"
+        (click)="cancelar()"
         [disabled]="guardando">
         Cancelar
       </button>
+
+      <button
+        type="submit"
+        class="btn-save"
+        [disabled]="!visitaForm.form.valid || nuevaVisita.reoId <= 0 || guardando">
+        {{ guardando ? 'Enviando…' : 'Enviar solicitud' }}
+      </button>
     </div>
+
   </form>
 </div>

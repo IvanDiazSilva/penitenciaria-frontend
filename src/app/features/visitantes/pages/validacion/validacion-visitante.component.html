@@ -1,10 +1,8 @@
 <div class="list-container">
   <div class="list-header">
     <h2>Validación de visitantes pendientes</h2>
-    <button class="btn-add" routerLink="/monitor">← Volver al monitor</button>
   </div>
 
-  <!-- Toolbar -->
   <div class="toolbar" [hidden]="loading">
     <div class="search-box">
       <span class="search-icon">⌕</span>
@@ -12,18 +10,15 @@
     </div>
   </div>
 
-  <!-- Loading -->
   <div *ngIf="loading" class="loading-box">
     <p>Consultando visitantes pendientes...</p>
   </div>
 
-  <!-- Error -->
   <div *ngIf="error && !loading" class="empty-state error-state">
     <p>{{ error }}</p>
     <button class="btn-add" (click)="cargarVisitantesPendientes()">Reintentar</button>
   </div>
 
-  <!-- Tabla SIEMPRE MONTADA (sin *ngIf grande) -->
   <div [hidden]="loading || error" class="table-responsive">
     <table class="visitas-table" *ngIf="visitantesFiltrados.length > 0; else emptyState">
       <thead>
@@ -58,6 +53,7 @@
         </tr>
       </tbody>
     </table>
+
     <ng-template #emptyState>
       <div class="empty-state">
         <p>No hay visitantes pendientes de validación.</p>
